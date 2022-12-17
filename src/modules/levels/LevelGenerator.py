@@ -3,35 +3,11 @@
 Вызывать generate_level(width, height, rooms) для получения карты уровня.
 """
 
-
 import random
 import math
 import collections
-from enum import Enum
 
-
-class RoomsTypes(Enum):
-    """
-    Константы типов комнат
-    """
-    EMPTY: int = 0
-    DEFAULT: int = 1
-    SPAWN: int = 2
-    TREASURE: int = 3
-    SHOP: int = 4
-    SECRET: int = 5
-    BOSS: int = 6
-
-
-class Moves(Enum):
-    """
-    Возможные направления (x, y).
-    Верхний левый угол — начало координат.
-    """
-    UP: tuple[int, int] = (0, -1)
-    DOWN: tuple[int, int] = (0, 1)
-    RIGHT: tuple[int, int] = (1, 0)
-    LEFT: tuple[int, int] = (-1, 0)
+from src.consts import RoomsTypes, Moves
 
 
 def all_rooms_have_path_to_start(rooms: list[list[Moves | int]], *, ignore_secret: bool = True) -> bool:
