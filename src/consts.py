@@ -23,3 +23,12 @@ class Moves(Enum):
     DOWN: tuple[int, int] = (0, 1)
     RIGHT: tuple[int, int] = (1, 0)
     LEFT: tuple[int, int] = (-1, 0)
+
+
+WIDTH, HEIGHT = 1280, 960                # Весь экран
+GAME_WIDTH, GAME_HEIGHT = 1280, 810      # Часть экрана с игрой
+STATS_WIDTH, STATS_HEIGHT = 1280, 150    # Часто экрана с статой (хп, карта, деньги итп)
+ROOM_WIDTH, ROOM_HEIGHT = 13, 7          # В клетках
+WALL_SIZE = 133                          # Размер стены текстурок комнаты (пиксели)
+CELL_SIZE = 78                           # Размер клетки комнаты (пиксели)
+
