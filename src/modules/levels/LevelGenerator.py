@@ -7,10 +7,12 @@ import random
 import math
 import collections
 
+from src.utils.graph import make_neighbors_graph
 from src.consts import RoomsTypes, Moves
 
 
-def all_rooms_have_path_to_start(rooms: list[list[Moves | int]], *, ignore_secret: bool = True) -> bool:
+# Оптимизировать это, проложив путь от старта до всех возможных точек и проверить, что все точки задействованы.
+def all_rooms_have_path_to_start(rooms: list[list[RoomsTypes | int]], *, ignore_secret: bool = True) -> bool:
     """
     Проверка, все ли комнаты имеют путь до стартовой комнаты.
 
@@ -28,7 +30,7 @@ def all_rooms_have_path_to_start(rooms: list[list[Moves | int]], *, ignore_secre
     return True
 
 
-def has_path_to_start(start_pos: tuple[int, int], rooms: list[list[Moves | int]],
+def has_path_to_start(start_pos: tuple[int, int], rooms: list[list[RoomsTypes | int]],
                       *,
                       ignore_secret: bool = True, graph: dict[tuple[int, int], list[tuple[int, int]]] = None) -> bool:
     """
@@ -58,59 +60,7 @@ def has_path_to_start(start_pos: tuple[int, int], rooms: list[list[Moves | int]]
     return end_pos in visited.keys()
 
 
-def valid_coords(x: int, y: int, width: int, height: int) -> bool:
-    """
-    Проверка координат на выход за пределы списка.
-
-    :param x: Координата столбца.
-    :param y: Координата строки.
-    :param width: Ширина двумерного массива.
-    :param height: Высота двумерного массива.
-    :return: Корректны ли координаты.
-    """
-    return width > x >= 0 and height > y >= 0
-
-
-def get_neighbors_coords(x: int, y: int, rooms: list[list[Moves | int]],
-                         *,
-                         ignore_secret: bool = False) -> list[tuple[int, int]]:
-    """
-    Получение координат клеток-соседей, в которые можно пройти.
-
-    :param x: Координата столбца.
-    :param y: Координата строки.
-    :param rooms: Двумерный массив значений типов комнат.
-    :param ignore_secret: Игнорировать ли секретную комнату.
-    :return: Список со всеми координатами соседей, в которые можно пройти.
-    """
-    moves = [move.value for move in Moves]
-    map_width, map_height = len(rooms[0]), len(rooms)
-    ignored = [RoomsTypes.EMPTY]
-    if ignore_secret:
-        ignored.append(RoomsTypes.SECRET)
-    return [(x + i, y + j) for i, j in moves if
-            valid_coords(x + i, y + j, map_width, map_height) and rooms[y + j][x + i] not in ignored]
-
-
-def make_neighbors_graph(rooms: list[list[Moves | int]],
-                         ignore_secret: bool = False) -> dict[tuple[int, int], list[tuple[int, int]]]:
-    """
-    Генерация графа соседей.
-
-    :param rooms: Двумерный массив значений типов комнат.
-    :param ignore_secret: Игнорировать ли секретную комнату.
-    :return: Графоподобный словарь (координаты: список координат соседей).
-    """
-    graph = collections.defaultdict(list)  # dict[tuple[int, int], list[tuple[int, int]]]
-    # клетка -> список соседей, в которые можно пройти
-    for y, row in enumerate(rooms):
-        for x, col in enumerate(row):
-            if col != RoomsTypes.EMPTY:
-                graph[(x, y)].extend(get_neighbors_coords(x, y, rooms, ignore_secret=ignore_secret))
-    return graph
-
-
-def set_secret_room(rooms: list[list[Moves | int]]) -> bool:
+def set_secret_room(rooms: list[list[RoomsTypes | int]]) -> bool:
     """
     Установка секретной комнаты.
     :param rooms: Двумерный массив значений типов комнат.
@@ -130,7 +80,7 @@ def set_secret_room(rooms: list[list[Moves | int]]) -> bool:
     return True
 
 
-def set_special_rooms(rooms: list[list[Moves | int]]) -> bool:
+def set_special_rooms(rooms: list[list[RoomsTypes | int]]) -> bool:
     """
     Расстановка специальных комнат (сокровищница, магазин, босс).
 
@@ -159,7 +109,7 @@ def set_special_rooms(rooms: list[list[Moves | int]]) -> bool:
     return True
 
 
-def set_other_rooms(rooms: list[list[Moves | int]]) -> bool:
+def set_other_rooms(rooms: list[list[RoomsTypes | int]]) -> bool:
     """
     Расстановка комнат, отличных от спавна и дефолтных.
     :param rooms: Двумерный массив значений типов комнат.
@@ -176,7 +126,7 @@ def set_other_rooms(rooms: list[list[Moves | int]]) -> bool:
     return True
 
 
-def set_default_rooms(rooms: list[list[Moves | int]], room_numbers: int) -> None:
+def set_default_rooms(rooms: list[list[RoomsTypes | int]], room_numbers: int) -> None:
     """
     Расстановка RoomsTypes.DEFAULT и RoomsTypes.SPAWN на пустой карте.
 
@@ -200,7 +150,7 @@ def set_default_rooms(rooms: list[list[Moves | int]], room_numbers: int) -> None
             rooms[cur_y][cur_x] = RoomsTypes.DEFAULT
 
 
-def generate_level(map_width: int, map_height: int, room_numbers: int) -> list[list[Moves | int]]:
+def generate_level(map_width: int, map_height: int, room_numbers: int) -> list[list[RoomsTypes | int]]:
     """
     Генератор этажа (уровня).
 
@@ -224,7 +174,7 @@ def generate_level(map_width: int, map_height: int, room_numbers: int) -> list[l
     return rooms
 
 
-def print_map(rooms: list[list[Moves | int]]) -> None:
+def print_map(rooms: list[list[RoomsTypes | int]]) -> None:
     """
     Вывод карты в консоль.
 
