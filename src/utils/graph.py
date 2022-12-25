@@ -18,7 +18,8 @@ def valid_coords(x: int, y: int, width: int, height: int) -> bool:
 
 def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | int]],
                          *,
-                         ignore_secret: bool = False) -> list[tuple[int, int]]:
+                         ignore_secret: bool = False,
+                         use_diagonals: bool = False) -> list[tuple[int, int]]:
     """
     Получение координат клеток-соседей, в которые можно пройти.
 
@@ -26,9 +27,12 @@ def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | in
     :param y: Координата строки.
     :param rooms: Двумерный массив значений типов комнат.
     :param ignore_secret: Игнорировать ли секретную комнату.
+    :param use_diagonals: Использовать ли диагональные пути.
     :return: Список со всеми координатами соседей, в которые можно пройти.
     """
     moves = [move.value for move in consts.Moves]
+    if use_diagonals:
+        moves += [(1, 1), (-1, -1), (1, -1), (-1, 1)]
     map_width, map_height = len(rooms[0]), len(rooms)
     ignored = [consts.RoomsTypes.EMPTY]
     if ignore_secret:
@@ -38,7 +42,8 @@ def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | in
 
 
 def make_neighbors_graph(rooms: list[list[consts.RoomsTypes | int]],
-                         ignore_secret: bool = False) -> dict[tuple[int, int], list[tuple[int, int]]]:
+                         ignore_secret: bool = False,
+                         use_diagonals: bool = False) -> dict[tuple[int, int], list[tuple[int, int]]]:
     """
     Генерация графа соседей.
     Используется как для построения графа всей карты, так и для построения графа конкретной комнаты,
@@ -49,6 +54,7 @@ def make_neighbors_graph(rooms: list[list[consts.RoomsTypes | int]],
 
     :param rooms: Двумерный массив значений типов комнат.
     :param ignore_secret: Игнорировать ли секретную комнату.
+    :param use_diagonals: Использовать ли диагональные пути.
     :return: Графоподобный словарь (координаты: список координат соседей).
     """
     graph = collections.defaultdict(list)  # dict[tuple[int, int], list[tuple[int, int]]]
@@ -56,5 +62,6 @@ def make_neighbors_graph(rooms: list[list[consts.RoomsTypes | int]],
     for y, row in enumerate(rooms):
         for x, col in enumerate(row):
             if col != consts.RoomsTypes.EMPTY:
-                graph[(x, y)].extend(get_neighbors_coords(x, y, rooms, ignore_secret=ignore_secret))
+                graph[(x, y)].extend(get_neighbors_coords(x, y, rooms,
+                                                          ignore_secret=ignore_secret, use_diagonals=use_diagonals))
     return graph
