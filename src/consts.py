@@ -7,7 +7,10 @@ class FloorsTypes(Enum):
     """
     BASEMENT: str = "basement"
     CAVES: str = "caves"
+    CATACOMBS: str = "catacombs"
     DEPTHS: str = "depths"
+    BLUEWOMB: str = "bluewomb"
+    WOMB: str = "womb"
 
 
 class RoomsTypes(Enum):
