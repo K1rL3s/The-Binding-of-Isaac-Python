@@ -5,11 +5,23 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src import consts
+from src.utils.funcs import load_image, load_sound
 from src.modules.entities.Rock import Rock
+from src.modules.entities.Poop import Poop
 from src.utils.graph import make_neighbors_graph
 
 
 class Room:
+    controls_hint: pg.Surface = load_image("textures/room/controls.png")
+    basement_background: pg.Surface = load_image("textures/room/basement.png")
+    caves_background: pg.Surface = load_image("textures/room/basement.png")
+    catacombs_background: pg.Surface = load_image("textures/room/basement.png")
+    depths_background: pg.Surface = load_image("textures/room/basement.png")
+    bluewomb_background: pg.Surface = load_image("textures/room/basement.png")
+    womb_background: pg.Surface = load_image("textures/room/basement.png")
+    treasure_background: pg.Surface = load_image("textures/room/basement.png")
+    shop_background: pg.Surface = load_image("textures/room/basement.png")
+    secret_background: pg.Surface = load_image("textures/room/basement.png")
     """
     Класс комнаты.
 
@@ -18,24 +30,18 @@ class Room:
     :param texture_variant: Вариант текстуры (1-4, один из вариантов из изображения).
     :param abs_pos: Расположение на всей карте (x, y).
     :param xml_description: XML разметка объектов в комнате.
-    :param all_textures: Все текстуры игры.
-    :param all_sounds: Все звуки игры.
     """
 
     def __init__(self, floor_type: consts.FloorsTypes | str,
                  room_type: consts.RoomsTypes | int,
                  texture_variant: int,
                  abs_pos: tuple[int, int],
-                 xml_description: XMLTree,
-                 all_textures: dict[str, dict[consts.FloorsTypes | consts.RoomsTypes | str, pg.Surface]],
-                 all_sounds: dict[str, pg.mixer.Sound | list[pg.mixer.Sound]]):
+                 xml_description: XMLTree):
 
         self.x, self.y = abs_pos
         self.floor_type = floor_type
         self.room_type = room_type
         self.texture_variant = texture_variant
-        self.all_textures = all_textures
-        self.all_sounds = all_sounds
         self.background = pg.Surface((0, 0))
 
         # Отображение на мини-карте разными цветами
@@ -70,12 +76,12 @@ class Room:
             texture_y = consts.GAME_HEIGHT // 2
         elif self.texture_variant == 4:
             texture_x = consts.GAME_WIDTH // 2
-            texture_y = consts.GAME_WIDTH // 2
+            texture_y = consts.GAME_HEIGHT // 2
 
         if self.room_type in (consts.RoomsTypes.TREASURE, consts.RoomsTypes.SHOP, consts.RoomsTypes.SECRET):
-            texture = self.all_textures["rooms"][self.room_type]
+            texture = getattr(Room, self.room_type.value.lower() + '_background')
         else:
-            texture = self.all_textures["rooms"][self.floor_type]
+            texture = getattr(Room, self.floor_type.value.lower() + '_background')
         texture = texture.subsurface((texture_x, texture_y, consts.GAME_WIDTH // 2, consts.GAME_HEIGHT // 2))
 
         background = pg.Surface((consts.GAME_WIDTH, consts.GAME_HEIGHT))
@@ -88,7 +94,8 @@ class Room:
             )
         )
         if self.room_type == consts.RoomsTypes.SPAWN:
-            background.blit(self.all_textures["room"]["controls"], (0, 0))  # Показ управления в спавн команте (сделать)
+            # Показ управления в спавн команте
+            background.blit(Room.controls_hint, (consts.WALL_SIZE, consts.WALL_SIZE))
         self.background = background
 
     def setup_entities(self, xml: XMLTree):
@@ -99,9 +106,9 @@ class Room:
         for i in range(consts.ROOM_HEIGHT):
             for j in range(consts.ROOM_WIDTH):
                 if random.random() > 0.5:
-                    Rock((j, i), self.floor_type,
-                         self.all_sounds["rock_crumble"], self.all_textures["rocks"],
-                         self.rocks, self.colliadble_group, self.all_obstacles)  # .destroy()
+                    Rock((j, i), self.floor_type, self.rocks, self.colliadble_group, self.all_obstacles)  # .destroy()
+                else:
+                    Poop((j, i), self.poops, self.colliadble_group, self.destroyable_group, self.all_obstacles)
 
         # Сделать класс дверей
         # Сделать класс врага, который ходить по земле и обходит препятствия
