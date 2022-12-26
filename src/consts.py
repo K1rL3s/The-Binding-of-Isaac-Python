@@ -37,6 +37,16 @@ class Moves(Enum):
     LEFT: tuple[int, int] = (-1, 0)
 
 
+class DoorsCoords(Enum):
+    """
+    Возможные расположения дверей в комнате (x, y)
+    """
+    UP = (6, -1)
+    DOWN = (6, 7)
+    LEFT = (-1, 3)
+    RIGHT = (13, 3)
+
+
 WIDTH, HEIGHT = 1280, 960                # Весь экран
 GAME_WIDTH, GAME_HEIGHT = 1280, 810      # Часть экрана с игрой
 STATS_WIDTH, STATS_HEIGHT = 1280, 150    # Часть экрана с статой (хп, карта, деньги итп)

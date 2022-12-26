@@ -8,6 +8,7 @@ from src import consts
 from src.utils.funcs import load_image, load_sound
 from src.modules.entities.Rock import Rock
 from src.modules.entities.Poop import Poop
+from src.modules.entities.Door import Door
 from src.utils.graph import make_neighbors_graph
 
 
@@ -19,9 +20,11 @@ class Room:
     depths_background: pg.Surface = load_image("textures/room/basement.png")
     bluewomb_background: pg.Surface = load_image("textures/room/basement.png")
     womb_background: pg.Surface = load_image("textures/room/basement.png")
+
     treasure_background: pg.Surface = load_image("textures/room/basement.png")
     shop_background: pg.Surface = load_image("textures/room/basement.png")
     secret_background: pg.Surface = load_image("textures/room/basement.png")
+
     """
     Класс комнаты.
 
@@ -58,14 +61,13 @@ class Room:
         self.rocks = pg.sprite.Group()
         self.poops = pg.sprite.Group()
         self.fires = pg.sprite.Group()
-        self.doors = pg.sprite.Group()
+        self.doors: dict[consts.DoorsCoords | tuple[int, int], Door] = dict()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
 
         self.setup_background()
         self.setup_entities(xml_description)
-        self.update_obstacles()
         self.setup_graph()
 
     def setup_background(self):
@@ -110,14 +112,12 @@ class Room:
                 else:
                     Poop((j, i), self.poops, self.colliadble_group, self.destroyable_group, self.all_obstacles)
 
+        for coords in consts.DoorsCoords:
+            if random.random() > 0.5:
+                self.doors[coords] = Door(coords, self.all_obstacles)
+
         # Сделать класс дверей
         # Сделать класс врага, который ходить по земле и обходит препятствия
-
-    def update_obstacles(self):
-        """
-        Обновление списка препятствий. (нужно ли?)
-        """
-        pass
 
     def setup_graph(self):
         """
@@ -129,7 +129,7 @@ class Room:
         self.paths = make_neighbors_graph(cells)
         self.fly_paths = make_neighbors_graph(cells, use_diagonals=True)
 
-    def add_door(self, xy_pos: tuple[int, int], door_type: consts.RoomsTypes | consts.FloorsTypes, is_open: bool):
+    def update_doors(self, xy_pos: tuple[int, int], is_open: bool):
         """
         Добавление дверей.
         """
@@ -143,6 +143,12 @@ class Room:
 
     def enter_animation(self, direction: consts.Moves):
         self.moving = True
+
+    def update(self):
+        """
+        Обновление комнаты (перемещение врагов, просчёт коллизий)
+        """
+        pass
 
     def render(self, screen: pg.Surface):
         if not self.moving:
