@@ -114,7 +114,7 @@ class Room:
 
         for coords in consts.DoorsCoords:
             if random.random() > 0.5:
-                self.doors[coords] = Door(coords, self.all_obstacles)
+                self.doors[coords] = Door(coords, False, self.all_obstacles)
 
         # Сделать класс дверей
         # Сделать класс врага, который ходить по земле и обходит препятствия
@@ -131,7 +131,7 @@ class Room:
 
     def update_doors(self, xy_pos: tuple[int, int], is_open: bool):
         """
-        Добавление дверей.
+        Хз зачем
         """
         pass
     
