@@ -3,7 +3,7 @@ import random
 import pygame as pg
 
 from src.utils.funcs import load_image, load_sound
-from src.consts import FloorsTypes, CELL_SIZE
+from src.consts import FloorsTypes, RoomsTypes, CELL_SIZE
 from src.modules.entities.BaseItem import BaseItem
 from src.modules.Animation import Animation
 
@@ -19,6 +19,7 @@ class Rock(BaseItem):
 
     def __init__(self, xy_pos: tuple[int, int],
                  floor_type: FloorsTypes | str,
+                 room_type: RoomsTypes | str,
                  rocks_group: pg.sprite.AbstractGroup,
                  collidable_group: pg.sprite.AbstractGroup,
                  *groups: pg.sprite.AbstractGroup,
@@ -29,6 +30,7 @@ class Rock(BaseItem):
         self.rocks_group = rocks_group
         self.collidable_group = collidable_group
         self.floor_type = floor_type
+        self.room_type = room_type
         self.with_treasure = False
 
         self.destroyed_image = pg.Surface((0, 0))
@@ -43,6 +45,10 @@ class Rock(BaseItem):
             if floor_type == self.floor_type:
                 texture_x = i * CELL_SIZE
                 break
+        else:
+            if self.room_type == RoomsTypes.SECRET:
+                texture_x = len(FloorsTypes) * CELL_SIZE
+
         self.image = Rock.rocks.subsurface((texture_x, texture_y, CELL_SIZE, CELL_SIZE))
         self.destroyed_image = Rock.rocks.subsurface((texture_x, 0, CELL_SIZE, CELL_SIZE))
 

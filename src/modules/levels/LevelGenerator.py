@@ -12,7 +12,7 @@ from src.consts import RoomsTypes, Moves
 
 
 # Оптимизировать это, проложив путь от старта до всех возможных точек и проверить, что все точки задействованы.
-def all_rooms_have_path_to_start(rooms: list[list[RoomsTypes | int]], *, ignore_secret: bool = True) -> bool:
+def all_rooms_have_path_to_start(rooms: list[list[RoomsTypes | str]], *, ignore_secret: bool = True) -> bool:
     """
     Проверка, все ли комнаты имеют путь до стартовой комнаты.
 
@@ -30,7 +30,7 @@ def all_rooms_have_path_to_start(rooms: list[list[RoomsTypes | int]], *, ignore_
     return True
 
 
-def has_path_to_start(start_pos: tuple[int, int], rooms: list[list[RoomsTypes | int]],
+def has_path_to_start(start_pos: tuple[int, int], rooms: list[list[RoomsTypes | str]],
                       *,
                       ignore_secret: bool = True, graph: dict[tuple[int, int], list[tuple[int, int]]] = None) -> bool:
     """
@@ -60,7 +60,7 @@ def has_path_to_start(start_pos: tuple[int, int], rooms: list[list[RoomsTypes | 
     return end_pos in visited.keys()
 
 
-def set_secret_room(rooms: list[list[RoomsTypes | int]]) -> bool:
+def set_secret_room(rooms: list[list[RoomsTypes | str]]) -> bool:
     """
     Установка секретной комнаты.
     :param rooms: Двумерный массив значений типов комнат.
@@ -80,7 +80,7 @@ def set_secret_room(rooms: list[list[RoomsTypes | int]]) -> bool:
     return True
 
 
-def set_special_rooms(rooms: list[list[RoomsTypes | int]]) -> bool:
+def set_special_rooms(rooms: list[list[RoomsTypes | str]]) -> bool:
     """
     Расстановка специальных комнат (сокровищница, магазин, босс).
 
@@ -109,7 +109,7 @@ def set_special_rooms(rooms: list[list[RoomsTypes | int]]) -> bool:
     return True
 
 
-def set_other_rooms(rooms: list[list[RoomsTypes | int]]) -> bool:
+def set_other_rooms(rooms: list[list[RoomsTypes | str]]) -> bool:
     """
     Расстановка комнат, отличных от спавна и дефолтных.
     :param rooms: Двумерный массив значений типов комнат.
@@ -126,7 +126,7 @@ def set_other_rooms(rooms: list[list[RoomsTypes | int]]) -> bool:
     return True
 
 
-def set_default_rooms(rooms: list[list[RoomsTypes | int]], room_numbers: int) -> None:
+def set_default_rooms(rooms: list[list[RoomsTypes | str]], room_numbers: int) -> None:
     """
     Расстановка RoomsTypes.DEFAULT и RoomsTypes.SPAWN на пустой карте.
 
@@ -150,7 +150,7 @@ def set_default_rooms(rooms: list[list[RoomsTypes | int]], room_numbers: int) ->
             rooms[cur_y][cur_x] = RoomsTypes.DEFAULT
 
 
-def generate_level(map_width: int, map_height: int, room_numbers: int) -> list[list[RoomsTypes | int]]:
+def generate_level(map_width: int, map_height: int, room_numbers: int) -> list[list[RoomsTypes | str]]:
     """
     Генератор этажа (уровня).
 
@@ -174,7 +174,7 @@ def generate_level(map_width: int, map_height: int, room_numbers: int) -> list[l
     return rooms
 
 
-def print_map(rooms: list[list[RoomsTypes | int]]) -> None:
+def print_map(rooms: list[list[RoomsTypes | str]]) -> None:
     """
     Вывод карты в консоль.
 
@@ -183,7 +183,7 @@ def print_map(rooms: list[list[RoomsTypes | int]]) -> None:
     """
     for row in rooms:
         for col in row:
-            print(col.value, end=' ')
+            print(col.value.center(8, ' '), end=' ')
         print()
 
 

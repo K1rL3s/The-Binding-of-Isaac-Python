@@ -16,7 +16,7 @@ def valid_coords(x: int, y: int, width: int, height: int) -> bool:
     return width > x >= 0 and height > y >= 0
 
 
-def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | int]],
+def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | str]],
                          *,
                          ignore_secret: bool = False,
                          use_diagonals: bool = False) -> list[tuple[int, int]]:
@@ -41,7 +41,7 @@ def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | in
             valid_coords(x + i, y + j, map_width, map_height) and rooms[y + j][x + i] not in ignored]
 
 
-def make_neighbors_graph(rooms: list[list[consts.RoomsTypes | int]],
+def make_neighbors_graph(rooms: list[list[consts.RoomsTypes | str]],
                          ignore_secret: bool = False,
                          use_diagonals: bool = False) -> dict[tuple[int, int], list[tuple[int, int]]]:
     """

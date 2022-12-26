@@ -15,7 +15,7 @@ from src.modules.levels.Room import Room
 
 
 def main():
-    room = Room(random.choice(list(consts.FloorsTypes)), random.choice(list(consts.FloorsTypes)),
+    room = Room(consts.FloorsTypes.CAVES, consts.RoomsTypes.DEFAULT,
                 random.randint(1, 4), (0, 0), None)
 
     running = True
@@ -31,8 +31,8 @@ def main():
         pg.display.flip()
 
         # Убрать эту строку, чтобы комнаты не менялись
-        room = Room(random.choice(list(consts.FloorsTypes)), random.choice(list(consts.FloorsTypes)),
-                  random.randint(1, 4), (0, 0), None)
+        # room = Room(random.choice(list(consts.FloorsTypes)), random.choice(list(consts.RoomsTypes)),
+        #            random.randint(1, 4), (0, 0), None)
 
     pg.quit()
 

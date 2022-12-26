@@ -22,7 +22,7 @@ class Room:
     womb_background: pg.Surface = load_image("textures/room/basement.png")
 
     treasure_background: pg.Surface = load_image("textures/room/basement.png")
-    shop_background: pg.Surface = load_image("textures/room/basement.png")
+    shop_background: list[pg.Surface] = [load_image("textures/room/shop.png"), load_image("textures/room/shop2.png")]
     secret_background: pg.Surface = load_image("textures/room/basement.png")
 
     """
@@ -36,7 +36,7 @@ class Room:
     """
 
     def __init__(self, floor_type: consts.FloorsTypes | str,
-                 room_type: consts.RoomsTypes | int,
+                 room_type: consts.RoomsTypes | str,
                  texture_variant: int,
                  abs_pos: tuple[int, int],
                  xml_description: XMLTree):
@@ -61,7 +61,7 @@ class Room:
         self.rocks = pg.sprite.Group()
         self.poops = pg.sprite.Group()
         self.fires = pg.sprite.Group()
-        self.doors: dict[consts.DoorsCoords | tuple[int, int], Door] = dict()
+        self.doors = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
@@ -84,6 +84,8 @@ class Room:
             texture = getattr(Room, self.room_type.value.lower() + '_background')
         else:
             texture = getattr(Room, self.floor_type.value.lower() + '_background')
+        if isinstance(texture, list):
+            texture = random.choice(texture)
         texture = texture.subsurface((texture_x, texture_y, consts.GAME_WIDTH // 2, consts.GAME_HEIGHT // 2))
 
         background = pg.Surface((consts.GAME_WIDTH, consts.GAME_HEIGHT))
@@ -114,9 +116,9 @@ class Room:
 
         for coords in consts.DoorsCoords:
             if random.random() > 0.5:
-                self.doors[coords] = Door(coords, False, self.all_obstacles)
+                Door(coords, self.floor_type, self.room_type, self.doors, self.all_obstacles)
 
-        # Сделать класс дверей
+        # Сделать логику для установки нужных дверей в нужные комнаты
         # Сделать класс врага, который ходить по земле и обходит препятствия
 
     def setup_graph(self):

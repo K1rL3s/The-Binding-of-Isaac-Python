@@ -17,13 +17,13 @@ class RoomsTypes(Enum):
     """
     Константы типов комнат (изменить на какой-нибудь рандом?).
     """
-    EMPTY: int = 0
-    DEFAULT: int = 1
-    SPAWN: int = 2
-    TREASURE: int = 3
-    SHOP: int = 4
-    SECRET: int = 5
-    BOSS: int = 6
+    EMPTY: str = "empty"
+    DEFAULT: str = "default"
+    SPAWN: str = "spawn"
+    TREASURE: str = "treasure"
+    SHOP: str = "shop"
+    SECRET: str = "secret"
+    BOSS: str = "boss"
 
 
 class Moves(Enum):
