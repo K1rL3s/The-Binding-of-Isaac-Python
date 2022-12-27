@@ -16,14 +16,14 @@ class Room:
     controls_hint: pg.Surface = load_image("textures/room/controls.png")
     basement_background: pg.Surface = load_image("textures/room/basement.png")
     caves_background: pg.Surface = load_image("textures/room/caves.png")
-    catacombs_background: pg.Surface = load_image("textures/room/basement.png")
-    depths_background: pg.Surface = load_image("textures/room/basement.png")
-    bluewomb_background: pg.Surface = load_image("textures/room/basement.png")
-    womb_background: pg.Surface = load_image("textures/room/basement.png")
+    catacombs_background: pg.Surface = load_image("textures/room/catacombs.png")
+    depths_background: pg.Surface = load_image("textures/room/depths.png")
+    bluewomb_background: pg.Surface = load_image("textures/room/bluewomb.png")
+    womb_background: pg.Surface = load_image("textures/room/womb.png")
 
-    treasure_background: pg.Surface = load_image("textures/room/basement.png")
-    shop_background: list[pg.Surface] = [load_image("textures/room/shop.png"), load_image("textures/room/shop2.png")]
-    secret_background: pg.Surface = load_image("textures/room/basement.png")
+    treasure_background: pg.Surface = load_image("textures/room/treasure.png")
+    shop_background: pg.Surface = load_image("textures/room/shop.png")
+    secret_background: pg.Surface = load_image("textures/room/secret.png")
 
     """
     Класс комнаты.
