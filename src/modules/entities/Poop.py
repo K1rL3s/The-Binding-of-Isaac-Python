@@ -62,7 +62,6 @@ class Poop(BaseItem):
     def destroy(self):
         """
         Уничтожение Poop после взрыва/ломания слезами.
-        (сделать замену на текстурку сломанной Poop, наложить её на Room.background для того, чтобы не перерисовывать)
         """
         self.image = self.stages[4]
         self.collidable = False

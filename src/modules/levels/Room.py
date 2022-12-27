@@ -50,7 +50,7 @@ class Room:
         # Отображение на мини-карте разными цветами
         self.visited = False
         self.spotted = False
-        
+
         # Анимация входа-выхода
         self.moving = False
 
@@ -109,16 +109,17 @@ class Room:
         """
         for i in range(consts.ROOM_HEIGHT):
             for j in range(consts.ROOM_WIDTH):
-                if random.random() > 0.5:
-                    Rock((j, i), self.floor_type, self.rocks, self.colliadble_group, self.all_obstacles)  # .destroy()
-                else:
+                chance = random.random()
+                if chance > 0.75:
+                    Rock((j, i), self.floor_type, self.room_type, self.rocks, self.colliadble_group, self.all_obstacles)
+                elif chance > 0.25:
                     Poop((j, i), self.poops, self.colliadble_group, self.destroyable_group, self.all_obstacles)
 
         for coords in consts.DoorsCoords:
             if random.random() > 0.5:
-                Door(coords, self.floor_type, self.room_type, self.doors, self.all_obstacles)
+                Door(coords, self.floor_type, self.room_type, self.doors, self.all_obstacles)  # .blow() .open()
 
-        # Сделать логику для установки нужных дверей в нужные комнаты
+        # Сделать логику для установки нужных дверей в нужные комнаты (класс этажа)
         # Сделать класс врага, который ходить по земле и обходит препятствия
 
     def setup_graph(self):
@@ -136,17 +137,17 @@ class Room:
         Хз зачем
         """
         pass
-    
+
     def add_other(self, xy_pos: tuple[int, int], *args):
         pass
-    
+
     def exit_animtaion(self, direction: consts.Moves):
         self.moving = True
 
     def enter_animation(self, direction: consts.Moves):
         self.moving = True
 
-    def update(self):
+    def update(self, delta_t: float):
         """
         Обновление комнаты (перемещение врагов, просчёт коллизий)
         """
