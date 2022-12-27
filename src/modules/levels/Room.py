@@ -15,7 +15,7 @@ from src.utils.graph import make_neighbors_graph
 class Room:
     controls_hint: pg.Surface = load_image("textures/room/controls.png")
     basement_background: pg.Surface = load_image("textures/room/basement.png")
-    caves_background: pg.Surface = load_image("textures/room/basement.png")
+    caves_background: pg.Surface = load_image("textures/room/caves.png")
     catacombs_background: pg.Surface = load_image("textures/room/basement.png")
     depths_background: pg.Surface = load_image("textures/room/basement.png")
     bluewomb_background: pg.Surface = load_image("textures/room/basement.png")
@@ -117,7 +117,8 @@ class Room:
 
         for coords in consts.DoorsCoords:
             if random.random() > 0.5:
-                Door(coords, self.floor_type, self.room_type, self.doors, self.all_obstacles)  # .blow() .open()
+                door = Door(coords, self.floor_type, self.room_type, self.doors, self.all_obstacles)
+                # door.blow()
 
         # Сделать логику для установки нужных дверей в нужные комнаты (класс этажа)
         # Сделать класс врага, который ходить по земле и обходит препятствия

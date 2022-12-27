@@ -223,39 +223,41 @@ class Door(BaseItem, DoorTextures):
 
         super().__init__(self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
         self.set_image()
-        self.set_rect()
+        self.set_rect(DOOR_CELL_SIZE, DOOR_CELL_SIZE)
 
     def blow(self):
         """
         Уничтожение/Взрыв двери.
         """
-        if self.collidable:
+        if not self.collidable:
             return
         if self.room_type in (RoomsTypes.BOSS, RoomsTypes.TREASURE, RoomsTypes.SHOP):
             return
-        self.update_image('blow', is_open=True)
+        self.update_image('blow')
 
     def open(self):
         """
         Открыть дверь.
         """
         if not self.room_type == RoomsTypes.SECRET:
-            self.update_image('open', is_open=True)
+            self.update_image('open')
 
-    def update_image(self, state: str = None, direction: str = None, is_open: bool = False):
+    def update_image(self, state: str = None, direction: str = None):
         """
         Обновление текстурки двери.
         :param state: Открыта, закрыта или взорвана.
         :param direction: Сверху, снизу, слева или справа.
-        :param is_open: Открыта ли дверь.
         """
         if state:
             self.state = state
         if direction:
             self.direction = direction
         self.state = state
-        self.collidable = is_open
-        self.image = getattr(Door, f'{self.texture}_{self.state}_{self.direction}')
+        self.collidable = True if self.state == 'close' else False
+        if self.room_type == RoomsTypes.SECRET and self.collidable:
+            self.image = pg.Surface((0, 0))
+        else:
+            self.image = getattr(Door, f'{self.texture}_{self.state}_{self.direction}')
 
     def set_image(self):
         """
@@ -282,7 +284,7 @@ class Door(BaseItem, DoorTextures):
         elif self.xy_pos == DoorsCoords.RIGHT.value:
             self.direction = 'right'
 
-        self.update_image(self.state, self.direction, False)
+        self.update_image(self.state, self.direction)
 
     def collide(self, other):
         if self.collidable:

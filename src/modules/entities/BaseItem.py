@@ -69,6 +69,10 @@ class BaseItem(pg.sprite.Sprite):
         Установка объекта в центре своей клетки.
         """
         self.rect = self.image.get_rect()
+        if width:
+            self.rect.width = width
+        if height:
+            self.rect.height = height
         cell_x = self.x * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.width) // 2
         cell_y = self.y * CELL_SIZE + WALL_SIZE + STATS_HEIGHT + (CELL_SIZE - self.rect.width) // 2
         if width is None:
