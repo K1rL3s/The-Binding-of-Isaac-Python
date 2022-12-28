@@ -12,7 +12,7 @@ from src.modules.entities.Door import Door
 from src.utils.graph import make_neighbors_graph
 
 
-class Room:
+class RoomTextures:
     controls_hint: pg.Surface = load_image("textures/room/controls.png")
     basement_background: pg.Surface = load_image("textures/room/basement.png")
     caves_background: pg.Surface = load_image("textures/room/caves.png")
@@ -25,34 +25,36 @@ class Room:
     shop_background: pg.Surface = load_image("textures/room/shop.png")
     secret_background: pg.Surface = load_image("textures/room/secret.png")
 
+
+class Room(RoomTextures):
     """
     Класс комнаты.
 
     :param floor_type: Номер этажа (1-5).
     :param room_type: Тип комнаты.
     :param texture_variant: Вариант текстуры (1-4, один из вариантов из изображения).
-    :param abs_pos: Расположение на всей карте (x, y).
+    :param xy_pos: Расположение на этаже (x, y).
     :param xml_description: XML разметка объектов в комнате.
     """
 
-    def __init__(self, floor_type: consts.FloorsTypes | str,
+    def __init__(self,
+                 floor_type: consts.FloorsTypes | str,
                  room_type: consts.RoomsTypes | str,
-                 texture_variant: int,
-                 abs_pos: tuple[int, int],
-                 xml_description: XMLTree):
+                 xy_pos: tuple[int, int],
+                 xml_description: XMLTree,
+                 texture_variant: int = None):
 
-        self.x, self.y = abs_pos
+        assert room_type != consts.RoomsTypes.EMPTY, f"Тип комнаты не можеть быть {consts.RoomsTypes.EMPTY}."
+
+        self.x, self.y = xy_pos
         self.floor_type = floor_type
         self.room_type = room_type
-        self.texture_variant = texture_variant
+        self.texture_variant = texture_variant if texture_variant else random.randint(1, 4)
         self.background = pg.Surface((0, 0))
 
         # Отображение на мини-карте разными цветами
         self.visited = False
         self.spotted = False
-
-        # Анимация входа-выхода
-        self.moving = False
 
         self.all_obstacles = pg.sprite.Group()
         self.colliadble_group = pg.sprite.Group()
@@ -110,17 +112,10 @@ class Room:
         for i in range(consts.ROOM_HEIGHT):
             for j in range(consts.ROOM_WIDTH):
                 chance = random.random()
-                if chance > 0.75:
+                if chance > 0.90:
                     Rock((j, i), self.floor_type, self.room_type, self.rocks, self.colliadble_group, self.all_obstacles)
-                elif chance > 0.25:
+                elif chance > 0.80:
                     Poop((j, i), self.poops, self.colliadble_group, self.destroyable_group, self.all_obstacles)
-
-        for coords in consts.DoorsCoords:
-            if random.random() > 0.5:
-                door = Door(coords, self.floor_type, self.room_type, self.doors, self.all_obstacles)
-                # door.blow()
-
-        # Сделать логику для установки нужных дверей в нужные комнаты (класс этажа)
         # Сделать класс врага, который ходить по земле и обходит препятствия
 
     def setup_graph(self):
@@ -133,20 +128,26 @@ class Room:
         self.paths = make_neighbors_graph(cells)
         self.fly_paths = make_neighbors_graph(cells, use_diagonals=True)
 
-    def update_doors(self, xy_pos: tuple[int, int], is_open: bool):
+    def setup_doors(self, doors: list[tuple[consts.DoorsCoords, consts.RoomsTypes]]):
         """
-        Хз зачем
+        Установка дверей с нужными текстурками.
         """
-        pass
+        for coords, room_type in doors:
+            Door(coords, self.floor_type, room_type, self.doors, self.all_obstacles)
+
+    def update_doors(self, state: str):
+        """
+        Открыть/Закрыть/Взорвать все двери.
+        :param state: "open", "close", "blow".
+        """
+        for door in self.doors.sprites():
+            try:
+                getattr(door, state)()
+            except AttributeError:
+                pass
 
     def add_other(self, xy_pos: tuple[int, int], *args):
         pass
-
-    def exit_animtaion(self, direction: consts.Moves):
-        self.moving = True
-
-    def enter_animation(self, direction: consts.Moves):
-        self.moving = True
 
     def update(self, delta_t: float):
         """
@@ -155,9 +156,11 @@ class Room:
         pass
 
     def render(self, screen: pg.Surface):
-        if not self.moving:
-            screen.blit(self.background, (0, consts.STATS_HEIGHT))
-            self.all_obstacles.draw(screen)
-        else:
-            # Анимация перехода
-            self.moving = False
+        screen.blit(self.background, (0, consts.STATS_HEIGHT))
+        self.rocks.draw(screen)
+        self.poops.draw(screen)
+        self.enemies.draw(screen)
+        self.fires.draw(screen)
+        self.doors.draw(screen)
+        self.other.draw(screen)
+

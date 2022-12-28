@@ -13,7 +13,8 @@ class Poop(BaseItem):
 
     max_hp = 10
 
-    def __init__(self, xy_pos: tuple[int, int],
+    def __init__(self,
+                 xy_pos: tuple[int, int],
                  poop_group: pg.sprite.AbstractGroup,
                  collidable_group: pg.sprite.AbstractGroup,
                  destroyable_group: pg.sprite.AbstractGroup,

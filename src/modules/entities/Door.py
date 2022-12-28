@@ -205,7 +205,8 @@ class Door(BaseItem, DoorTextures):
     :param collidable: Закрыта ли дверь.
     :param hurtable: Наносит ли урон дверь при проходе через неё.
     """
-    def __init__(self, xy_pos: DoorsCoords | tuple[int, int],
+    def __init__(self,
+                 xy_pos: DoorsCoords | tuple[int, int],
                  floor_type: FloorsTypes,
                  room_type: RoomsTypes,  # из этого определять текстурку (секретка в т.ч.)
                  *groups: pg.sprite.AbstractGroup,
@@ -241,6 +242,12 @@ class Door(BaseItem, DoorTextures):
         """
         if not self.room_type == RoomsTypes.SECRET:
             self.update_image('open')
+
+    def close(self):
+        """
+        Закрыть двери.
+        """
+        self.update_image('close')
 
     def update_image(self, state: str = None, direction: str = None):
         """

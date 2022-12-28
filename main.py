@@ -1,5 +1,3 @@
-import random
-
 import pygame as pg
 
 from src import consts
@@ -11,27 +9,35 @@ pg.mixer.init()
 screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 
 
-from src.modules.levels.Room import Room
+from src.modules.Game import Game
 
 
 def main():
-    room = Room(random.choice(list(consts.FloorsTypes)), consts.RoomsTypes.SPAWN,
-                random.randint(1, 4), (0, 0), None)
     running = True
     timer = pg.time.Clock()
+
+    game = Game()
 
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_UP:
+                    game.move_to_next_room(consts.Moves.UP)
+                elif event.key == pg.K_DOWN:
+                    game.move_to_next_room(consts.Moves.DOWN)
+                elif event.key == pg.K_RIGHT:
+                    game.move_to_next_room(consts.Moves.RIGHT)
+                elif event.key == pg.K_LEFT:
+                    game.move_to_next_room(consts.Moves.LEFT)
             if event.type == pg.MOUSEBUTTONDOWN:
-                room = Room(random.choice(list(consts.FloorsTypes)), random.choice(list(consts.RoomsTypes)),
-                            random.randint(1, 4), (0, 0), None)
-                print(room.floor_type, room.room_type)
+                game.next_level()
+
         delta_t = timer.tick(60) / 1000
         screen.fill(pg.Color('white'))
-        room.update(delta_t)
-        room.render(screen)
+        game.update(delta_t)
+        game.render(screen)
         pg.display.flip()
 
     pg.quit()

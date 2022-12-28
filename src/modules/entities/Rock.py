@@ -17,7 +17,8 @@ class Rock(BaseItem):
         load_sound("sounds/rock_crumble3.wav"),
     ]
 
-    def __init__(self, xy_pos: tuple[int, int],
+    def __init__(self,
+                 xy_pos: tuple[int, int],
                  floor_type: FloorsTypes | str,
                  room_type: RoomsTypes | str,
                  rocks_group: pg.sprite.AbstractGroup,

@@ -20,7 +20,8 @@ class BaseItem(pg.sprite.Sprite):
     :param hurtable: Наносит ли урон персонажу при прикосновении.
     """
 
-    def __init__(self, xy_pos: tuple[int, int],
+    def __init__(self,
+                 xy_pos: tuple[int, int],
                  *groups: pg.sprite.AbstractGroup,
                  acceleration: int | float = 0,
                  collidable: bool = False,

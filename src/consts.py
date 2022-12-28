@@ -28,7 +28,7 @@ class RoomsTypes(Enum):
 
 class Moves(Enum):
     """
-    Возможные направления (x, y).
+    Возможные направления (x, y) (делать сложение).
     Верхний левый угол — начало координат.
     """
     UP: tuple[int, int] = (0, -1)
@@ -47,9 +47,11 @@ class DoorsCoords(Enum):
     RIGHT = (13, 3)
 
 
-WIDTH, HEIGHT = 1280, 960                # Весь экран
-GAME_WIDTH, GAME_HEIGHT = 1280, 810      # Часть экрана с игрой
-STATS_WIDTH, STATS_HEIGHT = 1280, 150    # Часть экрана с статой (хп, карта, деньги итп)
-ROOM_WIDTH, ROOM_HEIGHT = 13, 7          # В клетках
-WALL_SIZE = 133                          # Размер стены текстурок комнаты (пиксели)
-CELL_SIZE = 78                           # Размер клетки комнаты (пиксели)
+WIDTH, HEIGHT = 1280, 960                         # Весь экран
+GAME_WIDTH, GAME_HEIGHT = 1280, 810               # Часть экрана с игрой
+STATS_WIDTH, STATS_HEIGHT = 1280, 150             # Часть экрана с статой (хп, карта, деньги итп)
+ROOM_WIDTH, ROOM_HEIGHT = 13, 7                   # В клетках
+WALL_SIZE = 133                                   # Размер стены текстурок комнаты (пиксели)
+CELL_SIZE = 78                                    # Размер клетки комнаты (пиксели)
+MINIMAP_CELL_WIDTH, MINIMAP_CELL_HEIGHT = 20, 10  # Размер клетки на миникарте
+MINIMAP_WIDTH, MINIMAP_HEIGHT = 200, 100          # Размер миникарты
