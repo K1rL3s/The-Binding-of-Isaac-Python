@@ -99,6 +99,12 @@ class BaseItem(pg.sprite.Sprite):
         pass
         # self.destroy()
 
+    def blow(self):
+        """
+        Взрыв объекта.
+        """
+        pass
+
     def hurt(self, damage: int):
         """
         Нанесение урона предмету (какашке).

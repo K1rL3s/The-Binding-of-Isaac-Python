@@ -1,8 +1,10 @@
 import os
+from functools import cache
 
 import pygame as pg
 
 
+@cache
 def load_image(name: str, colorkey: pg.Color | int | None = None) -> pg.Surface:
     """
     Загрузка изображения в pygame.Surface.
@@ -25,6 +27,7 @@ def load_image(name: str, colorkey: pg.Color | int | None = None) -> pg.Surface:
     return image
 
 
+@cache
 def load_sound(name) -> pg.mixer.Sound:
     """
     Загрузка звука в pygame.Sound.

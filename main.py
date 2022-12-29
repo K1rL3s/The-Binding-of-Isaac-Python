@@ -15,6 +15,7 @@ from src.modules.Game import Game
 def main():
     running = True
     timer = pg.time.Clock()
+    background = pg.Color(27, 24, 24)
 
     game = Game()
 
@@ -35,7 +36,7 @@ def main():
                 game.next_level()
 
         delta_t = timer.tick(60) / 1000
-        screen.fill(pg.Color('white'))
+        screen.fill(background)
         game.update(delta_t)
         game.render(screen)
         pg.display.flip()

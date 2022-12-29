@@ -25,12 +25,18 @@ class RoomTextures:
     shop_background: pg.Surface = load_image("textures/room/shop.png")
     secret_background: pg.Surface = load_image("textures/room/secret.png")
 
+    minimap_cells: list[pg.Surface] = [load_image("textures/room/minimap_cells.png").subsurface(
+            (0, y * consts.MINIMAP_CELL_HEIGHT, consts.MINIMAP_CELL_WIDTH, consts.MINIMAP_CELL_HEIGHT)
+        )
+        for y in range(3)
+    ]
+
 
 class Room(RoomTextures):
     """
     Класс комнаты.
 
-    :param floor_type: Номер этажа (1-5).
+    :param floor_type: Тип этажа.
     :param room_type: Тип комнаты.
     :param texture_variant: Вариант текстуры (1-4, один из вариантов из изображения).
     :param xy_pos: Расположение на этаже (x, y).
@@ -50,11 +56,13 @@ class Room(RoomTextures):
         self.floor_type = floor_type
         self.room_type = room_type
         self.texture_variant = texture_variant if texture_variant else random.randint(1, 4)
-        self.background = pg.Surface((0, 0))
+        self.minimap_cell: pg.Surface = pg.Surface((0, 0))
+        self.background: pg.Surfac = pg.Surface((0, 0))
 
         # Отображение на мини-карте разными цветами
-        self.visited = False
-        self.spotted = False
+        self.is_spotted = False
+        self.is_visited = False
+        self.is_active = False
 
         self.all_obstacles = pg.sprite.Group()
         self.colliadble_group = pg.sprite.Group()
@@ -99,7 +107,7 @@ class Room(RoomTextures):
                 (pg.transform.flip(texture, True, True), (consts.GAME_WIDTH // 2, consts.GAME_HEIGHT // 2))
             )
         )
-        if self.room_type == consts.RoomsTypes.SPAWN:
+        if self.room_type == consts.RoomsTypes.SPAWN and self.floor_type == consts.FloorsTypes.BASEMENT:
             # Показ управления в спавн команте
             background.blit(Room.controls_hint, (consts.WALL_SIZE, consts.WALL_SIZE))
         self.background = background
@@ -145,6 +153,38 @@ class Room(RoomTextures):
                 getattr(door, state)()
             except AttributeError:
                 pass
+
+    def update_detection_state(self, is_spotted: bool = False, is_active: bool = False):
+        """
+        Обновление состояния видимости на миникарте.
+        :param is_spotted: Замечена ли комната (дверь в неё).
+        :param is_active: Текущая ли комната.
+        """
+
+        self.is_active = is_active
+        if self.is_active:
+            self.is_visited = True
+        if (self.is_visited or is_spotted) and self.room_type != consts.RoomsTypes.SECRET:
+            self.is_spotted = True
+        self.update_minimap()
+
+    def update_minimap(self):
+        """
+        Обновление иконки для мини-карты.
+        """
+        if self.is_active:
+            self.minimap_cell = self.minimap_cells[2]
+        elif self.is_visited:
+            self.minimap_cell = self.minimap_cells[1]
+        elif self.is_spotted:
+            self.minimap_cell = self.minimap_cells[0]
+
+    def get_minimap_cell(self) -> pg.Surface:
+        """
+        Возвращает иконку для миникарты.
+        :return: pg.Surface.
+        """
+        return self.minimap_cell
 
     def add_other(self, xy_pos: tuple[int, int], *args):
         pass

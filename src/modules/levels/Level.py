@@ -1,16 +1,24 @@
 import pygame as pg
 
-from src.modules.levels.LevelGenerator import generate_level
+from src.utils.graph import valid_coords
 from src.modules.levels.Room import Room
 from src.utils.graph import get_neighbors_coords
+from src.modules.levels.LevelGenerator import generate_level
 from src.consts import RoomsTypes, FloorsTypes, DoorsCoords, Moves
 
 
 class Level:
+    """
+    Класс уровня/'этажа'.
+
+    :param floor_type: Тип этажа.
+    :param width: Максимальная ширина расстановки комнат.
+    :param height: Максимальная высота расстановки комнат.
+    """
     def __init__(self,
                  floor_type: FloorsTypes | str,
                  width: int = 10,
-                 height: int = 10):
+                 height: int = 6):
         self.width = width
         self.height = height
         self.floor_type = floor_type
@@ -21,7 +29,10 @@ class Level:
         self.setup_level()
 
     def setup_level(self):
-        self.level_map = generate_level(self.width, self.height, 10)
+        """
+        Генерация комнат уровня и расстановка дверей.
+        """
+        self.level_map = generate_level(self.width, self.height, 15)
         for y, row in enumerate(self.level_map):
             for x, room_type in enumerate(row):
                 if room_type == RoomsTypes.EMPTY:
@@ -38,6 +49,12 @@ class Level:
         self.change_rooms_state(self.current_room.x, self.current_room.y)
 
     def get_doors(self, cur_x: int, cur_y: int) -> list[tuple[DoorsCoords, RoomsTypes]]:
+        """
+        Получение координат дверей и необходимой информации для установки текстурки.
+        :param cur_x: Координата текущей комнаты.
+        :param cur_y: Координата текущей комнаты.
+        :return: Лист с парами (координаты, тип комнаты).
+        """
         coords = get_neighbors_coords(cur_x, cur_y, self.level_map)
         doors = []
         for room_x, room_y in coords:
@@ -62,22 +79,34 @@ class Level:
         return doors
 
     def get_rooms(self) -> list[list[Room | None]]:
+        """
+        Получение всех комнат этажа в виде двумерного массива.
+        """
         return self.rooms
 
     def change_rooms_state(self, cur_x: int, cur_y: int):
-        # Перенести в комнату, пусть там она сама своё состояние определяет и возвращает Surface нужный для Stats
-        self.rooms[cur_y][cur_x].visited = True
+        """
+        Изменение статуса видимости текущей и соседних комнат.
+        :param cur_x: Координата текущей комнаты.
+        :param cur_y: Координата текущей комнаты.
+        """
+        self.rooms[cur_y][cur_x].update_detection_state(is_active=True)
         coords = get_neighbors_coords(cur_x, cur_y, self.level_map)
         for x, y in coords:
-            self.rooms[y][x].spotted = True
+            self.rooms[y][x].update_detection_state(is_spotted=True)
 
     def move_to_next_room(self, direction: Moves | tuple[int, int]):
+        """
+        Вход в другую комнату.
+        :param direction: Направление движения.
+        """
         x, y = direction.value
         x = self.current_room.x + x
         y = self.current_room.y + y
-        if self.rooms[y][x]:
+        if valid_coords(x, y, self.width, self.height) and self.rooms[y][x]:
             self.current_room = self.rooms[y][x]
-            self.current_room.visited = True
+            self.current_room.update_detection_state(is_active=True)
+            self.current_room.update_doors("open")
             self.change_rooms_state(x, y)
 
     def update(self, delta_t: float, *args, **kwargs):

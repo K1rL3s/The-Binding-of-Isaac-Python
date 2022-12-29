@@ -63,21 +63,28 @@ def has_path_to_start(start_pos: tuple[int, int], rooms: list[list[RoomsTypes | 
 def set_secret_room(rooms: list[list[RoomsTypes | str]]) -> bool:
     """
     Установка секретной комнаты.
+
     :param rooms: Двумерный массив значений типов комнат.
     :return: Успешно ли поставлена секретная комната.
     """
     graph = make_neighbors_graph(rooms)
-    secrets = [room for room in graph if len(graph[room]) >= 2 and rooms[room[1]][room[0]] == RoomsTypes.DEFAULT]
-    random.shuffle(secrets)
-    for x, y in secrets:
-        rooms[y][x] = RoomsTypes.SECRET
-        if all_rooms_have_path_to_start(rooms):
+    is_okay = False
+    # Сначала ставит секретку там, где 4 соседа, потом там, где 3, потом там, где 2.
+    # Теперь работает медленнее :)
+    for neighbors_rooms in range(4, 1, -1):
+        secrets = [room for room in graph if len(graph[room]) >= neighbors_rooms
+                   and rooms[room[1]][room[0]] == RoomsTypes.DEFAULT]
+        random.shuffle(secrets)
+        for x, y in secrets:
+            rooms[y][x] = RoomsTypes.SECRET
+            if all_rooms_have_path_to_start(rooms):
+                is_okay = True
+                break
+            else:
+                rooms[y][x] = RoomsTypes.DEFAULT
+        if is_okay:
             break
-        else:
-            rooms[y][x] = RoomsTypes.DEFAULT
-    else:
-        return False
-    return True
+    return is_okay
 
 
 def set_special_rooms(rooms: list[list[RoomsTypes | str]]) -> bool:
@@ -112,6 +119,7 @@ def set_special_rooms(rooms: list[list[RoomsTypes | str]]) -> bool:
 def set_other_rooms(rooms: list[list[RoomsTypes | str]]) -> bool:
     """
     Расстановка комнат, отличных от спавна и дефолтных.
+
     :param rooms: Двумерный массив значений типов комнат.
     :return: Успешно ли поставлены все комнаты.
     """

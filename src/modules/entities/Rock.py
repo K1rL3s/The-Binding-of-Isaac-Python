@@ -9,6 +9,18 @@ from src.modules.Animation import Animation
 
 
 class Rock(BaseItem):
+    """
+    Класс комня.
+
+    :param xy_pos: Позиция в комнате.
+    :param floor_type: Тип этажа.
+    :param room_type: Тип комнаты.
+    :param rocks_group: Группа спрайтов, где все спрайты - камни.
+    :param collidable_group: Группа спрайтов, где все спрайты - препятствия.
+    :param *groups: Остальные группы спрайтов.
+    :param collidable: Можно ли столкнуться с объектом (непроходимый ли).
+    :param hurtable: Наносит ли урон при прикосновении.
+    """
     rocks: pg.Surface = load_image("textures/room/rocks.png")
     destroy_frames: pg.Surface = None
     rock_crumble: list[pg.mixer.Sound] = [
@@ -53,6 +65,12 @@ class Rock(BaseItem):
         self.image = Rock.rocks.subsurface((texture_x, texture_y, CELL_SIZE, CELL_SIZE))
         self.destroyed_image = Rock.rocks.subsurface((texture_x, 0, CELL_SIZE, CELL_SIZE))
 
+    def blow(self):
+        """
+        Взрыв камня.
+        """
+        self.destroy()
+
     def destroy(self):
         """
         Уничтожение камня после взрыва.
@@ -75,3 +93,9 @@ class Rock(BaseItem):
     def destroy_animation(self):
         # Разлёт частиц, которые удалятся после перезахода в комнату
         Animation(Rock.destroy_frames)
+
+    def collide(self, other):
+        if self.collidable:
+            pass
+        if self.hurtable:
+            pass

@@ -8,24 +8,24 @@ from src.modules.entities.BaseItem import BaseItem
 DOOR_CELL_SIZE = CELL_SIZE * 1.5  # Размер клетки (ширины) двери.
 
 
-class DoorImage:
-    """
-    Изображение со всеми дверьми.
-    Почему-то при определении в DoorTextures выдаёт NameError, поэтому вынес в отдельный класс.
-    """
-    image = load_image("textures/room/doors.png")
+# class DoorImage:
+#     """
+#     Изображение со всеми дверьми.
+#     Почему-то при определении в DoorTextures выдаёт NameError, поэтому вынес в отдельный класс.
+#     """
+#     image = load_image("textures/room/doors.png")
 
 
-class DoorTextures(DoorImage):
+class DoorTextures:  # class DoorTextures(DoorImage):
     """
     Текстурки дверей по отдельности.
     """
     all_doors = [
         [
-            DoorImage.image.subsurface(DOOR_CELL_SIZE * x,
-                                       DOOR_CELL_SIZE * y,
-                                       DOOR_CELL_SIZE,
-                                       DOOR_CELL_SIZE)
+            load_image("textures/room/doors.png").subsurface(DOOR_CELL_SIZE * x,
+                                                             DOOR_CELL_SIZE * y,
+                                                             DOOR_CELL_SIZE,
+                                                             DOOR_CELL_SIZE)
             for y in range(4)
         ]
         for x in range(10)
