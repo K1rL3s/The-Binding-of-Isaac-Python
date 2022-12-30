@@ -5,7 +5,7 @@ from src.utils.funcs import load_image, load_sound
 from src.modules.entities.BaseItem import BaseItem
 
 
-DOOR_CELL_SIZE = CELL_SIZE * 1.5  # Размер клетки (ширины) двери.
+DOOR_CELL_SIZE = int(CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
 
 
 # class DoorImage:
