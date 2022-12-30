@@ -114,7 +114,7 @@ class Level:
             self.current_room.update_doors("open")
             self.change_rooms_state(x, y)
 
-    def update(self, delta_t: float, *args, **kwargs):
+    def update(self, delta_t: float):
         self.current_room.update(delta_t)
 
     def render(self, screen: pg.Surface):

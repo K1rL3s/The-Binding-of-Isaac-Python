@@ -91,8 +91,9 @@ class Rock(BaseItem):
         pass
 
     def destroy_animation(self):
+        pass
         # Разлёт частиц, которые удалятся после перезахода в комнату
-        Animation(Rock.destroy_frames)
+        # SingleAnimation(Rock.destroy_frames)
 
     def collide(self, other):
         if self.collidable:

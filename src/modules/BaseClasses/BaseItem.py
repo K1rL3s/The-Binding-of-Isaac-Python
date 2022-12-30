@@ -43,6 +43,7 @@ class BaseItem(BaseSprite):
 
         self.image: pg.Surface
         self.rect: pg.Rect
+        self.mask: pg.mask.Mask = pg.mask.Mask((0, 0))
         self.hp = 0
         self.vx = 0
         self.vy = 0
@@ -77,6 +78,7 @@ class BaseItem(BaseSprite):
         if height is None:
             height = self.image.get_height()
         self.rect = pg.Rect(cell_x, cell_y, width, height)
+        self.mask = pg.mask.from_surface(self.image)
 
     def set_start_speed(self, vx: int | float, vy: int | float):
         """

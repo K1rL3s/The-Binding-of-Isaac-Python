@@ -47,6 +47,7 @@ class DoorsCoords(Enum):
     RIGHT = (13, 3)
 
 
+FPS = 60                                          # А может 59.98?
 WIDTH, HEIGHT = 1280, 960                         # Весь экран
 GAME_WIDTH, GAME_HEIGHT = 1280, 810               # Часть экрана с игрой
 STATS_WIDTH, STATS_HEIGHT = 1280, 150             # Часть экрана с статой (хп, карта, деньги итп)

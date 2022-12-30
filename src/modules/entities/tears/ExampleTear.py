@@ -1,5 +1,9 @@
+import random
+
 import pygame as pg
 
+from src.utils.funcs import crop
+from src.modules.Animation import Animation
 from src.modules.BaseClasses.BaseTear import BaseTear
 
 
@@ -19,6 +23,10 @@ class ExampleTear(BaseTear):
         self.set_rect()
 
     def set_image(self):
-        self.image = pg.Surface((10, 10), pg.SRCALPHA, 32)
-        pg.draw.circle(self.image, 'red', (5, 5), 1)
+        self.image = crop(BaseTear.all_tears[0][7])
+        self.mask = pg.mask.from_surface(self.image)
+
+    def destroy(self, dokill: bool = False):
+        # Animation()
+        super().destroy()
 

@@ -37,7 +37,7 @@ def main():
             if event.type == pg.MOUSEBUTTONDOWN:
                 game.move_main_hero(event.pos)
 
-        delta_t = timer.tick(60) / 1000
+        delta_t = timer.tick(consts.FPS) / 1000
         screen.fill(background)
         game.update(delta_t)
         game.render(screen)
