@@ -1,6 +1,6 @@
 import pygame as pg
 
-from src.modules.entities.tears.BaseTear import BaseTear
+from src.modules.BaseClasses.BaseTear import BaseTear
 
 
 class ExampleTear(BaseTear):

@@ -5,7 +5,7 @@ from src.modules.levels.Room import Room
 from src.modules.menus.Stats import Stats
 from src.consts import FloorsTypes, Moves
 
-from src.modules.enemies.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 
 
 # Заглушка (переделать!)

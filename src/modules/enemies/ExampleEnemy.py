@@ -2,8 +2,8 @@ from typing import Type
 
 import pygame as pg
 
-from src.modules.enemies.BaseEnemy import BaseEnemy
-from src.modules.entities.tears.BaseTear import BaseTear
+from src.modules.BaseClasses.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.BaseTear import BaseTear
 from src.modules.entities.tears.ExampleTear import ExampleTear
 
 
@@ -18,7 +18,7 @@ class ExampleEnemy(BaseEnemy):
                  shot_damage: int | float = 1,
                  shot_max_distance: int | float = 5,
                  shot_max_speed: int | float = 5,
-                 shot_delay: int | float = 0.2,
+                 shot_delay: int | float = 0,
                  tear_class: Type[BaseTear] = ExampleTear,
                  movable: bool = False,
                  flyable: bool = False):

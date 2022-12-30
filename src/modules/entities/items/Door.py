@@ -1,8 +1,8 @@
 import pygame as pg
 
 from src.consts import CELL_SIZE, DoorsCoords, RoomsTypes, FloorsTypes
-from src.utils.funcs import load_image, load_sound
-from src.modules.entities.items.BaseItem import BaseItem
+from src.utils.funcs import load_image
+from src.modules.BaseClasses.BaseItem import BaseItem
 
 
 DOOR_CELL_SIZE = int(CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.

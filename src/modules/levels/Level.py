@@ -6,7 +6,7 @@ from src.utils.graph import get_neighbors_coords
 from src.modules.levels.LevelGenerator import generate_level
 from src.consts import RoomsTypes, FloorsTypes, DoorsCoords, Moves
 
-from src.modules.enemies.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 
 
 class Level:

@@ -2,10 +2,12 @@ from typing import Any
 
 import pygame as pg
 
+
+from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.consts import CELL_SIZE, WALL_SIZE, STATS_HEIGHT
 
 
-class BaseItem(pg.sprite.Sprite):
+class BaseItem(BaseSprite):
     """
     Базовый класс для предметов (камень, какашка, ключ, монета, артефакт итд).
 
@@ -59,12 +61,6 @@ class BaseItem(pg.sprite.Sprite):
         #     if self.vy:
         #         self.vx = max((0, self.vy - self.a * delta_t))
 
-    def set_image(self):
-        """
-        Установка текстуры на объект.
-        """
-        pass
-
     def set_rect(self, width: int = None, height: int = None):
         """
         Установка объекта в центре своей клетки.
@@ -98,22 +94,6 @@ class BaseItem(pg.sprite.Sprite):
         """
         pass
         # self.destroy()
-
-    def blow(self):
-        """
-        Взрыв объекта.
-        """
-        pass
-
-    def hurt(self, damage: int):
-        """
-        Нанесение урона предмету (какашке).
-        :param damage: Сколько урона нанеслось.
-        """
-        pass
-        # self.hp = max(0, self.hp - damage)
-        # if self.hp == 0:
-        #     self.destroy()
 
     def collide(self, other: Any):
         """

@@ -2,14 +2,14 @@ import math
 
 import pygame as pg
 
-from src.modules.entities.items.BaseItem import BaseItem
-# from src.modules.enemies.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.BaseItem import BaseItem
+from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.consts import CELL_SIZE
 
 
-class BaseTear(pg.sprite.Sprite):
+class BaseTear(BaseSprite):
     """
-    Базовый класс слезы (Ростик, переделай)
+    Базовый класс слезы (Мб надо переделать)
 
     :param xy_pos: Координата спавна в пикселях, центр слезы.
     :param damage: Урон.
@@ -56,7 +56,6 @@ class BaseTear(pg.sprite.Sprite):
         self.cur_x += self.vx * delta_t
         self.cur_y += self.vy * delta_t
         self.rect = pg.Rect(self.cur_x, self.cur_y, self.rect.width, self.rect.height)
-        # self.rect.move_ip(self.vx * delta_t, self.vy * delta_t)
         for collide_group in self.collide_groups:
             if pg.sprite.spritecollideany(self, collide_group):
                 is_collided = True
@@ -69,12 +68,6 @@ class BaseTear(pg.sprite.Sprite):
 
         if math.hypot(self.start_x - self.rect.x, self.start_y - self.rect.y) > self.max_distance:
             self.end_animation("miss")
-
-    def set_image(self):
-        """
-        Установка текстуры.
-        """
-        pass
 
     def set_rect(self):
         """

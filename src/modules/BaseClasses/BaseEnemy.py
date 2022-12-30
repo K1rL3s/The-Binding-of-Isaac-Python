@@ -4,10 +4,11 @@ import math
 import pygame as pg
 
 from src.consts import CELL_SIZE, WALL_SIZE, STATS_HEIGHT
-from src.modules.entities.tears.BaseTear import BaseTear
+from src.modules.BaseClasses.BaseSprite import BaseSprite
+from src.modules.BaseClasses.BaseTear import BaseTear
 
 
-class BaseEnemy(pg.sprite.Sprite):
+class BaseEnemy(BaseSprite):
     """
     Базовый класс противника (Ростик, измени под свой класс BaseTear).
 
@@ -76,12 +77,6 @@ class BaseEnemy(pg.sprite.Sprite):
     def draw_tears(self, screen: pg.Surface):
         self.tears.draw(screen)
 
-    def set_image(self, *args, **kwargs):
-        """
-        Установка текстуры.
-        """
-        pass
-
     def set_rect(self, width: int = None, height: int = None):
         """
         Установка объекта в центре своей клетки.
@@ -115,22 +110,6 @@ class BaseEnemy(pg.sprite.Sprite):
         vy = self.shot_max_speed * dy / distance
         self.tear_class(self.rect.center, self.shot_damage, self.shot_max_distance, vx, vy,
                         self.tear_collide_groups, self.tears)
-
-    def blow(self):
-        """
-        Взрыв противника.
-        """
-        pass
-
-    def hurt(self, damage: int):
-        """
-        Нанесение урона противнику.
-        :param damage: Сколько урона нанеслось.
-        """
-        pass
-        # self.hp = max(0, self.hp - damage)
-        # if self.hp == 0:
-        #     self.destroy()
 
     def death(self):
         """

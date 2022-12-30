@@ -5,8 +5,8 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src import consts
-from src.utils.funcs import load_image, load_sound
-from src.modules.entities.items.BaseItem import BaseItem
+from src.utils.funcs import load_image
+from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Poop import Poop
 from src.modules.entities.items.Door import Door
