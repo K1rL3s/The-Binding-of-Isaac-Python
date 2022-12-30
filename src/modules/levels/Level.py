@@ -6,22 +6,27 @@ from src.utils.graph import get_neighbors_coords
 from src.modules.levels.LevelGenerator import generate_level
 from src.consts import RoomsTypes, FloorsTypes, DoorsCoords, Moves
 
+from src.modules.enemies.BaseEnemy import BaseEnemy
+
 
 class Level:
     """
     Класс уровня/'этажа'.
 
     :param floor_type: Тип этажа.
+    :param main_hero: Главный персонаж.
     :param width: Максимальная ширина расстановки комнат.
     :param height: Максимальная высота расстановки комнат.
     """
     def __init__(self,
                  floor_type: FloorsTypes | str,
+                 main_hero: BaseEnemy,
                  width: int = 10,
                  height: int = 6):
+        self.floor_type = floor_type
+        self.main_hero = main_hero
         self.width = width
         self.height = height
-        self.floor_type = floor_type
         self.level_map: list[list[RoomsTypes | str]] = []
         self.rooms: list[list[Room | None]] = [[None] * width for _ in range(height)]
         self.current_room: Room | None = None
@@ -37,7 +42,7 @@ class Level:
             for x, room_type in enumerate(row):
                 if room_type == RoomsTypes.EMPTY:
                     continue
-                room = Room(self.floor_type, room_type, (x, y), None)
+                room = Room(self.floor_type, room_type, (x, y), self.main_hero, None)
                 room.setup_doors(self.get_doors(x, y))
                 if room_type == RoomsTypes.SPAWN:
                     self.current_room = room

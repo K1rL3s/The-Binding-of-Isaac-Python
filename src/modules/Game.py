@@ -5,11 +5,20 @@ from src.modules.levels.Room import Room
 from src.modules.menus.Stats import Stats
 from src.consts import FloorsTypes, Moves
 
+from src.modules.enemies.BaseEnemy import BaseEnemy
+
 
 # Заглушка (переделать!)
 class Game:
     def __init__(self):
-        self.levels = [Level(floor_type) for floor_type in FloorsTypes]
+        # ЗАТЫЧКА ГГ
+        self.main_hero = BaseEnemy((0, 0), 10, 10, 10, 10, 10, 10, None, None, None)
+        self.main_hero.image = pg.Surface((100, 100))
+        pg.draw.rect(self.main_hero.image, 'black', (0, 0, 100, 100))
+        self.main_hero.rect = pg.Rect(0, 0, 100, 100)
+        # ЗАТЫЧКА ГГ
+
+        self.levels = [Level(floor_type, self.main_hero) for floor_type in FloorsTypes]
         self.current_level = self.levels[0]
         self.stats = Stats(None, self.current_level)
 
@@ -23,6 +32,11 @@ class Game:
     def move_to_next_room(self, direction: Moves | tuple[int, int]):
         self.current_level.move_to_next_room(direction)
         self.stats.update_minimap()
+
+    def move_main_hero(self, xy_pos: tuple[int, int]):
+        x, y = xy_pos
+        self.main_hero.rect = pg.Rect(x - self.main_hero.rect.width // 2, y - self.main_hero.rect.height // 2,
+                                      self.main_hero.rect.width, self.main_hero.rect.height)
 
     def update(self, delta_t: float):
         self.current_level.update(delta_t)

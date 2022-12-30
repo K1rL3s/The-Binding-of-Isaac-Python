@@ -6,9 +6,11 @@ import xml.etree.ElementTree as XMLTree
 
 from src import consts
 from src.utils.funcs import load_image, load_sound
-from src.modules.entities.Rock import Rock
-from src.modules.entities.Poop import Poop
-from src.modules.entities.Door import Door
+from src.modules.entities.items.BaseItem import BaseItem
+from src.modules.entities.items.Rock import Rock
+from src.modules.entities.items.Poop import Poop
+from src.modules.entities.items.Door import Door
+from src.modules.enemies.ExampleEnemy import ExampleEnemy
 from src.utils.graph import make_neighbors_graph
 
 
@@ -40,6 +42,7 @@ class Room(RoomTextures):
     :param room_type: Тип комнаты.
     :param texture_variant: Вариант текстуры (1-4, один из вариантов из изображения).
     :param xy_pos: Расположение на этаже (x, y).
+    :param main_hero: Главный герой.
     :param xml_description: XML разметка объектов в комнате.
     """
 
@@ -47,6 +50,7 @@ class Room(RoomTextures):
                  floor_type: consts.FloorsTypes | str,
                  room_type: consts.RoomsTypes | str,
                  xy_pos: tuple[int, int],
+                 main_hero,
                  xml_description: XMLTree,
                  texture_variant: int = None):
 
@@ -76,6 +80,7 @@ class Room(RoomTextures):
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
 
+        self.main_hero = main_hero
         self.setup_background()
         self.setup_entities(xml_description)
         self.setup_graph()
@@ -120,11 +125,14 @@ class Room(RoomTextures):
         for i in range(consts.ROOM_HEIGHT):
             for j in range(consts.ROOM_WIDTH):
                 chance = random.random()
-                if chance > 0.90:
+                if chance > 0.95:
                     Rock((j, i), self.floor_type, self.room_type, self.rocks, self.colliadble_group, self.all_obstacles)
-                elif chance > 0.80:
+                if chance > 0.80:
+                    ExampleEnemy((j, i), self.main_hero, (self.colliadble_group,), self.enemies)
+                elif chance > 0.3:
                     Poop((j, i), self.poops, self.colliadble_group, self.destroyable_group, self.all_obstacles)
-        # Сделать класс врага, который ходить по земле и обходит препятствия
+
+        # Сделать класс врага, который ходит по земле и обходит препятствия
 
     def setup_graph(self):
         """
@@ -132,7 +140,8 @@ class Room(RoomTextures):
         """
         cells = [[consts.RoomsTypes.DEFAULT] * consts.ROOM_WIDTH for _ in range(consts.ROOM_HEIGHT)]
         for obj in self.colliadble_group.sprites():
-            cells[obj.y][obj.x] = consts.RoomsTypes.EMPTY  # noqa
+            obj: BaseItem
+            cells[obj.y][obj.x] = consts.RoomsTypes.EMPTY
         self.paths = make_neighbors_graph(cells)
         self.fly_paths = make_neighbors_graph(cells, use_diagonals=True)
 
@@ -193,13 +202,22 @@ class Room(RoomTextures):
         """
         Обновление комнаты (перемещение врагов, просчёт коллизий)
         """
-        pass
+        self.enemies.update(delta_t)
 
     def render(self, screen: pg.Surface):
         screen.blit(self.background, (0, consts.STATS_HEIGHT))
         self.rocks.draw(screen)
         self.poops.draw(screen)
         self.enemies.draw(screen)
+
+        # ЗАТЫЧКА ГГ
+        screen.blit(self.main_hero.image, (self.main_hero.rect.x, self.main_hero.rect.y))
+        # ЗАТЫЧКА ГГ
+
+        for enemy in self.enemies.sprites():
+            enemy: ExampleEnemy
+            enemy.draw_tears(screen)
+            enemy.draw_stats(screen)
         self.fires.draw(screen)
         self.doors.draw(screen)
         self.other.draw(screen)

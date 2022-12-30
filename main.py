@@ -32,8 +32,10 @@ def main():
                     game.move_to_next_room(consts.Moves.RIGHT)
                 elif event.key == pg.K_LEFT:
                     game.move_to_next_room(consts.Moves.LEFT)
+                elif event.key == pg.K_SPACE:
+                    game.next_level()
             if event.type == pg.MOUSEBUTTONDOWN:
-                game.next_level()
+                game.move_main_hero(event.pos)
 
         delta_t = timer.tick(60) / 1000
         screen.fill(background)

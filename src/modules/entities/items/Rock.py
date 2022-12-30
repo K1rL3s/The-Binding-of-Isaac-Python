@@ -4,7 +4,7 @@ import pygame as pg
 
 from src.utils.funcs import load_image, load_sound
 from src.consts import FloorsTypes, RoomsTypes, CELL_SIZE
-from src.modules.entities.BaseItem import BaseItem
+from src.modules.entities.items.BaseItem import BaseItem
 from src.modules.Animation import Animation
 
 

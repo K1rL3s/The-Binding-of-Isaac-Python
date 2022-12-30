@@ -59,7 +59,7 @@ class BaseItem(pg.sprite.Sprite):
         #     if self.vy:
         #         self.vx = max((0, self.vy - self.a * delta_t))
 
-    def set_image(self, *args, **kwargs):
+    def set_image(self):
         """
         Установка текстуры на объект.
         """
