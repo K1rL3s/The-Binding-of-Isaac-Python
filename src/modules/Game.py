@@ -12,10 +12,10 @@ from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 class Game:
     def __init__(self):
         # ЗАТЫЧКА ГГ
-        self.main_hero = BaseEnemy((0, 0), 10, 10, 10, 10, 10, 10, None, None, None)
-        self.main_hero.image = pg.Surface((100, 100))
-        pg.draw.rect(self.main_hero.image, 'black', (0, 0, 100, 100))
-        self.main_hero.rect = pg.Rect(0, 0, 100, 100)
+        self.main_hero = BaseEnemy((0, 0), 10, 10, 1, dict(), 10, 10, 10, 10, None, None, None, None)
+        self.main_hero.image = pg.Surface((50, 50))
+        pg.draw.rect(self.main_hero.image, 'black', (0, 0, 50, 50))
+        self.main_hero.rect = pg.Rect(0, 0, 50, 50)
         # ЗАТЫЧКА ГГ
 
         self.levels = [Level(floor_type, self.main_hero) for floor_type in FloorsTypes]

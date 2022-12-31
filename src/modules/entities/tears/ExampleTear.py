@@ -23,7 +23,7 @@ class ExampleTear(BaseTear):
         self.set_rect()
 
     def set_image(self):
-        self.image = crop(BaseTear.all_tears[0][7])
+        self.image = crop(BaseTear.all_tears[0][1])
         self.mask = pg.mask.from_surface(self.image)
 
     def destroy(self, dokill: bool = False):

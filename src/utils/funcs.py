@@ -3,6 +3,8 @@ from functools import cache
 
 import pygame as pg
 
+from src.consts import WALL_SIZE, STATS_HEIGHT, GAME_WIDTH, HEIGHT, CELL_SIZE
+
 
 @cache
 def load_image(name: str, colorkey: pg.Color | int | None = None, crop_background: bool = False) -> pg.Surface:
@@ -50,6 +52,11 @@ def load_sound(name) -> pg.mixer.Sound:
 
 @cache
 def crop(screen: pg.Surface) -> pg.Surface:
+    """
+    Обрезка изображения по крайним не пустым пикселям.
+    :param screen: Изображение.
+    :return: Обрезанное изображение.
+    """
     pixels = pg.PixelArray(screen)
     background = pixels[0][0]  # noqa
     width, height = screen.get_width(), screen.get_height()
@@ -68,3 +75,29 @@ def crop(screen: pg.Surface) -> pg.Surface:
                 min_y = min(y, min_y)
 
     return screen.subsurface((min_x, min_y, max_x - min_x, max_y - min_y))
+
+
+def pixels_to_cell(xy_pos: tuple[int, int] | tuple[float, float]) -> tuple[int, int] | None:
+    """
+    Переводит пиксели на экране в клетку комнаты.
+    :param xy_pos: Координаты в пикселях.
+    :return: Координаты в клетках.
+    """
+    x, y = xy_pos
+    if WALL_SIZE <= x < GAME_WIDTH - WALL_SIZE and WALL_SIZE + STATS_HEIGHT <= y < HEIGHT - WALL_SIZE:
+        x_cell = x - WALL_SIZE
+        y_cell = y - WALL_SIZE - STATS_HEIGHT
+        return int(x_cell // CELL_SIZE), int(y_cell // CELL_SIZE)
+    return None
+
+
+def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
+    """
+    Переводит клетку комнаты в пиксели на экране (центр клетки).
+    :param xy_pos: Координаты клекти.
+    :return: Координаты в пикселях (центр).
+    """
+    x_cell, y_cell = xy_pos
+    x = x_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
+    y = y_cell * CELL_SIZE + WALL_SIZE + STATS_HEIGHT + CELL_SIZE // 2
+    return int(x), int(y)

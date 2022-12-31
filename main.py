@@ -1,6 +1,7 @@
 import pygame as pg
 
 from src import consts
+from src.utils.funcs import pixels_to_cell, cell_to_pixels
 
 
 pg.init()
@@ -35,7 +36,14 @@ def main():
                 elif event.key == pg.K_SPACE:
                     game.next_level()
             if event.type == pg.MOUSEBUTTONDOWN:
-                game.move_main_hero(event.pos)
+                if event.button == pg.BUTTON_LEFT:
+                    game.move_main_hero(event.pos)
+                elif event.button == pg.BUTTON_RIGHT:
+                    cell = pixels_to_cell(event.pos)
+                    xy = (0, 0)
+                    if cell:
+                        xy = cell_to_pixels(cell)
+                    print(cell, xy)
 
         delta_t = timer.tick(consts.FPS) / 1000
         screen.fill(background)
