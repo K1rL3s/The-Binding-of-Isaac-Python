@@ -14,7 +14,6 @@ class Poop(BaseItem):
     :param xy_pos: Позиция в комнате.
     :param poop_group: Группа спрайтов, где все спрайты - Poop'ы.
     :param collidable_group: Группа спрайтов, где все спрайты - препятствия.
-    :param destroyable_group: Группа спрайтов, где все спрайты - разрушаемые слезами.
     :param *groups: Остальные группы спрайтов.
     :param collidable: Можно ли столкнуться с объектом (непроходимый ли).
     """
@@ -26,16 +25,13 @@ class Poop(BaseItem):
 
     def __init__(self,
                  xy_pos: tuple[int, int],
-                 poop_group: pg.sprite.AbstractGroup,
                  collidable_group: pg.sprite.AbstractGroup,
-                 destroyable_group: pg.sprite.AbstractGroup,
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True):
-        super().__init__(xy_pos, poop_group, collidable_group, destroyable_group, *groups,
+        super().__init__(xy_pos, collidable_group, *groups,
                          collidable=collidable)
 
         self.collidable_group = collidable_group
-        self.destroyable_group = destroyable_group
 
         self.stages: list[pg.Surface] = []
         self.treasure: list[BaseItem] = []
@@ -89,7 +85,6 @@ class Poop(BaseItem):
         self.collidable = False
         self.destroyable = False
         self.collidable_group.remove(self)
-        self.destroyable_group.remove(self)
         random.choice(self.poop_destoryed).play()
         self.drop_something()
 

@@ -15,7 +15,6 @@ class Rock(BaseItem):
     :param xy_pos: Позиция в комнате.
     :param floor_type: Тип этажа.
     :param room_type: Тип комнаты.
-    :param rocks_group: Группа спрайтов, где все спрайты - камни.
     :param collidable_group: Группа спрайтов, где все спрайты - препятствия.
     :param *groups: Остальные группы спрайтов.
     :param collidable: Можно ли столкнуться с объектом (непроходимый ли).
@@ -33,14 +32,12 @@ class Rock(BaseItem):
                  xy_pos: tuple[int, int],
                  floor_type: FloorsTypes | str,
                  room_type: RoomsTypes | str,
-                 rocks_group: pg.sprite.AbstractGroup,
                  collidable_group: pg.sprite.AbstractGroup,
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True,
                  hurtable: bool = False):
-        super().__init__(xy_pos, rocks_group, collidable_group, *groups, collidable=collidable, hurtable=hurtable)
+        super().__init__(xy_pos, collidable_group, *groups, collidable=collidable, hurtable=hurtable)
 
-        self.rocks_group = rocks_group
         self.collidable_group = collidable_group
         self.floor_type = floor_type
         self.room_type = room_type

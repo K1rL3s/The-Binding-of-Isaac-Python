@@ -71,9 +71,13 @@ class Room(RoomTextures):
         self.is_visited = False
         self.is_active = False
 
-        self.all_obstacles = pg.sprite.Group()
-        self.colliadble_group = pg.sprite.Group()
-        self.destroyable_group = pg.sprite.Group()
+        self.always_render = pg.sprite.Group()  # Применить когда-нибудь
+        self.colliadble_group = pg.sprite.Group()  # То, через что нельзя пройти, пока оно есть
+        self.obstacles = pg.sprite.Group()  # Препятствия для построения графа комнаты
+        self.blowable = pg.sprite.Group()  # То, что взрывается
+        self.main_hero_group = pg.sprite.Group()
+        self.main_hero_group.add(main_hero)
+
         self.enemies = pg.sprite.Group()
         self.fly_enemies = pg.sprite.Group()
         self.rocks = pg.sprite.Group()
@@ -126,18 +130,18 @@ class Room(RoomTextures):
         Загрузка комнаты из json/xml, пока не выбрали.
         Сейчас - заглушка.
         """
-        no_enemy = True
         for i in range(consts.ROOM_HEIGHT):
             for j in range(consts.ROOM_WIDTH):
                 chance = random.random()
                 if chance > 0.9:
-                    Rock((j, i), self.floor_type, self.room_type, self.rocks, self.colliadble_group, self.all_obstacles)
-                elif chance > 0:  # and no_enemy:
+                    Rock((j, i), self.floor_type, self.room_type, self.colliadble_group, self.rocks,
+                         self.obstacles, self.blowable)
+                elif chance > 0.8:
+                    Poop((j, i), self.colliadble_group, self.poops, self.obstacles)
+                elif chance > 0.7:  # and no_enemy:
                     ExampleEnemy((j, i), self.paths, self.main_hero, (self.colliadble_group,), (self.colliadble_group,),
-                                 self.enemies)
-                    no_enemy = False
-                # elif chance > 0.4:
-                #     Poop((j, i), self.poops, self.colliadble_group, self.destroyable_group, self.all_obstacles)
+                                 self.enemies, self.blowable)
+
 
     def setup_graph(self):
         """
@@ -148,9 +152,10 @@ class Room(RoomTextures):
         if not self.fly_paths:
             self.fly_paths = make_neighbors_graph(cells, use_diagonals=True)
 
-        for obj in self.colliadble_group.sprites():
+        for obj in self.obstacles.sprites():
             obj: BaseItem
-            cells[obj.y][obj.x] = consts.RoomsTypes.EMPTY
+            if obj.collidable:
+                cells[obj.y][obj.x] = consts.RoomsTypes.EMPTY
         self.paths = make_neighbors_graph(cells)
 
     def setup_doors(self, doors: list[tuple[consts.DoorsCoords, consts.RoomsTypes]]):
@@ -158,7 +163,7 @@ class Room(RoomTextures):
         Установка дверей с нужными текстурками.
         """
         for coords, room_type in doors:
-            Door(coords, self.floor_type, room_type, self.doors, self.all_obstacles)
+            Door(coords, self.floor_type, room_type, self.doors, self.colliadble_group)
 
     def update_doors(self, state: str):
         """

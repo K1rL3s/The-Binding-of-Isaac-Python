@@ -111,7 +111,7 @@ class Level:
         if valid_coords(x, y, self.width, self.height) and self.rooms[y][x]:
             self.current_room = self.rooms[y][x]
             self.current_room.update_detection_state(is_active=True)
-            self.current_room.update_doors("open")
+            # self.current_room.update_doors("open")
             self.change_rooms_state(x, y)
 
     def update(self, delta_t: float):

@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src.consts import CELL_SIZE, DoorsCoords, RoomsTypes, FloorsTypes
-from src.utils.funcs import load_image
+from src.utils.funcs import load_image, crop
 from src.modules.BaseClasses.BaseItem import BaseItem
 
 
@@ -224,7 +224,13 @@ class Door(BaseItem, DoorTextures):
 
         super().__init__(self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
         self.set_image()
-        self.set_rect(DOOR_CELL_SIZE, DOOR_CELL_SIZE)
+        self.set_rect()
+        self.rect = pg.Rect((
+            self.rect.x,
+            self.rect.y,
+            0,
+            0
+        ))
 
     def blow(self):
         """
