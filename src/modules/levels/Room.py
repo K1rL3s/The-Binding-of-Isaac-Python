@@ -34,6 +34,14 @@ class RoomTextures:
         for y in range(3)
     ]
 
+    minimap_icons: dict[consts.RoomsTypes, pg.Surface] = {
+        room_type: surface
+        for room_type, surface in zip(
+            (consts.RoomsTypes.SHOP, consts.RoomsTypes.BOSS, consts.RoomsTypes.TREASURE, consts.RoomsTypes.SECRET),
+            [load_image("textures/room/minimap_icons.png").subsurface((x * 32, 0, 32, 32)) for x in range(4)]
+        )
+    }
+
 
 class Room(RoomTextures):
     """
@@ -49,8 +57,8 @@ class Room(RoomTextures):
     paths_update_delay: int | float = 1
 
     def __init__(self,
-                 floor_type: consts.FloorsTypes | str,
-                 room_type: consts.RoomsTypes | str,
+                 floor_type: consts.FloorsTypes,
+                 room_type: consts.RoomsTypes,
                  xy_pos: tuple[int, int],
                  main_hero,
                  xml_description: XMLTree,
@@ -142,7 +150,6 @@ class Room(RoomTextures):
                     ExampleEnemy((j, i), self.paths, self.main_hero, (self.colliadble_group,), (self.colliadble_group,),
                                  self.enemies, self.blowable)
 
-
     def setup_graph(self):
         """
         Построение графа соседних клеток в комнате для передвижения противников.
@@ -171,10 +178,7 @@ class Room(RoomTextures):
         :param state: "open", "close", "blow".
         """
         for door in self.doors.sprites():
-            try:
-                getattr(door, state)()
-            except AttributeError:
-                pass
+            getattr(door, state)()
 
     def update_detection_state(self, is_spotted: bool = False, is_active: bool = False):
         """
@@ -194,19 +198,31 @@ class Room(RoomTextures):
         """
         Обновление иконки для мини-карты.
         """
+        # Если убрать .copy(), то будет забавный баг)
         if self.is_active:
-            self.minimap_cell = self.minimap_cells[2]
+            self.minimap_cell = self.minimap_cells[2].copy()
         elif self.is_visited:
-            self.minimap_cell = self.minimap_cells[1]
+            self.minimap_cell = self.minimap_cells[1].copy()
         elif self.is_spotted:
-            self.minimap_cell = self.minimap_cells[0]
+            self.minimap_cell = self.minimap_cells[0].copy()
+
+        # Особое отображение секретки после посещения
+        if self.room_type == consts.RoomsTypes.SECRET and self.is_visited and not self.is_active:
+            self.minimap_cell = self.minimap_cells[0].copy()
 
     def get_minimap_cell(self) -> pg.Surface:
         """
         Возвращает иконку для миникарты.
         :return: pg.Surface.
         """
+        if self.minimap_cell.get_width():
+            self.draw_minimap_icons()
         return self.minimap_cell
+
+    def draw_minimap_icons(self):
+        if icon := RoomTextures.minimap_icons.get(self.room_type):
+            self.minimap_cell.blit(icon, ((consts.MINIMAP_CELL_WIDTH - icon.get_width()) // 2,
+                                          (consts.MINIMAP_CELL_HEIGHT - icon.get_height()) // 2))
 
     def add_other(self, xy_pos: tuple[int, int], *args):
         pass
@@ -253,4 +269,3 @@ class Room(RoomTextures):
         self.fires.draw(screen)
         self.doors.draw(screen)
         self.other.draw(screen)
-
