@@ -2,6 +2,7 @@ import pygame as pg
 
 from src.consts import CELL_SIZE
 from src.modules.BaseClasses.BaseItem import BaseItem
+from src.modules.BaseClasses.BaseSprite import BaseSprite
 
 from src.utils.funcs import cell_to_pixels
 
@@ -25,7 +26,7 @@ class MovableItem(BaseItem):
                  *groups: pg.sprite.AbstractGroup,
                  xy_pixels: tuple[int, int] = None,
                  pickable: bool = False):
-        super().__init__(xy_pos, *groups, pickable=pickable, movable=True, collidable=True)
+        super().__init__(xy_pos, *groups, pickable=pickable, movable=True, collidable=False)
 
         self.a = acceleration * CELL_SIZE
         self.collide_groups = collide_groups
@@ -90,3 +91,13 @@ class MovableItem(BaseItem):
             self.vy = 0
         if self.rect.centery < centery and self.vy > 0:
             self.vy = 0
+
+    def collide(self, other: BaseSprite):
+        """
+        Не факт, что работает корректно :)
+        Пока что супер примитивно, ага
+        """
+        super().collide(other)
+        vx = 1 if self.rect.centerx - other.rect.centerx > 0 else -1
+        vy = 1 if self.rect.centery - other.rect.centery > 0 else -1
+        self.set_start_speed(vx, vy)

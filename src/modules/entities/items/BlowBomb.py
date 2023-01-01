@@ -63,6 +63,7 @@ class BlowBomb(MovableItem):
                 for sprite in sprites:
                     if pg.sprite.collide_circle(self, sprite):
                         sprite: BaseSprite
+                        sprite.collide(self)
                         sprite.blow()
         random.choice(BlowBomb.explosion_sounds).play()
         OneTimeAnimation()  # Сделать анимацию взрыва

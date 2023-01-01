@@ -83,9 +83,6 @@ class BaseItem(BaseSprite):
         """
         if self.collidable:
             other.move_back(self.rect.center)
-        if self.destroyable:
-            if isinstance(other, BaseTear):
-                self.hurt(other.damage)
         if self.pickable:
             pass
         if self.hurtable:

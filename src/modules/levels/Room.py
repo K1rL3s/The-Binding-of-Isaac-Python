@@ -157,7 +157,7 @@ class Room(RoomTextures):
                 elif chance > 0.7:  # and no_enemy:
                     ExampleEnemy((j, i), self.paths, self.main_hero,
                                  (self.colliadble_group, self.movement_borders),
-                                 (self.colliadble_group, self.tears_borders),
+                                 (self.colliadble_group, self.tears_borders, self.other),
                                  self.enemies, self.blowable)
 
     def setup_graph(self):
@@ -390,9 +390,9 @@ class Room(RoomTextures):
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
         if room_pos := pixels_to_cell(xy_pos):
-            bomb = BlowBomb(room_pos, (self.colliadble_group, self.movement_borders), (self.blowable,), self.other,
-                            xy_pixels=xy_pos)
-            bomb.set_start_speed(random.randint(-200, 200) / 10, random.randint(-200, 200) / 10)
+            bomb = BlowBomb(room_pos, (self.colliadble_group, self.movement_borders), (self.blowable, self.other),
+                            self.other, xy_pixels=xy_pos)
+            bomb.set_start_speed(random.randint(-20, 20) / 10, random.randint(-20, 20) / 10)
 
 
 class Border(BaseSprite):

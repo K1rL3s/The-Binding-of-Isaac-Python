@@ -1,5 +1,3 @@
-import random
-
 import pygame as pg
 
 from src.utils.funcs import crop
