@@ -78,6 +78,7 @@ class BaseEnemy(BaseSprite):
     def update(self, delta_t: float):
         """
         Обновление врага, отмер времени для выстрела или движения.
+
         :param delta_t: Время с прошлого кадра.
         """
         self.shot_ticks += delta_t
@@ -143,6 +144,7 @@ class BaseEnemy(BaseSprite):
     def update_room_graph(self, room_graph: dict[tuple[int, int]]):
         """
         Обновление графа комнаты (например, после ломания Poop'a).
+
         :param room_graph: Графоподобный словарь клеток комнаты.
         """
         self.room_graph = room_graph

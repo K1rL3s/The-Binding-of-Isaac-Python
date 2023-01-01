@@ -8,6 +8,7 @@ class BaseSprite(pg.sprite.Sprite):
     def update(self, delta_t: float):
         """
         Обновление положения/счётчиков.
+
         :param delta_t: Время с прошлого кадра.
         """
         pass
@@ -39,6 +40,8 @@ class BaseSprite(pg.sprite.Sprite):
     def collide(self, other: pg.sprite.Sprite):
         """
         Обработка столкновений.
+
+        :param other: наследник BaseSprite
         """
         pass
 

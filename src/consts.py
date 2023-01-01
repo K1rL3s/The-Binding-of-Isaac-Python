@@ -1,5 +1,7 @@
 from enum import Enum
 
+import pygame as pg
+
 
 class FloorsTypes(Enum):
     """
@@ -56,3 +58,16 @@ WALL_SIZE = 133                                   # Размер стены те
 CELL_SIZE = 78                                    # Размер клетки комнаты (пиксели)
 MINIMAP_CELL_WIDTH, MINIMAP_CELL_HEIGHT = 41, 21  # Размер клетки на миникарте
 MINIMAP_WIDTH, MINIMAP_HEIGHT = 410, 126          # Размер миникарты (10x6)
+
+MOVE_TO_LEFT_ROOM_TYPE = pg.USEREVENT + 1
+MOVE_TO_RIGHT_ROOM_TYPE = pg.USEREVENT + 2
+MOVE_TO_UP_ROOM_TYPE = pg.USEREVENT + 3
+MOVE_TO_DOWN_ROOM_TYPE = pg.USEREVENT + 4
+MOVE_TO_NEXT_LEVEL_TYPE = pg.USEREVENT + 5
+
+MOVE_TO_LEFT_ROOM_EVENT = pg.event.Event(MOVE_TO_LEFT_ROOM_TYPE)
+MOVE_TO_RIGHT_ROOM_EVENT = pg.event.Event(MOVE_TO_RIGHT_ROOM_TYPE)
+MOVE_TO_UP_ROOM_EVENT = pg.event.Event(MOVE_TO_UP_ROOM_TYPE)
+MOVE_TO_DOWN_ROOM_EVENT = pg.event.Event(MOVE_TO_DOWN_ROOM_TYPE)
+MOVE_TO_NEXT_LEVEL_EVENT = pg.event.Event(MOVE_TO_NEXT_LEVEL_TYPE)
+

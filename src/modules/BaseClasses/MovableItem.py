@@ -48,6 +48,7 @@ class MovableItem(BaseItem):
     def set_start_speed(self, vx: int | float, vy: int | float):
         """
         Задание начальной скорости движения.
+
         :param vx: Скорость по горизонтали в клетках/секунду.
         :param vy: Скорость по вертикали в клетках/секунду.
         """
@@ -78,6 +79,7 @@ class MovableItem(BaseItem):
     def move_back(self, xy_center: tuple[int, int]):
         """
         Обработка коллизии и изменение скоростей при столкновении.
+
         :param xy_center: Центр спрайта, с которым было столкновение
         """
         self.x_center, self.y_center = self.x_center_last, self.y_center_last

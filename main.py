@@ -40,6 +40,15 @@ def main():
                 elif event.button == pg.BUTTON_RIGHT:
                     game.current_level.current_room.test_func_set_bomb(event.pos)
 
+            elif event.type == consts.MOVE_TO_UP_ROOM_TYPE:
+                game.move_to_next_room(consts.Moves.UP)
+            elif event.type == consts.MOVE_TO_DOWN_ROOM_TYPE:
+                game.move_to_next_room(consts.Moves.DOWN)
+            elif event.type == consts.MOVE_TO_RIGHT_ROOM_TYPE:
+                game.move_to_next_room(consts.Moves.RIGHT)
+            elif event.type == consts.MOVE_TO_LEFT_ROOM_TYPE:
+                game.move_to_next_room(consts.Moves.LEFT)
+
         delta_t = timer.tick(consts.FPS) / 1000
         screen.fill(background)
         game.update(delta_t)

@@ -228,6 +228,7 @@ class Door(BaseItem, DoorTextures):
         self.set_image()
         super().set_rect()
         self.set_rect()
+        self.event_rect = pg.Rect(self.rect.centerx - 25, self.rect.centery - 25, 50, 50)
 
     def set_rect(self, width: int | None = None, height: int | None = None):
         if self.room_type == consts.RoomsTypes.SECRET:
@@ -244,45 +245,61 @@ class Door(BaseItem, DoorTextures):
             self.rect.midleft = (consts.WIDTH - consts.WALL_SIZE,
                                  consts.STATS_HEIGHT + consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
 
-    def blow(self):
+    def blow(self, with_sound: bool = True):
         """
         Уничтожение/Взрыв двери.
+
+        :param with_sound: Со звуком ли.
         """
         if not self.collidable:
             return
         if self.room_type in (consts.RoomsTypes.BOSS, consts.RoomsTypes.TREASURE, consts.RoomsTypes.SHOP):
             return
-        self.update_image('blow')
+        self.update_image('blow', with_sound=with_sound)
 
-    def open(self):
+    def open(self, with_sound: bool = True):
         """
         Открыть дверь.
+
+        :param with_sound: Со звуком ли.
         """
         if not self.room_type == consts.RoomsTypes.SECRET:
-            self.update_image('open')
+            self.update_image('open', with_sound=with_sound)
 
-    def close(self):
+    def close(self, with_sound: bool = True):
         """
         Закрыть двери.
-        """
-        self.update_image('close')
 
-    def update_image(self, state: str = None, direction: str = None):
+        :param with_sound: Со звуком ли.
+        """
+        self.update_image('close', with_sound=with_sound)
+
+    def update_image(self, state: str = None, direction: str = None, with_sound: bool = True):
         """
         Обновление текстурки двери.
+
         :param state: Открыта, закрыта или взорвана.
         :param direction: Сверху, снизу, слева или справа.
+        :param with_sound: Со звуком ли.
         """
         if state:
             self.state = state
         if direction:
             self.direction = direction
-        self.state = state
         self.collidable = True if self.state == 'close' else False
+
         if self.room_type == consts.RoomsTypes.SECRET and self.collidable:
             self.image = pg.Surface((0, 0))
         else:
             self.image = getattr(Door, f'{self.texture}_{self.state}_{self.direction}')
+
+        if with_sound:
+            self.play_sound()
+
+    def play_sound(self):
+        a = self.state
+        ...
+        pass
 
     def set_image(self):
         """
@@ -316,3 +333,10 @@ class Door(BaseItem, DoorTextures):
             other.move_back(self.rect.center)
         if self.hurtable:
             other.hurt(1)
+        # Вместо BaseSprite поставить MainCharacter или его туловище
+        if isinstance(other, BaseSprite) and self.event_rect.colliderect(other.rect):
+            pg.event.post(getattr(consts, f'MOVE_TO_{self.direction.upper()}_ROOM_EVENT'))
+
+            # Реализовать закрытие двери после входа в секретку:
+            # if self.room_type == consts.RoomsTypes.SECRET:
+            #     self.update_image("close")

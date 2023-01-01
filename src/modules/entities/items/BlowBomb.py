@@ -48,6 +48,7 @@ class BlowBomb(MovableItem):
     def update(self, delta_t: float):
         """
         Обновление положения объекта (нужно при self.movable = True)
+
         :param delta_t: Время с прошлого кадра.
         """
         super().move(delta_t)

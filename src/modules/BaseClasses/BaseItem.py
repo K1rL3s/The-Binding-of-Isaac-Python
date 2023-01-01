@@ -65,6 +65,7 @@ class BaseItem(BaseSprite):
     def update(self, delta_t: float):
         """
         Обновление положения объекта (нужно при self.movable = True)
+
         :param delta_t: Время с прошлого кадра.
         """
         pass
@@ -79,6 +80,7 @@ class BaseItem(BaseSprite):
     def collide(self, other: BaseSprite):
         """
         Обработка столкновения с энтити.
+
         :param other: Объект, с которым прозошло столкновение (персонаж, слеза, взрыв бомбы).
         """
         if self.collidable:

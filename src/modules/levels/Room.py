@@ -292,17 +292,20 @@ class Room(RoomTextures):
         Border(consts.WIDTH - consts.WALL_SIZE, consts.STATS_HEIGHT, 1, consts.WALL_SIZE,
                self.movement_borders, self.tears_borders, self.debug_render)
 
-    def update_doors(self, state: str):
+    def update_doors(self, state: str, with_sound: bool = True):
         """
         Открыть/Закрыть/Взорвать все двери.
+
         :param state: "open", "close", "blow".
+        :param with_sound: Со звуком ли.
         """
         for door in self.doors.sprites():
-            getattr(door, state)()
+            getattr(door, state)(with_sound=with_sound)
 
     def update_detection_state(self, is_spotted: bool = False, is_active: bool = False):
         """
         Обновление состояния видимости на миникарте.
+
         :param is_spotted: Замечена ли комната (дверь в неё).
         :param is_active: Текущая ли комната.
         """
@@ -333,6 +336,7 @@ class Room(RoomTextures):
     def get_minimap_cell(self) -> pg.Surface:
         """
         Возвращает иконку для миникарты.
+
         :return: pg.Surface.
         """
         if self.minimap_cell.get_width():

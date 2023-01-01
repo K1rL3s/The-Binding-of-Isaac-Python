@@ -57,6 +57,7 @@ class Poop(BaseItem):
     def hurt(self, damage: int):
         """
         Нанесение урона Poop'y.
+
         :param damage: сколько урона.
         """
         if not self.hp:

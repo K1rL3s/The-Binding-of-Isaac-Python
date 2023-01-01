@@ -56,6 +56,7 @@ class Level:
     def get_doors(self, cur_x: int, cur_y: int) -> list[tuple[DoorsCoords, RoomsTypes]]:
         """
         Получение координат дверей и необходимой информации для установки текстурки.
+
         :param cur_x: Координата текущей комнаты.
         :param cur_y: Координата текущей комнаты.
         :return: Лист с парами (координаты, тип комнаты).
@@ -92,6 +93,7 @@ class Level:
     def change_rooms_state(self, cur_x: int, cur_y: int):
         """
         Изменение статуса видимости текущей и соседних комнат.
+
         :param cur_x: Координата текущей комнаты.
         :param cur_y: Координата текущей комнаты.
         """
@@ -99,6 +101,9 @@ class Level:
         coords = get_neighbors_coords(cur_x, cur_y, self.level_map)
         for x, y in coords:
             self.rooms[y][x].update_detection_state(is_spotted=True)
+
+        if self.current_room.room_type == RoomsTypes.SECRET:
+            self.current_room.update_doors("blow", with_sound=False)
 
     def move_to_next_room(self, direction: Moves | tuple[int, int]):
         """

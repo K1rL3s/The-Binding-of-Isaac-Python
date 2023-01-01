@@ -62,6 +62,7 @@ class BaseTear(BaseSprite):
     def update(self, delta_t: float):
         """
         Обновление положения слезы.
+
         :param delta_t: Время с прошлого кадра.
         """
         self.center_x += self.vx * delta_t

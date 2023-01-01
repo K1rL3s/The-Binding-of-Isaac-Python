@@ -62,6 +62,7 @@ class MovingEnemy(BaseEnemy):
     def update(self, delta_t: float):
         """
         Обновление врага, отмер времени для выстрела или движения.
+
         :param delta_t: Время с прошлого кадра.
         """
         super().update(delta_t)
@@ -75,6 +76,7 @@ class MovingEnemy(BaseEnemy):
     def move(self, delta_t: float):
         """
         Перемещение сущности.
+
         :param delta_t: Время с прошлого кадра.
         """
         self.x_center_last, self.y_center_last = self.x_center, self.y_center
@@ -103,6 +105,7 @@ class MovingEnemy(BaseEnemy):
     def move_back(self, xy_center: tuple[int, int]):
         """
         Обработка коллизии и изменение скоростей для обхода препятствия.
+
         :param xy_center: Центр спрайта, с которым было столкновение
         """
         self.x_center, self.y_center = self.x_center_last, self.y_center_last
