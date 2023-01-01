@@ -4,7 +4,7 @@ from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
 from src.modules.menus.Stats import Stats
 from src.consts import FloorsTypes, Moves
-
+from src.modules.characters import parents
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 
 
@@ -12,10 +12,8 @@ from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 class Game:
     def __init__(self):
         # ЗАТЫЧКА ГГ
-        self.main_hero = BaseEnemy((0, 0), 10, 10, dict(), 10, 10, 10, 10, None, None, None, None)
-        self.main_hero.image = pg.Surface((50, 50))
-        pg.draw.rect(self.main_hero.image, 'black', (0, 0, 50, 50))
-        self.main_hero.rect = pg.Rect(0, 0, 50, 50)
+        self.main_hero = parents.Player(8, 8)
+        self.main_hero.rect = self.main_hero.image.get_rect().move(500, 500)
         # ЗАТЫЧКА ГГ
 
         self.levels = [Level(floor_type, self.main_hero) for floor_type in FloorsTypes]
@@ -40,7 +38,8 @@ class Game:
 
     def update(self, delta_t: float):
         self.current_level.update(delta_t)
+        self.main_hero.update()
 
     def render(self, screen: pg.Surface):
-        self.stats.render(screen)
         self.current_level.render(screen)
+        self.stats.render(screen)
