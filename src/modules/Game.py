@@ -42,5 +42,5 @@ class Game:
         self.current_level.update(delta_t)
 
     def render(self, screen: pg.Surface):
-        self.current_level.render(screen)
         self.stats.render(screen)
+        self.current_level.render(screen)

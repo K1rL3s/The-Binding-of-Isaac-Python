@@ -1,7 +1,6 @@
 import pygame as pg
 
 from src import consts
-from src.utils.funcs import pixels_to_cell, cell_to_pixels
 
 
 pg.init()

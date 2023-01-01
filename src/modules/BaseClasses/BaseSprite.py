@@ -35,3 +35,15 @@ class BaseSprite(pg.sprite.Sprite):
         Получение урона от взрыва.
         """
         pass
+
+    def collide(self, other: pg.sprite.Sprite):
+        """
+        Обработка столкновений.
+        """
+        pass
+
+    def move_back(self, xy_center: tuple[int, int]):
+        """
+        Перемещение назад при столкновении.
+        """
+        pass

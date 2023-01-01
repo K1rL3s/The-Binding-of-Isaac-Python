@@ -5,6 +5,7 @@ import pygame as pg
 
 from src.consts import CELL_SIZE
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
@@ -88,7 +89,8 @@ class MovingEnemy(BaseEnemy):
                 if sprites := pg.sprite.spritecollide(self, group, False):
                     is_collided = True
                     for sprite in sprites:
-                        self.move_back(sprite.rect.center)
+                        sprite: BaseSprite
+                        sprite.collide(self)
             if is_collided:
                 return
 

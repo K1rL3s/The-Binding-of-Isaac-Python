@@ -1,9 +1,8 @@
-from typing import Any
-
 import pygame as pg
 
 
 from src.modules.BaseClasses.BaseSprite import BaseSprite
+from src.modules.BaseClasses.BaseTear import BaseTear
 from src.consts import CELL_SIZE, WALL_SIZE, STATS_HEIGHT
 
 
@@ -77,21 +76,20 @@ class BaseItem(BaseSprite):
         pass
         # self.destroy()
 
-    def collide(self, other: Any):
+    def collide(self, other: BaseSprite):
         """
         Обработка столкновения с энтити.
         :param other: Объект, с которым прозошло столкновение (персонаж, слеза, взрыв бомбы).
         """
         if self.collidable:
-            pass
+            other.move_back(self.rect.center)
         if self.destroyable:
-            pass
+            if isinstance(other, BaseTear):
+                self.hurt(other.damage)
         if self.pickable:
             pass
-        if self.movable:
-            pass
         if self.hurtable:
-            pass
+            other.hurt(1)
 
     def destroy(self, *args, **kwargs):
         """

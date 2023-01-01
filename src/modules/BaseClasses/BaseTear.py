@@ -75,12 +75,9 @@ class BaseTear(BaseSprite):
                 is_collided = True
                 for collide in pg.sprite.spritecollide(self, collide_group, False):
                     collide: BaseSprite
-                    collide.hurt(self.damage)
+                    collide.collide(self)
 
-        if is_collided:
-            self.destroy()
-
-        if math.hypot(self.start_x - self.rect.x, self.start_y - self.rect.y) > self.max_distance:
+        if is_collided or math.hypot(self.start_x - self.rect.x, self.start_y - self.rect.y) > self.max_distance:
             self.destroy()
 
     def set_rect(self):

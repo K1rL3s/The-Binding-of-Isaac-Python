@@ -1,11 +1,13 @@
 import pygame as pg
 
-from src.consts import CELL_SIZE, DoorsCoords, RoomsTypes, FloorsTypes
+from src import consts
+from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.utils.funcs import load_image, crop
 from src.modules.BaseClasses.BaseItem import BaseItem
+from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 
 
-DOOR_CELL_SIZE = int(CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
+DOOR_CELL_SIZE = int(consts.CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
 
 
 # class DoorImage:
@@ -22,10 +24,10 @@ class DoorTextures:  # class DoorTextures(DoorImage):
     """
     all_doors = [
         [
-            load_image("textures/room/doors.png").subsurface(DOOR_CELL_SIZE * x,
-                                                             DOOR_CELL_SIZE * y,
-                                                             DOOR_CELL_SIZE,
-                                                             DOOR_CELL_SIZE)
+            crop(load_image("textures/room/doors.png").subsurface(DOOR_CELL_SIZE * x,
+                                                                  DOOR_CELL_SIZE * y,
+                                                                  DOOR_CELL_SIZE,
+                                                                  DOOR_CELL_SIZE))
             for y in range(4)
         ]
         for x in range(10)
@@ -206,13 +208,13 @@ class Door(BaseItem, DoorTextures):
     :param hurtable: Наносит ли урон дверь при проходе через неё.
     """
     def __init__(self,
-                 xy_pos: DoorsCoords | tuple[int, int],
-                 floor_type: FloorsTypes,
-                 room_type: RoomsTypes,  # из этого определять текстурку (секретка в т.ч.)
+                 xy_pos: consts.DoorsCoords | tuple[int, int],
+                 floor_type: consts.FloorsTypes,
+                 room_type: consts.RoomsTypes,  # из этого определять текстурку (секретка в т.ч.)
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True,
                  hurtable: bool = False):
-        if isinstance(xy_pos, DoorsCoords):
+        if isinstance(xy_pos, consts.DoorsCoords):
             self.xy_pos = xy_pos.value
         else:
             self.xy_pos = xy_pos
@@ -224,13 +226,23 @@ class Door(BaseItem, DoorTextures):
 
         super().__init__(self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
         self.set_image()
+        super().set_rect()
         self.set_rect()
-        self.rect = pg.Rect((
-            self.rect.x,
-            self.rect.y,
-            0,
-            0
-        ))
+
+    def set_rect(self, width: int | None = None, height: int | None = None):
+        if self.room_type == consts.RoomsTypes.SECRET:
+            image: pg.Surface = getattr(DoorTextures, f'{self.floor_type.value}_blow_{self.direction}')
+            self.rect = image.get_rect()
+        if self.direction == 'up':
+            self.rect.midbottom = (consts.WIDTH // 2, consts.STATS_HEIGHT + consts.WALL_SIZE)
+        elif self.direction == 'down':
+            self.rect.midtop = (consts.WIDTH // 2, consts.HEIGHT - consts.WALL_SIZE)
+        elif self.direction == 'left':
+            self.rect.midright = (consts.WALL_SIZE,
+                                  consts.STATS_HEIGHT + consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
+        elif self.direction == 'right':
+            self.rect.midleft = (consts.WIDTH - consts.WALL_SIZE,
+                                 consts.STATS_HEIGHT + consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
 
     def blow(self):
         """
@@ -238,7 +250,7 @@ class Door(BaseItem, DoorTextures):
         """
         if not self.collidable:
             return
-        if self.room_type in (RoomsTypes.BOSS, RoomsTypes.TREASURE, RoomsTypes.SHOP):
+        if self.room_type in (consts.RoomsTypes.BOSS, consts.RoomsTypes.TREASURE, consts.RoomsTypes.SHOP):
             return
         self.update_image('blow')
 
@@ -246,7 +258,7 @@ class Door(BaseItem, DoorTextures):
         """
         Открыть дверь.
         """
-        if not self.room_type == RoomsTypes.SECRET:
+        if not self.room_type == consts.RoomsTypes.SECRET:
             self.update_image('open')
 
     def close(self):
@@ -267,7 +279,7 @@ class Door(BaseItem, DoorTextures):
             self.direction = direction
         self.state = state
         self.collidable = True if self.state == 'close' else False
-        if self.room_type == RoomsTypes.SECRET and self.collidable:
+        if self.room_type == consts.RoomsTypes.SECRET and self.collidable:
             self.image = pg.Surface((0, 0))
         else:
             self.image = getattr(Door, f'{self.texture}_{self.state}_{self.direction}')
@@ -276,9 +288,9 @@ class Door(BaseItem, DoorTextures):
         """
         Определяет state, direction и texture при инициализации для метода update_image.
         """
-        if self.room_type in (RoomsTypes.SHOP, RoomsTypes.TREASURE, RoomsTypes.BOSS):
+        if self.room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE, consts.RoomsTypes.BOSS):
             self.texture = self.room_type.value
-        elif self.room_type == RoomsTypes.SECRET:
+        elif self.room_type == consts.RoomsTypes.SECRET:
             self.texture = f'{self.floor_type.value}_{self.room_type.value}'
         else:
             self.texture = self.floor_type.value
@@ -288,19 +300,19 @@ class Door(BaseItem, DoorTextures):
         else:
             self.state = 'open'
 
-        if self.xy_pos == DoorsCoords.UP.value:
+        if self.xy_pos == consts.DoorsCoords.UP.value:
             self.direction = 'up'
-        elif self.xy_pos == DoorsCoords.DOWN.value:
+        elif self.xy_pos == consts.DoorsCoords.DOWN.value:
             self.direction = 'down'
-        elif self.xy_pos == DoorsCoords.LEFT.value:
+        elif self.xy_pos == consts.DoorsCoords.LEFT.value:
             self.direction = 'left'
-        elif self.xy_pos == DoorsCoords.RIGHT.value:
+        elif self.xy_pos == consts.DoorsCoords.RIGHT.value:
             self.direction = 'right'
 
         self.update_image(self.state, self.direction)
 
-    def collide(self, other):
+    def collide(self, other: MovingEnemy | BaseSprite):
         if self.collidable:
-            pass
+            other.move_back(self.rect.center)
         if self.hurtable:
-            pass
+            other.hurt(1)

@@ -28,8 +28,9 @@ class Poop(BaseItem):
                  collidable_group: pg.sprite.AbstractGroup,
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True):
+        destroyable = True
         super().__init__(xy_pos, collidable_group, *groups,
-                         collidable=collidable)
+                         collidable=collidable, destroyable=destroyable)
 
         self.collidable_group = collidable_group
 
@@ -46,12 +47,6 @@ class Poop(BaseItem):
         texture_x = poop_type * CELL_SIZE
         self.stages = [Poop.poops.subsurface(texture_x, y * CELL_SIZE, CELL_SIZE, CELL_SIZE) for y in range(5)]
         self.image = self.stages[0]
-
-    def collide(self, other):
-        if self.collidable:
-            pass
-        if self.destroyable:
-            pass
 
     def blow(self):
         """
