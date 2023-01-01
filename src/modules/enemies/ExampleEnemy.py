@@ -16,7 +16,7 @@ class ExampleEnemy(MovingEnemy):
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
-                 flyable: bool = False):
+                 flyable: bool = False):  # = True чтобы сделать летающим
         hp: int = 10
         speed: int | float = 2
         damage_from_blow: int = 10

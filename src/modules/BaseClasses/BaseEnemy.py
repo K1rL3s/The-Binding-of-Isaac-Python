@@ -129,7 +129,7 @@ class BaseEnemy(BaseSprite):
         dx = x - self.rect.centerx
         dy = y - self.rect.centery
         distance = math.hypot(dx, dy)
-        if distance > self.shot_max_distance * CELL_SIZE:
+        if distance > self.shot_max_distance * CELL_SIZE or distance == 0:  # Стреляет тогда, когда уже вплотную, ну хз.
             return
         vx = self.shot_max_speed * dx / distance
         vy = self.shot_max_speed * dy / distance

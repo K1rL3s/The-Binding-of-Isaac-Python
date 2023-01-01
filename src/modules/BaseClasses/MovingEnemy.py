@@ -76,7 +76,6 @@ class MovingEnemy(BaseEnemy):
         Перемещение сущности.
         :param delta_t: Время с прошлого кадра.
         """
-
         self.x_center_last, self.y_center_last = self.x_center, self.y_center
         self.x_center += self.vx * delta_t
         self.y_center += self.vy * delta_t
@@ -124,6 +123,17 @@ class MovingEnemy(BaseEnemy):
         """
         Обновление вертикальной и горизонатальной скоростей для перемещения к ГГ.
         """
+        if self.flyable:  # Летающие летят напрямую ахахаха)
+            dx = self.main_hero.rect.centerx - self.rect.centerx
+            dy = self.main_hero.rect.centery - self.rect.centery
+            distance = math.hypot(dx, dy)
+            if distance:
+                self.vx = self.speed * dx / distance
+                self.vy = self.speed * dy / distance
+            else:
+                self.vx, self.vy = 0, 0
+            return
+
         self.move_ticks = 0
         xy_end = self.main_hero.rect.center
         xy_end = pixels_to_cell(xy_end)
@@ -133,10 +143,7 @@ class MovingEnemy(BaseEnemy):
             return
 
         self.path = path_list[1:]
-        if self.flyable:
-            next_cell = self.path[-1]
-        else:
-            next_cell = self.path[0]
+        next_cell = self.path[0]
         x, y = cell_to_pixels(next_cell)
         dx = x - self.rect.centerx
         dy = y - self.rect.centery
