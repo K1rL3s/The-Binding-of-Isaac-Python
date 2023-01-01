@@ -3,7 +3,7 @@ import random
 import pygame as pg
 
 from src.utils.funcs import crop
-from src.modules.Animation import Animation
+from src.modules.Animation import OneTimeAnimation
 from src.modules.BaseClasses.BaseTear import BaseTear
 
 
@@ -27,6 +27,6 @@ class ExampleTear(BaseTear):
         self.mask = pg.mask.from_surface(self.image)
 
     def destroy(self, dokill: bool = False):
-        # Animation()
+        OneTimeAnimation()  # Сделать анимацию
         super().destroy()
 

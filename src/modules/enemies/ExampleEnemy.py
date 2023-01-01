@@ -2,33 +2,34 @@ from typing import Type
 
 import pygame as pg
 
-from src.modules.BaseClasses.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 from src.modules.BaseClasses.BaseTear import BaseTear
 from src.modules.entities.tears.ExampleTear import ExampleTear
 from src.consts import CELL_SIZE
 
 
-class ExampleEnemy(BaseEnemy):
+class ExampleEnemy(MovingEnemy):
     def __init__(self,
                  xy_pos: tuple[int, int],
                  room_graph: dict[tuple[int, int]],
-                 main_hero: pg.sprite.Sprite | BaseEnemy,
+                 main_hero: pg.sprite.Sprite,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
-                 movable: bool = False,
                  flyable: bool = False):
         hp: int = 10
         speed: int | float = 2
+        damage_from_blow: int = 10
         move_delay: int | float = 0.1
         shot_damage: int = 5
-        shot_max_distance: int | float = 10
+        shot_max_distance: int | float = 1
         shot_max_speed: int | float = 5
         shot_delay: int | float = 0
         tear_class: Type[BaseTear] = ExampleTear
-        super().__init__(xy_pos, hp, speed, move_delay, room_graph, shot_damage, shot_max_distance, shot_max_speed,
-                         shot_delay, tear_class, main_hero, enemy_collide_groups, tear_collide_groups, *groups,
-                         movable=movable, flyable=flyable)
+        super().__init__(xy_pos, hp, speed, damage_from_blow, move_delay, room_graph, shot_damage, shot_max_distance,
+                         shot_max_speed, shot_delay, tear_class, main_hero,
+                         enemy_collide_groups, tear_collide_groups, *groups,
+                         flyable=flyable)
 
         self.set_image()
         self.set_rect()
@@ -61,4 +62,3 @@ class ExampleEnemy(BaseEnemy):
         screen.blit(text2, (text_x, text_y + h))
         screen.blit(text3, (text_x, text_y + 2 * h))
         screen.blit(text4, (text_x, text_y + 3 * h))
-

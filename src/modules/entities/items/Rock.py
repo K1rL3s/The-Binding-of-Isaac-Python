@@ -72,7 +72,9 @@ class Rock(BaseItem):
         """
         Уничтожение камня после взрыва.
         """
-        self.destroyable = False
+        if not self.collidable:
+            return
+        self.collidable = False
         self.hurtable = False
         self.image = self.destroyed_image
         self.collidable_group.remove(self)

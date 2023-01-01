@@ -12,7 +12,6 @@ class BaseItem(BaseSprite):
     Базовый класс для предметов (камень, какашка, ключ, монета, артефакт итд).
 
     :param groups: Все группы, которым принадлежит предмет-спрайт.
-    :param acceleration: Ускорение торможения в случае movable = True
     :param colliadble: Можно ли столкнуться с объектом (непроходимый ли).
     :param destroyable: Можно ли сломать слезой.
     :param pickable: Можно ли подобрать.
@@ -23,7 +22,6 @@ class BaseItem(BaseSprite):
     def __init__(self,
                  xy_pos: tuple[int, int],
                  *groups: pg.sprite.AbstractGroup,
-                 acceleration: int | float = 0,
                  collidable: bool = False,
                  destroyable: bool = False,
                  pickable: bool = False,
@@ -45,20 +43,6 @@ class BaseItem(BaseSprite):
         self.hp = 0
         self.vx = 0
         self.vy = 0
-        self.a = acceleration
-
-    def update(self, delta_t: float, *args, **kwargs):
-        """
-        Обновление положения объекта (нужно при self.movable = True)
-        :param delta_t: Время с прошлого кадра.
-        """
-        pass
-        # if self.vx or self.vy:
-        #     self.rect.move_ip(ceil(self.vx * delta_t), ceil(self.vy * delta_t))
-        #     if self.vx:
-        #         self.vx = max((0, self.vx - self.a * delta_t))
-        #     if self.vy:
-        #         self.vx = max((0, self.vy - self.a * delta_t))
 
     def set_rect(self, width: int = None, height: int = None):
         """
@@ -78,15 +62,12 @@ class BaseItem(BaseSprite):
         self.rect = pg.Rect(cell_x, cell_y, width, height)
         self.mask = pg.mask.from_surface(self.image)
 
-    def set_start_speed(self, vx: int | float, vy: int | float):
+    def update(self, delta_t: float):
         """
-        Задание начальной скорости движения.
-        :param vx: Скорость по горизонтали.
-        :param vy: Скорость по вертикали.
+        Обновление положения объекта (нужно при self.movable = True)
+        :param delta_t: Время с прошлого кадра.
         """
         pass
-        # self.vx = vx
-        # self.vy = vy
 
     def pickup(self, *args, **kwargs):
         """

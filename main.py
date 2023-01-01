@@ -39,11 +39,7 @@ def main():
                 if event.button == pg.BUTTON_LEFT:
                     game.move_main_hero(event.pos)
                 elif event.button == pg.BUTTON_RIGHT:
-                    cell = pixels_to_cell(event.pos)
-                    xy = (0, 0)
-                    if cell:
-                        xy = cell_to_pixels(cell)
-                    print(cell, xy)
+                    game.current_level.current_room.test_func_set_bomb(event.pos)
 
         delta_t = timer.tick(consts.FPS) / 1000
         screen.fill(background)

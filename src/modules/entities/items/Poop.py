@@ -9,7 +9,7 @@ from src.modules.BaseClasses.BaseItem import BaseItem
 
 class Poop(BaseItem):
     """
-    Класс комня.
+    Класс Poop'a.
 
     :param xy_pos: Позиция в комнате.
     :param poop_group: Группа спрайтов, где все спрайты - Poop'ы.
@@ -64,6 +64,8 @@ class Poop(BaseItem):
         Нанесение урона Poop'y.
         :param damage: сколько урона.
         """
+        if not self.hp:
+            return
         self.hp = max(0, self.hp - damage)
         percent = self.hp / Poop.max_hp
         if percent >= 0.75:

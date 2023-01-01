@@ -11,8 +11,10 @@ from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Poop import Poop
 from src.modules.entities.items.Door import Door
+from src.modules.entities.items.Bomb import Bomb
 from src.modules.enemies.ExampleEnemy import ExampleEnemy
 from src.utils.graph import make_neighbors_graph
+from src.utils.funcs import pixels_to_cell
 
 
 class RoomTextures:
@@ -145,7 +147,7 @@ class Room(RoomTextures):
                     Rock((j, i), self.floor_type, self.room_type, self.colliadble_group, self.rocks,
                          self.obstacles, self.blowable)
                 elif chance > 0.8:
-                    Poop((j, i), self.colliadble_group, self.poops, self.obstacles)
+                    Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
                 elif chance > 0.7:  # and no_enemy:
                     ExampleEnemy((j, i), self.paths, self.main_hero, (self.colliadble_group,), (self.colliadble_group,),
                                  self.enemies, self.blowable)
@@ -170,7 +172,7 @@ class Room(RoomTextures):
         Установка дверей с нужными текстурками.
         """
         for coords, room_type in doors:
-            Door(coords, self.floor_type, room_type, self.doors, self.colliadble_group)
+            Door(coords, self.floor_type, room_type, self.doors, self.colliadble_group, self.blowable)
 
     def update_doors(self, state: str):
         """
@@ -238,6 +240,7 @@ class Room(RoomTextures):
             self.update_enemies_paths()
         self.enemies.update(delta_t)
         self.fly_enemies.update(delta_t)
+        self.other.update(delta_t)
 
     def update_enemies_paths(self):
         """
@@ -269,3 +272,8 @@ class Room(RoomTextures):
         self.fires.draw(screen)
         self.doors.draw(screen)
         self.other.draw(screen)
+
+    def test_func_set_bomb(self, xy_pos: tuple[int, int]):
+        if room_pos := pixels_to_cell(xy_pos):
+            bomb = Bomb(room_pos, (self.colliadble_group,), (self.blowable,), self.other, xy_pixels=xy_pos)
+            bomb.set_start_speed(random.randint(-20, 20) / 10, random.randint(-20, 20) / 10)
