@@ -11,7 +11,7 @@ from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Poop import Poop
 from src.modules.entities.items.Door import Door
-from src.modules.entities.items.Bomb import Bomb
+from src.modules.entities.items.BlowBomb import BlowBomb
 from src.modules.enemies.ExampleEnemy import ExampleEnemy
 from src.utils.graph import make_neighbors_graph
 from src.utils.funcs import pixels_to_cell
@@ -275,5 +275,5 @@ class Room(RoomTextures):
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
         if room_pos := pixels_to_cell(xy_pos):
-            bomb = Bomb(room_pos, (self.colliadble_group,), (self.blowable,), self.other, xy_pixels=xy_pos)
+            bomb = BlowBomb(room_pos, (self.colliadble_group,), (self.blowable,), self.other, xy_pixels=xy_pos)
             bomb.set_start_speed(random.randint(-20, 20) / 10, random.randint(-20, 20) / 10)

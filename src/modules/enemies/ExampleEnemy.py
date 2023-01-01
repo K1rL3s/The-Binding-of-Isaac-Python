@@ -1,3 +1,4 @@
+import random
 from typing import Type
 
 import pygame as pg
@@ -6,9 +7,12 @@ from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 from src.modules.BaseClasses.BaseTear import BaseTear
 from src.modules.entities.tears.ExampleTear import ExampleTear
 from src.consts import CELL_SIZE
+from src.utils.funcs import load_sound
 
 
 class ExampleEnemy(MovingEnemy):
+    death_sounds = [load_sound(f"sounds/meat_death{i}.mp3") for i in range(1, 6)]
+
     def __init__(self,
                  xy_pos: tuple[int, int],
                  room_graph: dict[tuple[int, int]],
@@ -62,3 +66,7 @@ class ExampleEnemy(MovingEnemy):
         screen.blit(text2, (text_x, text_y + h))
         screen.blit(text3, (text_x, text_y + 2 * h))
         screen.blit(text4, (text_x, text_y + 3 * h))
+
+    def death(self):
+        random.choice(ExampleEnemy.death_sounds).play()
+        super().death()

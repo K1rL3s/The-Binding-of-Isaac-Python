@@ -9,9 +9,9 @@ from src.utils.funcs import load_image, load_sound
 from src.consts import CELL_SIZE
 
 
-class Bomb(MovableItem):
+class BlowBomb(MovableItem):
     """
-    Класс бомбы.
+    Взрываемая бомба.
 
     :param xy_pos: Позиция в комнате.
     :param collidable_group: Группа препятствий, через которые нельзя пройти.
@@ -43,7 +43,7 @@ class Bomb(MovableItem):
         self.set_rect()
 
     def set_image(self):
-        self.image = Bomb.bomb
+        self.image = BlowBomb.bomb
 
     def update(self, delta_t: float):
         """
@@ -52,11 +52,11 @@ class Bomb(MovableItem):
         """
         super().move(delta_t)
         self.ticks += delta_t
-        if self.ticks >= Bomb.explosion_delay:
+        if self.ticks >= BlowBomb.explosion_delay:
             self.blow_up()
 
     def blow_up(self):
-        self.rect = pg.Rect((0, 0, Bomb.explosion_radius * 2, Bomb.explosion_radius * 2))
+        self.rect = pg.Rect((0, 0, BlowBomb.explosion_radius * 2, BlowBomb.explosion_radius * 2))
         self.rect.center = self.x_center, self.y_center
         for group in self.blow_groups:
             if sprites := pg.sprite.spritecollide(self, group, False):
@@ -64,6 +64,6 @@ class Bomb(MovableItem):
                     if pg.sprite.collide_circle(self, sprite):
                         sprite: BaseSprite
                         sprite.blow()
-        random.choice(Bomb.explosion_sounds).play()
+        random.choice(BlowBomb.explosion_sounds).play()
         OneTimeAnimation()  # Сделать анимацию взрыва
         self.kill()

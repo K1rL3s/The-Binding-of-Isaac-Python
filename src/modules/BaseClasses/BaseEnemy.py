@@ -3,7 +3,7 @@ import math
 
 import pygame as pg
 
-from src.utils.funcs import cell_to_pixels
+from src.utils.funcs import cell_to_pixels, load_sound
 from src.consts import CELL_SIZE, WALL_SIZE, STATS_HEIGHT
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
@@ -29,6 +29,8 @@ class BaseEnemy(BaseSprite):
     :param movable: Передвигается ли.
     :param flyable: Летает ли.
     """
+
+    explosion_kill = load_sound("sounds/explosion_kill.mp3")
 
     def __init__(self,
                  xy_pos: tuple[int, int],
@@ -114,6 +116,8 @@ class BaseEnemy(BaseSprite):
         Взрыв сущности.
         """
         self.hurt(self.damage_from_blow)
+        if self.hp <= 0:
+            BaseEnemy.explosion_kill.play()
 
     def hurt(self, damage: int):
         self.hp -= damage
