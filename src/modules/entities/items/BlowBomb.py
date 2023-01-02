@@ -2,7 +2,7 @@ import random
 
 import pygame as pg
 
-from src.modules.Animation import OneTimeAnimation
+from src.modules.animations.OneTimeAnimation import OneTimeAnimation
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.MovableItem import MovableItem
 from src.utils.funcs import load_image, load_sound
