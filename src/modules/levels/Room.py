@@ -194,48 +194,48 @@ class Room(RoomTextures):
 
             if coords == consts.DoorsCoords.LEFT:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE + math.ceil(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
+                       consts.WALL_SIZE + math.ceil(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.RIGHT:
                 Border(consts.WIDTH - consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WIDTH - consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE + 4 * consts.CELL_SIZE,
+                       consts.WALL_SIZE + 4 * consts.CELL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.UP:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.debug_render)
                 Border(consts.WALL_SIZE + math.ceil(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.DOWN:
                 Border(consts.WALL_SIZE,
-                       consts.HEIGHT - consts.WALL_SIZE,
+                       consts.GAME_HEIGHT - consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WALL_SIZE + math.ceil(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       consts.HEIGHT - consts.WALL_SIZE,
+                       consts.GAME_HEIGHT - consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.tears_borders, self.debug_render)
@@ -243,28 +243,28 @@ class Room(RoomTextures):
         for coords in all_coords:
             if coords == consts.DoorsCoords.LEFT:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        consts.ROOM_HEIGHT * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.RIGHT:
                 Border(consts.WIDTH - consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        consts.ROOM_HEIGHT * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.UP:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        consts.ROOM_WIDTH * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.DOWN:
                 Border(consts.WALL_SIZE,
-                       consts.HEIGHT - consts.WALL_SIZE,
+                       consts.GAME_HEIGHT - consts.WALL_SIZE,
                        consts.ROOM_WIDTH * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.tears_borders, self.debug_render)
@@ -274,22 +274,22 @@ class Room(RoomTextures):
         Установка барьеров на краях экрана.
         """
         # Лево
-        Border(0, consts.STATS_HEIGHT, 1, consts.GAME_HEIGHT,
+        Border(0, 0, 1, consts.GAME_HEIGHT,
                self.movement_borders, self.tears_borders, self.debug_render)
         # Лево доп
-        Border(consts.WALL_SIZE, consts.STATS_HEIGHT, 1, consts.WALL_SIZE,
+        Border(consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
                self.movement_borders, self.tears_borders, self.debug_render)
         # Верх
-        Border(0, consts.STATS_HEIGHT, consts.WIDTH, 1,
+        Border(0, 0, consts.WIDTH, 1,
                self.movement_borders, self.tears_borders, self.debug_render)
         # Низ
-        Border(0, consts.HEIGHT - 1, consts.WIDTH, 1,
+        Border(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
                self.movement_borders, self.tears_borders, self.debug_render)
         # Право
-        Border(consts.WIDTH - 1, consts.STATS_HEIGHT, 1, consts.GAME_HEIGHT,
+        Border(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
                self.movement_borders, self.tears_borders, self.debug_render)
         # Право доп
-        Border(consts.WIDTH - consts.WALL_SIZE, consts.STATS_HEIGHT, 1, consts.WALL_SIZE,
+        Border(consts.WIDTH - consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
                self.movement_borders, self.tears_borders, self.debug_render)
 
     def update_doors(self, state: str, with_sound: bool = True):
@@ -372,7 +372,7 @@ class Room(RoomTextures):
             enemy.update_room_graph(self.paths)
 
     def render(self, screen: pg.Surface):
-        screen.blit(self.background, (0, consts.STATS_HEIGHT))
+        screen.blit(self.background, (0, 0))
         self.rocks.draw(screen)
         self.poops.draw(screen)
         self.enemies.draw(screen)
@@ -393,6 +393,7 @@ class Room(RoomTextures):
         self.debug_render.draw(screen)
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
+        xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
         if room_pos := pixels_to_cell(xy_pos):
             bomb = BlowBomb(room_pos, (self.colliadble_group, self.movement_borders), (self.blowable, self.other),
                             self.other, xy_pixels=xy_pos)

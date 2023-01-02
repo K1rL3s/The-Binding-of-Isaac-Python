@@ -4,7 +4,7 @@ import math
 import pygame as pg
 
 from src.utils.funcs import cell_to_pixels, load_sound
-from src.consts import CELL_SIZE, WALL_SIZE, STATS_HEIGHT
+from src.consts import CELL_SIZE, WALL_SIZE
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
 
@@ -98,7 +98,7 @@ class BaseEnemy(BaseSprite):
         if height:
             self.rect.height = height
         cell_x = self.x * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.width) // 2
-        cell_y = self.y * CELL_SIZE + WALL_SIZE + STATS_HEIGHT + (CELL_SIZE - self.rect.width) // 2
+        cell_y = self.y * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.width) // 2
         if width is None:
             width = self.image.get_width()
         if height is None:

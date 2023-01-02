@@ -33,10 +33,10 @@ class Moves(Enum):
     Возможные направления (x, y) (делать сложение).
     Верхний левый угол — начало координат.
     """
-    UP: tuple[int, int] = (0, -1)
-    DOWN: tuple[int, int] = (0, 1)
-    RIGHT: tuple[int, int] = (1, 0)
-    LEFT: tuple[int, int] = (-1, 0)
+    UP = (0, -1)
+    DOWN = (0, 1)
+    RIGHT = (1, 0)
+    LEFT = (-1, 0)
 
 
 class DoorsCoords(Enum):

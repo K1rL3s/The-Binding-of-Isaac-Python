@@ -25,13 +25,13 @@ def main():
                 running = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP:
-                    game.move_to_next_room(consts.DoorsCoords.UP)
+                    game.move_to_next_room(consts.Moves.UP)
                 elif event.key == pg.K_DOWN:
-                    game.move_to_next_room(consts.DoorsCoords.DOWN)
+                    game.move_to_next_room(consts.Moves.DOWN)
                 elif event.key == pg.K_RIGHT:
-                    game.move_to_next_room(consts.DoorsCoords.RIGHT)
+                    game.move_to_next_room(consts.Moves.RIGHT)
                 elif event.key == pg.K_LEFT:
-                    game.move_to_next_room(consts.DoorsCoords.LEFT)
+                    game.move_to_next_room(consts.Moves.LEFT)
                 elif event.key == pg.K_SPACE:
                     game.move_to_next_level()
             if event.type == pg.MOUSEBUTTONDOWN:

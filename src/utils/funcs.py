@@ -3,7 +3,7 @@ from functools import cache
 
 import pygame as pg
 
-from src.consts import WALL_SIZE, STATS_HEIGHT, GAME_WIDTH, HEIGHT, CELL_SIZE
+from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT
 
 
 @cache
@@ -84,9 +84,9 @@ def pixels_to_cell(xy_pos: tuple[int, int] | tuple[float, float]) -> tuple[int, 
     :return: Координаты в клетках.
     """
     x, y = xy_pos
-    if WALL_SIZE <= x < GAME_WIDTH - WALL_SIZE and WALL_SIZE + STATS_HEIGHT <= y < HEIGHT - WALL_SIZE:
+    if WALL_SIZE <= x < GAME_WIDTH - WALL_SIZE and WALL_SIZE <= y < GAME_HEIGHT - WALL_SIZE:
         x_cell = x - WALL_SIZE
-        y_cell = y - WALL_SIZE - STATS_HEIGHT
+        y_cell = y - WALL_SIZE
         return int(x_cell // CELL_SIZE), int(y_cell // CELL_SIZE)
     return None
 
@@ -99,5 +99,5 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     """
     x_cell, y_cell = xy_pos
     x = x_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
-    y = y_cell * CELL_SIZE + WALL_SIZE + STATS_HEIGHT + CELL_SIZE // 2
+    y = y_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
     return int(x), int(y)

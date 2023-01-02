@@ -235,15 +235,15 @@ class Door(BaseItem, DoorTextures):
             image: pg.Surface = getattr(DoorTextures, f'{self.floor_type.value}_blow_{self.direction}')
             self.rect = image.get_rect()
         if self.direction == 'up':
-            self.rect.midbottom = (consts.WIDTH // 2, consts.STATS_HEIGHT + consts.WALL_SIZE)
+            self.rect.midbottom = (consts.WIDTH // 2, consts.WALL_SIZE)
         elif self.direction == 'down':
-            self.rect.midtop = (consts.WIDTH // 2, consts.HEIGHT - consts.WALL_SIZE)
+            self.rect.midtop = (consts.WIDTH // 2, consts.GAME_HEIGHT - consts.WALL_SIZE)
         elif self.direction == 'left':
             self.rect.midright = (consts.WALL_SIZE,
-                                  consts.STATS_HEIGHT + consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
+                                  consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
         elif self.direction == 'right':
             self.rect.midleft = (consts.WIDTH - consts.WALL_SIZE,
-                                 consts.STATS_HEIGHT + consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
+                                 consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
 
     def blow(self, with_sound: bool = True):
         """
@@ -335,7 +335,17 @@ class Door(BaseItem, DoorTextures):
             other.hurt(1)
         # Вместо BaseSprite поставить MainCharacter или его туловище
         if isinstance(other, BaseSprite) and self.event_rect.colliderect(other.rect):
-            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM, {'direction': self.xy_pos}))
+            direction = None
+            if self.xy_pos == consts.DoorsCoords.UP.value:
+                direction = consts.Moves.UP
+            elif self.xy_pos == consts.DoorsCoords.DOWN.value:
+                direction = consts.Moves.DOWN
+            elif self.xy_pos == consts.DoorsCoords.RIGHT.value:
+                direction = consts.Moves.RIGHT
+            elif self.xy_pos == consts.DoorsCoords.LEFT.value:
+                direction = consts.Moves.LEFT
+            assert direction
+            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM, {'direction': direction}))
 
             # Реализовать закрытие двери после входа в секретку:
             # if self.room_type == consts.RoomsTypes.SECRET:
