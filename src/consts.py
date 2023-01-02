@@ -45,8 +45,8 @@ class DoorsCoords(Enum):
     """
     UP = (6, -1)
     DOWN = (6, 7)
-    LEFT = (-1, 3)
     RIGHT = (13, 3)
+    LEFT = (-1, 3)
 
 
 FPS = 60                                          # А может 59.98?
@@ -59,15 +59,5 @@ CELL_SIZE = 78                                    # Размер клетки к
 MINIMAP_CELL_WIDTH, MINIMAP_CELL_HEIGHT = 41, 21  # Размер клетки на миникарте
 MINIMAP_WIDTH, MINIMAP_HEIGHT = 410, 126          # Размер миникарты (10x6)
 
-MOVE_TO_LEFT_ROOM_TYPE = pg.USEREVENT + 1
-MOVE_TO_RIGHT_ROOM_TYPE = pg.USEREVENT + 2
-MOVE_TO_UP_ROOM_TYPE = pg.USEREVENT + 3
-MOVE_TO_DOWN_ROOM_TYPE = pg.USEREVENT + 4
-MOVE_TO_NEXT_LEVEL_TYPE = pg.USEREVENT + 5
-
-MOVE_TO_LEFT_ROOM_EVENT = pg.event.Event(MOVE_TO_LEFT_ROOM_TYPE)
-MOVE_TO_RIGHT_ROOM_EVENT = pg.event.Event(MOVE_TO_RIGHT_ROOM_TYPE)
-MOVE_TO_UP_ROOM_EVENT = pg.event.Event(MOVE_TO_UP_ROOM_TYPE)
-MOVE_TO_DOWN_ROOM_EVENT = pg.event.Event(MOVE_TO_DOWN_ROOM_TYPE)
-MOVE_TO_NEXT_LEVEL_EVENT = pg.event.Event(MOVE_TO_NEXT_LEVEL_TYPE)
-
+MOVE_TO_NEXT_ROOM = pg.USEREVENT + 1
+MOVE_TO_NEXT_LEVEL = pg.USEREVENT + 2

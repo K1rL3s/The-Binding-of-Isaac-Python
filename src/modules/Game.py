@@ -3,7 +3,7 @@ import pygame as pg
 from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
 from src.modules.menus.Stats import Stats
-from src.consts import FloorsTypes, Moves
+from src.consts import FloorsTypes, DoorsCoords
 
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 
@@ -25,11 +25,11 @@ class Game:
     def get_current_level_rooms(self) -> list[list[Room | None]]:
         return self.current_level.get_rooms()
 
-    def next_level(self):
+    def move_to_next_level(self):
         self.current_level = self.levels[(self.levels.index(self.current_level) + 1) % len(self.levels)]
         self.stats = Stats(None, self.current_level)
 
-    def move_to_next_room(self, direction: Moves | tuple[int, int]):
+    def move_to_next_room(self, direction: DoorsCoords | tuple[int, int]):
         self.current_level.move_to_next_room(direction)
         self.stats.update_minimap()
 

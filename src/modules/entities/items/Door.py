@@ -335,7 +335,7 @@ class Door(BaseItem, DoorTextures):
             other.hurt(1)
         # Вместо BaseSprite поставить MainCharacter или его туловище
         if isinstance(other, BaseSprite) and self.event_rect.colliderect(other.rect):
-            pg.event.post(getattr(consts, f'MOVE_TO_{self.direction.upper()}_ROOM_EVENT'))
+            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM, {'direction': self.xy_pos}))
 
             # Реализовать закрытие двери после входа в секретку:
             # if self.room_type == consts.RoomsTypes.SECRET:

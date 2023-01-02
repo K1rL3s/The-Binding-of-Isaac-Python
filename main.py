@@ -25,29 +25,25 @@ def main():
                 running = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP:
-                    game.move_to_next_room(consts.Moves.UP)
+                    game.move_to_next_room(consts.DoorsCoords.UP)
                 elif event.key == pg.K_DOWN:
-                    game.move_to_next_room(consts.Moves.DOWN)
+                    game.move_to_next_room(consts.DoorsCoords.DOWN)
                 elif event.key == pg.K_RIGHT:
-                    game.move_to_next_room(consts.Moves.RIGHT)
+                    game.move_to_next_room(consts.DoorsCoords.RIGHT)
                 elif event.key == pg.K_LEFT:
-                    game.move_to_next_room(consts.Moves.LEFT)
+                    game.move_to_next_room(consts.DoorsCoords.LEFT)
                 elif event.key == pg.K_SPACE:
-                    game.next_level()
+                    game.move_to_next_level()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == pg.BUTTON_LEFT:
                     game.move_main_hero(event.pos)
                 elif event.button == pg.BUTTON_RIGHT:
                     game.current_level.current_room.test_func_set_bomb(event.pos)
 
-            elif event.type == consts.MOVE_TO_UP_ROOM_TYPE:
-                game.move_to_next_room(consts.Moves.UP)
-            elif event.type == consts.MOVE_TO_DOWN_ROOM_TYPE:
-                game.move_to_next_room(consts.Moves.DOWN)
-            elif event.type == consts.MOVE_TO_RIGHT_ROOM_TYPE:
-                game.move_to_next_room(consts.Moves.RIGHT)
-            elif event.type == consts.MOVE_TO_LEFT_ROOM_TYPE:
-                game.move_to_next_room(consts.Moves.LEFT)
+            elif event.type == consts.MOVE_TO_NEXT_ROOM:
+                game.move_to_next_room(event.direction)
+            elif event.type == consts.MOVE_TO_NEXT_LEVEL:
+                game.move_to_next_level()
 
         delta_t = timer.tick(consts.FPS) / 1000
         screen.fill(background)

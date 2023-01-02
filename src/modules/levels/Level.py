@@ -105,14 +105,29 @@ class Level:
         if self.current_room.room_type == RoomsTypes.SECRET:
             self.current_room.update_doors("blow", with_sound=False)
 
-    def move_to_next_room(self, direction: Moves | tuple[int, int]):
+    def move_to_next_room(self, direction: DoorsCoords | tuple[int, int]):
         """
         Вход в другую комнату.
         :param direction: Направление движения.
         """
-        x, y = direction.value
-        x = self.current_room.x + x
-        y = self.current_room.y + y
+        if isinstance(direction, DoorsCoords):
+            direction = direction.value
+
+        x, y = None, None
+        if direction == DoorsCoords.UP.value:
+            x = self.current_room.x
+            y = self.current_room.y - 1
+        elif direction == DoorsCoords.DOWN.value:
+            x = self.current_room.x
+            y = self.current_room.y + 1
+        elif direction == DoorsCoords.RIGHT.value:
+            x = self.current_room.x + 1
+            y = self.current_room.y
+        elif direction == DoorsCoords.LEFT.value:
+            x = self.current_room.x - 1
+            y = self.current_room.y
+        assert x is not None and y is not None
+
         if valid_coords(x, y, self.width, self.height) and self.rooms[y][x]:
             self.current_room = self.rooms[y][x]
             self.current_room.update_detection_state(is_active=True)
