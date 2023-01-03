@@ -49,8 +49,6 @@ class BaseTear(BaseSprite):
         self.max_distance = max_distance * CELL_SIZE
         self.vx = vx * CELL_SIZE
         self.vy = vy * CELL_SIZE
-        self.vx_round = math.ceil if vx > 0 else math.floor
-        self.vy_round = math.ceil if vy > 0 else math.floor
         self.collide_groups = collide_groups
         self.groups = groups
         self.is_friendly = is_friendly

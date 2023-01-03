@@ -5,20 +5,20 @@ import pygame as pg
 
 import xml.etree.ElementTree as XMLTree
 
-from src import consts
 from src.modules.BaseClasses.BaseTear import BaseTear
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
-from src.utils.funcs import load_image
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Poop import Poop
 from src.modules.entities.items.Door import Door
+from src.modules.entities.items.Web import Web
 from src.modules.entities.items.BlowBomb import BlowBomb
 from src.modules.enemies.ExampleEnemy import ExampleEnemy
+from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
-from src.utils.funcs import pixels_to_cell
+from src import consts
 
 
 class RoomTextures:
@@ -97,6 +97,7 @@ class Room(RoomTextures):
         self.enemies = pg.sprite.Group()
         self.rocks = pg.sprite.Group()
         self.poops = pg.sprite.Group()
+        self.webs = pg.sprite.Group()
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
@@ -154,11 +155,13 @@ class Room(RoomTextures):
                          self.obstacles, self.blowable)
                 elif chance > 0.8:
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
-                elif chance > 0.7:  # and no_enemy:
+                elif chance > 0.7:
                     ExampleEnemy((j, i), self.paths, self.main_hero,
                                  (self.colliadble_group, self.movement_borders),
                                  (self.colliadble_group, self.tears_borders, self.other),
                                  self.enemies, self.blowable)
+                elif chance > 0.6:
+                    Web((j, i), self.colliadble_group, self.webs, self.blowable)
 
     def setup_graph(self):
         """
@@ -375,6 +378,7 @@ class Room(RoomTextures):
         screen.blit(self.background, (0, 0))
         self.rocks.draw(screen)
         self.poops.draw(screen)
+        self.webs.draw(screen)
         self.enemies.draw(screen)
 
         # ЗАТЫЧКА ГГ
@@ -390,14 +394,14 @@ class Room(RoomTextures):
         self.doors.draw(screen)
         self.other.draw(screen)
 
-        self.debug_render.draw(screen)
+        # self.debug_render.draw(screen)
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
         if room_pos := pixels_to_cell(xy_pos):
             bomb = BlowBomb(room_pos, (self.colliadble_group, self.movement_borders), (self.blowable, self.other),
                             self.other, xy_pixels=xy_pos)
-            bomb.set_start_speed(random.randint(-20, 20) / 10, random.randint(-20, 20) / 10)
+            bomb.set_speed(random.randint(-20, 20) / 10, random.randint(-20, 20) / 10)
 
 
 class Border(BaseSprite):

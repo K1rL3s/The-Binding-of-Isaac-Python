@@ -54,7 +54,7 @@ class MovingEnemy(BaseEnemy):
                          main_hero, enemy_collide_groups, tear_collide_groups, *groups,
                          movable=movable, flyable=flyable)
 
-        self.speed = speed * CELL_SIZE
+        self.speed = speed
         self.move_update_delay = move_update_delay
         self.vx, self.vy = 0, 0
         self.move_ticks = 0
@@ -80,21 +80,17 @@ class MovingEnemy(BaseEnemy):
         :param delta_t: Время с прошлого кадра.
         """
         self.x_center_last, self.y_center_last = self.x_center, self.y_center
-        self.x_center += self.vx * delta_t
-        self.y_center += self.vy * delta_t
+        self.x_center += self.vx * CELL_SIZE * delta_t
+        self.y_center += self.vy * CELL_SIZE * delta_t
         self.rect.center = self.x_center, self.y_center
 
         # Проверка коллизий
         if not self.flyable:
-            is_collided = False
             for group in self.enemy_collide_groups:
                 if sprites := pg.sprite.spritecollide(self, group, False):
-                    is_collided = True
                     for sprite in sprites:
                         sprite: BaseSprite
                         sprite.collide(self)
-            if is_collided:
-                return
 
         # Если координаты есть и если они отличаются от текущих, то обновляем скорости
         xy_cell = pixels_to_cell((self.x_center, self.y_center))
@@ -156,3 +152,13 @@ class MovingEnemy(BaseEnemy):
         if distance:
             self.vx = self.speed * dx / distance
             self.vy = self.speed * dy / distance
+
+    def set_speed(self, vx: int | float, vy: int | float):
+        """
+        Задание скорости движения.
+
+        :param vx: Скорость по горизонтали в клетках/секунду.
+        :param vy: Скорость по вертикали в клетках/секунду.
+        """
+        self.vx = vx
+        self.vy = vy

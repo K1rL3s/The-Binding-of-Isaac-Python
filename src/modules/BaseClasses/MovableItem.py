@@ -28,7 +28,7 @@ class MovableItem(BaseItem):
                  pickable: bool = False):
         super().__init__(xy_pos, *groups, pickable=pickable, movable=True, collidable=False)
 
-        self.a = acceleration * CELL_SIZE
+        self.a = acceleration
         self.collide_groups = collide_groups
 
         if xy_pixels:
@@ -45,36 +45,37 @@ class MovableItem(BaseItem):
         if (self.x_center, self.y_center) != cell_to_pixels((self.x, self.y)):
             self.rect.center = (self.x_center, self.y_center)
 
-    def set_start_speed(self, vx: int | float, vy: int | float):
+    def set_speed(self, vx: int | float, vy: int | float):
         """
-        Задание начальной скорости движения.
+        Задание скорости движения.
 
         :param vx: Скорость по горизонтали в клетках/секунду.
         :param vy: Скорость по вертикали в клетках/секунду.
         """
-        self.vx = vx * CELL_SIZE
-        self.vy = vy * CELL_SIZE
+        self.vx = vx
+        self.vy = vy
 
     def move(self, delta_t: float):
         self.x_center_last, self.y_center_last = self.x_center, self.y_center
         if self.vx:
             if self.vx < 0:
-                self.vx = min(0, self.vx + self.a * delta_t)
+                self.vx = min((0, self.vx + self.a * delta_t))
             else:
-                self.vx = max(0, self.vx - self.a * delta_t)
+                self.vx = max((0, self.vx - self.a * delta_t))
         if self.vy:
             if self.vy < 0:
-                self.vy = min(0, self.vy + self.a * delta_t)
+                self.vy = min((0, self.vy + self.a * delta_t))
             else:
-                self.vy = max(0, self.vy - self.a * delta_t)
-        self.x_center += self.vx * delta_t
-        self.y_center += self.vy * delta_t
+                self.vy = max((0, self.vy - self.a * delta_t))
+        self.x_center += self.vx * CELL_SIZE * delta_t
+        self.y_center += self.vy * CELL_SIZE * delta_t
         self.rect.center = self.x_center, self.y_center
 
         for group in self.collide_groups:
             if sprites := pg.sprite.spritecollide(self, group, False):
                 for sprite in sprites:
-                    self.move_back(sprite.rect.center)
+                    sprite: BaseSprite
+                    sprite.collide(self)
 
     def move_back(self, xy_center: tuple[int, int]):
         """
@@ -102,4 +103,4 @@ class MovableItem(BaseItem):
         super().collide(other)
         vx = 1 if self.rect.centerx - other.rect.centerx > 0 else -1
         vy = 1 if self.rect.centery - other.rect.centery > 0 else -1
-        self.set_start_speed(vx, vy)
+        self.set_speed(vx, vy)
