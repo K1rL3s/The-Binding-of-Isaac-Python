@@ -329,10 +329,7 @@ class Door(BaseItem, DoorTextures):
         self.update_image(self.state, self.direction)
 
     def collide(self, other: MovingEnemy | BaseSprite):
-        if self.collidable:
-            other.move_back(self.rect.center)
-        if self.hurtable:
-            other.hurt(1)
+        super().collide(other)
         # Вместо BaseSprite поставить MainCharacter или его туловище
         if isinstance(other, BaseSprite) and self.event_rect.colliderect(other.rect):
             direction = None

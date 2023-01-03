@@ -46,9 +46,9 @@ class BaseTear(BaseSprite):
 
         self.center_x, self.center_y = self.start_x, self.start_y = xy_pos
         self.damage = damage
-        self.max_distance = max_distance * CELL_SIZE
-        self.vx = vx * CELL_SIZE
-        self.vy = vy * CELL_SIZE
+        self.max_distance = max_distance
+        self.vx = vx
+        self.vy = vy
         self.collide_groups = collide_groups
         self.groups = groups
         self.is_friendly = is_friendly
@@ -63,21 +63,19 @@ class BaseTear(BaseSprite):
 
         :param delta_t: Время с прошлого кадра.
         """
-        self.center_x += self.vx * delta_t
-        self.center_y += self.vy * delta_t
+        self.center_x += self.vx * CELL_SIZE * delta_t
+        self.center_y += self.vy * CELL_SIZE * delta_t
         self.rect.centerx = self.center_x
         self.rect.centery = self.center_y
 
-        is_collided = False
         for collide_group in self.collide_groups:
             if pg.sprite.spritecollideany(self, collide_group):
-                is_collided = True
                 for collide in pg.sprite.spritecollide(self, collide_group, False):
                     collide: BaseSprite
                     collide.hurt(self.damage)
                     collide.collide(self)
 
-        if is_collided or math.hypot(self.start_x - self.rect.x, self.start_y - self.rect.y) > self.max_distance:
+        if math.hypot(self.start_x - self.rect.x, self.start_y - self.rect.y) > self.max_distance * CELL_SIZE:
             self.destroy()
 
     def set_rect(self):

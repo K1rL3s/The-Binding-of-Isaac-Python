@@ -28,7 +28,7 @@ class ExampleEnemy(MovingEnemy):
         shot_damage: int = 5
         shot_max_distance: int | float = 10
         shot_max_speed: int | float = 5
-        shot_delay: int | float = 10
+        shot_delay: int | float = 0
         tear_class: Type[BaseTear] = ExampleTear
         super().__init__(xy_pos, hp, speed, damage_from_blow, move_delay, room_graph, shot_damage, shot_max_distance,
                          shot_max_speed, shot_delay, tear_class, main_hero,

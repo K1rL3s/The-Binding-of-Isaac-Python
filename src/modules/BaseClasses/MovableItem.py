@@ -103,4 +103,4 @@ class MovableItem(BaseItem):
         super().collide(other)
         vx = 1 if self.rect.centerx - other.rect.centerx > 0 else -1
         vy = 1 if self.rect.centery - other.rect.centery > 0 else -1
-        self.set_speed(vx, vy)
+        self.set_speed(self.vx + vx, self.vy + vy)

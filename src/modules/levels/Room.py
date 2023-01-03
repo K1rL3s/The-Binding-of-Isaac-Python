@@ -13,6 +13,7 @@ from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Poop import Poop
 from src.modules.entities.items.Door import Door
+from src.modules.entities.items.Spikes import Spikes
 from src.modules.entities.items.Web import Web
 from src.modules.entities.items.BlowBomb import BlowBomb
 from src.modules.enemies.ExampleEnemy import ExampleEnemy
@@ -79,6 +80,8 @@ class Room(RoomTextures):
         self.minimap_cell: pg.Surface = pg.Surface((0, 0))
         self.background: pg.Surfac = pg.Surface((0, 0))
         self.paths_update_ticks = 0
+        self.is_over = False  # Пройдена ли комната
+        self.is_friendly = True  # Комната содержит только шипы, троль-бомбы итп, т.е. двери открыти, но ловушки есть
 
         # Отображение на мини-карте разными цветами
         self.is_spotted = False
@@ -98,6 +101,7 @@ class Room(RoomTextures):
         self.rocks = pg.sprite.Group()
         self.poops = pg.sprite.Group()
         self.webs = pg.sprite.Group()
+        self.spikes = pg.sprite.Group()
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
@@ -160,8 +164,11 @@ class Room(RoomTextures):
                                  (self.colliadble_group, self.movement_borders),
                                  (self.colliadble_group, self.tears_borders, self.other),
                                  self.enemies, self.blowable)
+                    self.is_friendly = False
                 elif chance > 0.6:
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
+                # elif chance > 0.5:
+                #     Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
 
     def setup_graph(self):
         """
@@ -358,13 +365,21 @@ class Room(RoomTextures):
         """
         Обновление комнаты (перемещение врагов, просчёт коллизий)
         """
+        self.other.update(delta_t)
+        self.spikes.update(delta_t)
+
+        if self.is_over:
+            return
+
         self.paths_update_ticks += delta_t
         if self.paths_update_ticks >= self.paths_update_delay:
             self.paths_update_ticks = 0
             self.setup_graph()
             self.update_enemies_paths()
         self.enemies.update(delta_t)
-        self.other.update(delta_t)
+
+        if not self.enemies.sprites():
+            self.win_room()
 
     def update_enemies_paths(self):
         """
@@ -374,11 +389,23 @@ class Room(RoomTextures):
             enemy: BaseEnemy
             enemy.update_room_graph(self.paths)
 
+    def win_room(self):
+        """
+        Открытие всех дверей итд, когда все враги умерли.
+        """
+        self.is_over = True
+        self.update_doors("open")
+        if not self.is_friendly:
+            for spikes in self.spikes.sprites():
+                spikes: Spikes
+                spikes.hide(True)
+
     def render(self, screen: pg.Surface):
         screen.blit(self.background, (0, 0))
         self.rocks.draw(screen)
         self.poops.draw(screen)
         self.webs.draw(screen)
+        self.spikes.draw(screen)
         self.enemies.draw(screen)
 
         # ЗАТЫЧКА ГГ

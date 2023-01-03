@@ -74,6 +74,7 @@ class BaseEnemy(BaseSprite):
         self.image: pg.Surface
         self.rect: pg.Rect
         self.mask: pg.mask.Mask = pg.mask.Mask((0, 0))
+        self.vx, self.vy = 0, 0
 
     def update(self, delta_t: float):
         """
@@ -136,8 +137,8 @@ class BaseEnemy(BaseSprite):
         distance = math.hypot(dx, dy)
         if distance > self.shot_max_distance * CELL_SIZE or distance == 0:  # Стреляет тогда, когда уже вплотную, ну хз.
             return
-        vx = self.shot_max_speed * dx / distance
-        vy = self.shot_max_speed * dy / distance
+        vx = self.shot_max_speed * dx / distance + self.vx  # Учёт собственной скорости
+        vy = self.shot_max_speed * dy / distance + self.vy  # Учёт собственной скорости
         self.tear_class(self.rect.center, self.shot_damage, self.shot_max_distance, vx, vy,
                         self.tear_collide_groups, self.tears)
 

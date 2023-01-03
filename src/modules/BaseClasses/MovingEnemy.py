@@ -56,7 +56,6 @@ class MovingEnemy(BaseEnemy):
 
         self.speed = speed
         self.move_update_delay = move_update_delay
-        self.vx, self.vy = 0, 0
         self.move_ticks = 0
 
     def update(self, delta_t: float):
