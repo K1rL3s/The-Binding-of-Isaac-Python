@@ -38,6 +38,9 @@ class Web(BaseItem):
         self.image = random.choice(Web.webs)
 
     def blow(self):
+        """
+        Взрыв (поломка) паутины.
+        """
         self.collidable = False
         self.image = Web.destoryed
 

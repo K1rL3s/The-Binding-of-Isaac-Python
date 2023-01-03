@@ -21,7 +21,7 @@ class BaseTear(BaseSprite):
     impacts: list[pg.mixer.Sound] = [load_sound(f"sounds/tear_impact{i}.mp3") for i in range(1, 4)]
 
     """
-    Базовый класс слезы (Мб надо переделать)
+    Базовый класс слезы (Мб надо переделать).
 
     :param xy_pos: Координата спавна в пикселях, центр слезы.
     :param damage: Урон.

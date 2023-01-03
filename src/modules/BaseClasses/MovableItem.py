@@ -56,6 +56,11 @@ class MovableItem(BaseItem):
         self.vy = vy
 
     def move(self, delta_t: float):
+        """
+        Перемещение объекта и изменение его скоростей.
+
+        :param delta_t: Время с прошлого кадра.
+        """
         self.x_center_last, self.y_center_last = self.x_center, self.y_center
         if self.vx:
             if self.vx < 0:

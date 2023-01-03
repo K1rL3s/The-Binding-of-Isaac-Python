@@ -84,7 +84,7 @@ class Rock(BaseItem):
 
     def drop_something(self):
         """
-        Спавн синего сердца.
+        Дроп лута после поломки.
         """
         pass
 

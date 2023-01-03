@@ -57,6 +57,9 @@ class BlowBomb(MovableItem):
             self.blow_up()
 
     def blow_up(self):
+        """
+        Подрыв себя.
+        """
         self.rect = pg.Rect((0, 0, BlowBomb.explosion_radius * 2, BlowBomb.explosion_radius * 2))
         self.rect.center = self.x_center, self.y_center
         for group in self.blow_groups:

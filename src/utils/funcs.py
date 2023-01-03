@@ -54,6 +54,7 @@ def load_sound(name) -> pg.mixer.Sound:
 def crop(screen: pg.Surface) -> pg.Surface:
     """
     Обрезка изображения по крайним не пустым пикселям.
+
     :param screen: Изображение.
     :return: Обрезанное изображение.
     """

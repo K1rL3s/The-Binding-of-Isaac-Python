@@ -66,9 +66,6 @@ def make_path_to_cell(graph: dict[tuple[int, int]],
                 queue.append(next_cell)
                 visited[next_cell] = current_cell
 
-    if xy_end:
-        pass
-
     if xy_end not in visited.keys():
         return False
 

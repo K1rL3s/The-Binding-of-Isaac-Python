@@ -48,6 +48,11 @@ class Spikes(BaseItem):
         # Попытаться уменьшить Rect шипов, чтобы края не дамажили (уменьшить текстурку?)
 
     def hide(self, forever: bool = False):
+        """
+        Скрыть шипы.
+
+        :param forever: Навсегда ли.
+        """
         # Сделать анимацию и звук?
         self.collidable = False
         self.image = Spikes.images[-1]
@@ -55,6 +60,9 @@ class Spikes(BaseItem):
             self.hiding_time = 0
 
     def unhide(self):
+        """
+        Показать шипы.
+        """
         # Сделать анимацию и звук?
         self.collidable = True
         self.image = Spikes.images[1]

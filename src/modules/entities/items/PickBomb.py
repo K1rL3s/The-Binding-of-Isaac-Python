@@ -2,6 +2,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.MovableItem import MovableItem
 from src.utils.funcs import load_image, load_sound
+from src.consts import PICKUP_LOOT
 
 
 class PickBomb(MovableItem):
@@ -39,6 +40,10 @@ class PickBomb(MovableItem):
             self.pickup()
 
     def pickup(self):
+        """
+        Подбор бомбы.
+        """
         PickBomb.pickup_sound.play()
+        pg.event.post(pg.event.Event(PICKUP_LOOT, {'item': PickBomb}))
         self.kill()
 

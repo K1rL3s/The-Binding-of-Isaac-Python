@@ -128,6 +128,13 @@ class Level:
             self.change_rooms_state(x, y)
 
     def moving_room_animation(self, from_room: Room, to_room: Room, direction: consts.Moves):
+        """
+        Старт анимации перехода между комнатами.
+
+        :param from_room: Из какой комнаты.
+        :param to_room: В какую комнату.
+        :param direction: Направление.
+        """
         self.is_moving = MovingRoomAnimation(from_room, to_room, direction)
 
     def update(self, delta_t: float):

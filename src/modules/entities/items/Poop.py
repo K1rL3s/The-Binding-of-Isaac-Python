@@ -87,6 +87,9 @@ class Poop(BaseItem):
         self.drop_something()
 
     def drop_something(self):
+        """
+        Выпадение лута после поломки.
+        """
         if self.treasure:
             pass
         elif random.random() > 0.9:

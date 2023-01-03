@@ -3,7 +3,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
-from src.consts import CELL_SIZE, WALL_SIZE, STATS_HEIGHT
+from src.consts import CELL_SIZE, WALL_SIZE
 
 
 class BaseItem(BaseSprite):

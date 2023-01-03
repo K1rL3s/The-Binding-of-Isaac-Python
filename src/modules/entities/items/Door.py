@@ -297,8 +297,9 @@ class Door(BaseItem, DoorTextures):
             self.play_sound()
 
     def play_sound(self):
-        a = self.state
-        ...
+        """
+        Проигрыш звука открытия/закрытия.
+        """
         pass
 
     def set_image(self):
