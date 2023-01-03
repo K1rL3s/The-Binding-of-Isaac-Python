@@ -54,7 +54,7 @@ class BaseItem(BaseSprite):
         if height:
             self.rect.height = height
         cell_x = self.x * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.width) // 2
-        cell_y = self.y * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.width) // 2
+        cell_y = self.y * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.height) // 2
         if width is None:
             width = self.image.get_width()
         if height is None:
