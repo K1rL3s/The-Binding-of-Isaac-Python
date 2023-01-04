@@ -4,7 +4,7 @@ from src.consts import CELL_SIZE
 from src.utils.funcs import load_image
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.MovableSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MovableSprite
 
 
 class Spikes(BaseItem):

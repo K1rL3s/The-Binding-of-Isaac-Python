@@ -7,7 +7,7 @@ from src.utils.funcs import load_image
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 from src.modules.BaseClasses.MovableItem import MovableItem
-from src.modules.BaseClasses.MovableSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MovableSprite
 
 
 class Web(BaseItem):

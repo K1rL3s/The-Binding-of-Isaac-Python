@@ -1,6 +1,5 @@
 import pygame as pg
 
-from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 from src.modules.BaseClasses.MovableItem import MovableItem
 

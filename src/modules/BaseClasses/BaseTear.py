@@ -4,7 +4,7 @@ import random
 import pygame as pg
 
 from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.MovableSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MovableSprite
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image, load_sound
 

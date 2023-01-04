@@ -2,7 +2,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.MovableSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MovableSprite
 
 
 class MovableItem(BaseItem, MovableSprite):
