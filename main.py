@@ -39,7 +39,7 @@ def main():
                     game.move_main_hero(event.pos)
                 elif event.button == pg.BUTTON_RIGHT:
                     game.current_level.current_room.test_func_set_bomb(event.pos)
-                elif event.button == pg.BUTTON_WHEELUP:
+                elif event.button in (pg.BUTTON_WHEELUP, pg.BUTTON_WHEELDOWN):
                     game.current_level.current_room.test_func_set_pickable(event.pos)
 
             elif event.type == consts.MOVE_TO_NEXT_ROOM:

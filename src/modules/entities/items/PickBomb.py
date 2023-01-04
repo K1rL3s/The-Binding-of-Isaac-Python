@@ -17,7 +17,7 @@ class PickBomb(PickableItem):
     """
 
     bomb = crop(load_image("textures/room/bomb.png").subsurface(48, 0, 48, 48))
-    pickup_sound = load_sound("sounds/penny_pickup.mp3")
+    pickup_sound = load_sound("sounds/bomb_pickup.wav")
 
     def __init__(self,
                  xy_pos: tuple[int, int],

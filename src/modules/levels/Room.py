@@ -162,7 +162,7 @@ class Room(RoomTextures):
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
                 elif chance > 0.7:
                     ExampleEnemy((j, i), self.paths, self.main_hero,
-                                 (self.colliadble_group, self.movement_borders),
+                                 (self.colliadble_group, self.movement_borders, self.other),
                                  (self.colliadble_group, self.tears_borders, self.other),
                                  self.enemies, self.blowable)
                     self.is_friendly = False
