@@ -57,6 +57,7 @@ class MovingEnemy(BaseEnemy):
         self.speed = speed
         self.move_update_delay = move_update_delay
         self.move_ticks = 0
+        self.slowdown_coef: float = 1.0
 
     def update(self, delta_t: float):
         """
@@ -107,18 +108,10 @@ class MovingEnemy(BaseEnemy):
         self.x_center, self.y_center = self.x_center_last, self.y_center_last
         self.rect.center = self.x_center, self.y_center
         centerx, centery = xy_center
-        if self.rect.centerx < centerx and self.vx > 0:
-            self.vy = self.speed if self.vy > 0 else -self.speed
-            self.vx = 0
-        if self.rect.centerx > centerx and self.vx < 0:
-            self.vy = self.speed if self.vy > 0 else -self.speed
-            self.vx = 0
-        if self.rect.centery > centery and self.vy < 0:
-            self.vx = self.speed if self.vx > 0 else -self.speed
-            self.vy = 0
-        if self.rect.centery < centery and self.vy > 0:
-            self.vx = self.speed if self.vx > 0 else -self.speed
-            self.vy = 0
+        if (self.rect.centerx < centerx and self.vx > 0) or (self.rect.centerx > centerx and self.vx < 0):
+            self.set_speed(0, self.speed if self.vy > 0 else -self.speed)
+        if (self.rect.centery > centery and self.vy < 0) or (self.rect.centery < centery and self.vy > 0):
+            self.set_speed(self.speed if self.vx > 0 else -self.speed, 0)
 
     def update_move_speed(self):
         """
@@ -129,10 +122,9 @@ class MovingEnemy(BaseEnemy):
             dy = self.main_hero.rect.centery - self.rect.centery
             distance = math.hypot(dx, dy)
             if distance:
-                self.vx = self.speed * dx / distance
-                self.vy = self.speed * dy / distance
+                self.set_speed(self.speed * dx / distance, self.speed * dy / distance)
             else:
-                self.vx, self.vy = 0, 0
+                self.set_speed(0, 0)
             return
 
         self.move_ticks = 0
@@ -150,8 +142,7 @@ class MovingEnemy(BaseEnemy):
         dy = y - self.rect.centery
         distance = math.hypot(dx, dy)
         if distance:
-            self.vx = self.speed * dx / distance
-            self.vy = self.speed * dy / distance
+            self.set_speed(self.speed * dx / distance, self.speed * dy / distance)
 
     def set_speed(self, vx: int | float, vy: int | float):
         """
@@ -160,5 +151,5 @@ class MovingEnemy(BaseEnemy):
         :param vx: Скорость по горизонтали в клетках/секунду.
         :param vy: Скорость по вертикали в клетках/секунду.
         """
-        self.vx = vx
-        self.vy = vy
+        self.vx = vx * self.slowdown_coef
+        self.vy = vy * self.slowdown_coef

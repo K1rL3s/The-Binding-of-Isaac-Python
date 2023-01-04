@@ -34,6 +34,7 @@ class MovableItem(BaseItem):
         self.collide_groups = collide_groups
         self.collide_sprites: list[BaseSprite] = []
         self.clear_collide_ticks = 0
+        self.slowdown_coef: float = 1.0
 
         if xy_pixels:
             self.x_center, self.y_center = xy_pixels
@@ -55,16 +56,6 @@ class MovableItem(BaseItem):
         if self.clear_collide_ticks >= MovableItem.clear_collide_delay:
             self.clear_collide_ticks = 0
             self.collide_sprites.clear()
-
-    def set_speed(self, vx: int | float, vy: int | float):
-        """
-        Задание скорости движения.
-
-        :param vx: Скорость по горизонтали в клетках/секунду.
-        :param vy: Скорость по вертикали в клетках/секунду.
-        """
-        self.vx = vx
-        self.vy = vy
 
     def move(self, delta_t: float):
         """
@@ -127,3 +118,13 @@ class MovableItem(BaseItem):
             vx = 1 if self.rect.centerx - other.rect.centerx > 0 else -1
             vy = 1 if self.rect.centery - other.rect.centery > 0 else -1
             self.set_speed(self.vx + vx, self.vy + vy)
+
+    def set_speed(self, vx: int | float, vy: int | float):
+        """
+        Задание скорости движения.
+
+        :param vx: Скорость по горизонтали в клетках/секунду.
+        :param vy: Скорость по вертикали в клетках/секунду.
+        """
+        self.vx = vx * self.slowdown_coef
+        self.vy = vy * self.slowdown_coef

@@ -23,7 +23,7 @@ class Web(BaseItem):
                               for x in range(3)]
     destoryed: pg.Surface = load_image("textures/room/web.png").subsurface(3 * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)
 
-    slowdown_coef = 4 / 5
+    slowdown_coef = 3/4
     clear_collides_delay = 1
 
     def __init__(self,
@@ -47,12 +47,19 @@ class Web(BaseItem):
         """
         self.collidable = False
         self.image = Web.destoryed
+        self.reset_collides_sprites()
 
     def update(self, delta_t: float):
         self.ticks += delta_t
         if self.ticks >= Web.clear_collides_delay:
             self.ticks = 0
-            self.collide_sprites.clear()
+            self.reset_collides_sprites()
+
+    def reset_collides_sprites(self):
+        for sprite in self.collide_sprites:
+            sprite: MovingEnemy | MovableItem
+            sprite.slowdown_coef = 1
+        self.collide_sprites.clear()
 
     def collide(self, other: BaseSprite):
         # Изменить MovingEnemy на MainCharacter или просто добавить MainCharacter?
@@ -60,4 +67,5 @@ class Web(BaseItem):
         if self.collidable and isinstance(other, (MovingEnemy, MovableItem)):
             if other not in self.collide_sprites:
                 self.collide_sprites.append(other)
-                other.set_speed(other.vx * Web.slowdown_coef, other.vy * Web.slowdown_coef)
+                other.slowdown_coef = Web.slowdown_coef
+                other.set_speed(other.vx, other.vy)

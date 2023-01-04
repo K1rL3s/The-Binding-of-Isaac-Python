@@ -369,6 +369,7 @@ class Room(RoomTextures):
         """
         self.other.update(delta_t)
         self.spikes.update(delta_t)
+        self.webs.update(delta_t)
 
         if self.is_over:
             return
