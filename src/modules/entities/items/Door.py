@@ -257,14 +257,20 @@ class Door(BaseItem, DoorTextures):
             return
         self.update_image('blow', with_sound=with_sound)
 
-    def open(self, with_sound: bool = True):
+    def open(self, with_sound: bool = True, with_key: bool = False):
         """
         Открыть дверь.
 
         :param with_sound: Со звуком ли.
+        :param with_key: Открывается ли ключом.
         """
-        if self.collidable and self.room_type != consts.RoomsTypes.SECRET:
-            self.update_image('open', with_sound=with_sound)
+        if not self.collidable:
+            return
+        if self.room_type == consts.RoomsTypes.SECRET:
+            return
+        if self.room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and not with_key:
+            return
+        self.update_image("open")
 
     def close(self, with_sound: bool = True):
         """
