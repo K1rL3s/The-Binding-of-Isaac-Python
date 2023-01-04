@@ -88,8 +88,9 @@ class MovingEnemy(BaseEnemy):
             for group in self.enemy_collide_groups:
                 if sprites := pg.sprite.spritecollide(self, group, False):
                     for sprite in sprites:
-                        sprite: BaseSprite
-                        sprite.collide(self)
+                        if sprite != self:
+                            sprite: BaseSprite
+                            sprite.collide(self)
 
         # Если координаты есть и если они отличаются от текущих, то обновляем скорости
         xy_cell = pixels_to_cell((self.x_center, self.y_center))

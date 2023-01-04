@@ -5,7 +5,7 @@ import pygame as pg
 from src.modules.animations.OneTimeAnimation import OneTimeAnimation
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.MovableItem import MovableItem
-from src.utils.funcs import load_image, load_sound
+from src.utils.funcs import load_image, load_sound, crop
 from src.consts import CELL_SIZE
 
 
@@ -14,15 +14,13 @@ class BlowBomb(MovableItem):
     Взрываемая бомба.
 
     :param xy_pos: Позиция в комнате.
-    :param collidable_group: Группа препятствий, через которые нельзя пройти.
+    :param collide_groups: Группа препятствий, через которые нельзя пройти.
     :param blow_groups: Группы спрайтов, где все спрайты взрываются.
     :param groups: Группы спрайтов.
     :param xy_pixels: Позиция в пикселях.
-    :param collidable: Можно ли столкнуться с объектом.
-    :param movable: Двигается ли при толкании или попадании слезы.
     """
 
-    bomb: pg.Surface = load_image("textures/room/bomb.png")
+    bomb: pg.Surface = crop(load_image("textures/room/bomb.png").subsurface(0, 0, 48, 48))
     explosion_sounds: list[pg.mixer.Sound] = [load_sound(f"sounds/explosion{i}.mp3") for i in range(1, 4)]
 
     explosion_delay: int | float = 2  # Задержка перед взрывом в секундах
@@ -34,8 +32,7 @@ class BlowBomb(MovableItem):
                  blow_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  xy_pixels: tuple[int, int] = None):
-        acceleration: int | float = 1  # Ускорение торможения в клетках/секунду
-        super().__init__(xy_pos, acceleration, collide_groups, *groups, xy_pixels=xy_pixels)
+        super().__init__(xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.blow_groups = blow_groups
         self.ticks = 0

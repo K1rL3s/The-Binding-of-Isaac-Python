@@ -263,7 +263,7 @@ class Door(BaseItem, DoorTextures):
 
         :param with_sound: Со звуком ли.
         """
-        if not self.room_type == consts.RoomsTypes.SECRET:
+        if self.collidable and self.room_type != consts.RoomsTypes.SECRET:
             self.update_image('open', with_sound=with_sound)
 
     def close(self, with_sound: bool = True):
@@ -330,9 +330,12 @@ class Door(BaseItem, DoorTextures):
         self.update_image(self.state, self.direction)
 
     def collide(self, other: MovingEnemy | BaseSprite):
+        if other == self:
+            return
+
         super().collide(other)
-        # Вместо BaseSprite поставить MainCharacter или его туловище
-        if isinstance(other, BaseSprite) and self.event_rect.colliderect(other.rect):
+        # Вместо MovingEnemy поставить MainCharacter или его туловище
+        if isinstance(other, MovingEnemy) and self.event_rect.colliderect(other.rect):
             direction = None
             if self.xy_pos == consts.DoorsCoords.UP.value:
                 direction = consts.Moves.UP

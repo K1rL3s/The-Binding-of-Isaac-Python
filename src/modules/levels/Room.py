@@ -6,10 +6,11 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
+from src.modules.entities.items.PickBomb import PickBomb
+from src.modules.entities.items.PickMoney import PickMoney
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Poop import Poop
 from src.modules.entities.items.Door import Door
@@ -104,6 +105,7 @@ class Room(RoomTextures):
         self.spikes = pg.sprite.Group()
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
+        self.bombs = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
@@ -284,23 +286,23 @@ class Room(RoomTextures):
         Установка барьеров на краях экрана.
         """
         # Лево
-        Border(0, 0, 1, consts.GAME_HEIGHT,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        KillingBorder(0, 0, 1, consts.GAME_HEIGHT,
+                      self.movement_borders, self.tears_borders, self.debug_render)
         # Лево доп
-        Border(consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        KillingBorder(consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
+                      self.movement_borders, self.tears_borders, self.debug_render)
         # Верх
-        Border(0, 0, consts.WIDTH, 1,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        KillingBorder(0, 0, consts.WIDTH, 1,
+                      self.movement_borders, self.tears_borders, self.debug_render)
         # Низ
-        Border(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        KillingBorder(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
+                      self.movement_borders, self.tears_borders, self.debug_render)
         # Право
-        Border(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        KillingBorder(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
+                      self.movement_borders, self.tears_borders, self.debug_render)
         # Право доп
-        Border(consts.WIDTH - consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        KillingBorder(consts.WIDTH - consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
+                      self.movement_borders, self.tears_borders, self.debug_render)
 
     def update_doors(self, state: str, with_sound: bool = True):
         """
@@ -420,15 +422,25 @@ class Room(RoomTextures):
         self.fires.draw(screen)
         self.doors.draw(screen)
         self.other.draw(screen)
+        self.bombs.draw(screen)
 
         # self.debug_render.draw(screen)
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
         if room_pos := pixels_to_cell(xy_pos):
-            bomb = BlowBomb(room_pos, (self.colliadble_group, self.movement_borders), (self.blowable, self.other),
-                            self.other, xy_pixels=xy_pos)
-            bomb.set_speed(random.randint(-20, 20) / 10, random.randint(-20, 20) / 10)
+            BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), (self.blowable, self.other),
+                     self.other, xy_pixels=xy_pos)
+
+    def test_func_set_pickable(self, xy_pos: tuple[int, int]):
+        xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
+        if room_pos := pixels_to_cell(xy_pos):
+            if random.random() > 0.5:
+                PickMoney(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
+                          xy_pixels=xy_pos)
+            else:
+                PickBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
+                         xy_pixels=xy_pos)
 
 
 class Border(BaseSprite):
@@ -446,16 +458,38 @@ class Border(BaseSprite):
                  y: int,
                  width: int,
                  height: int,
-                 # collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups):
         super().__init__(*groups)
 
-        # self.collide_groups = collide_groups
         self.image = pg.Surface((width, height))
         self.rect = pg.Rect(x, y, width, height)
 
         # Для видимости, где это чудо
         pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height))
 
-    def collide(self, other: MovingEnemy | BaseTear):
+    def collide(self, other: BaseSprite):
         other.move_back(self.rect.center)
+        if isinstance(other, BaseTear):
+            other.destroy()
+
+
+class KillingBorder(Border):
+    """
+    Невидимый барьер для краёв экрана, который убивает.
+
+    :param x: Пиксель на экране.
+    :param y: Пиксель на экране.
+    :param width: Ширина стены.
+    :param height: Высота стены.
+    """
+    def __init__(self,
+                 x: int,
+                 y: int,
+                 width: int,
+                 height: int,
+                 *groups):
+        super().__init__(x, y, width, height, *groups)
+
+    def collide(self, other: BaseSprite):
+        super().collide(other)
+        other.kill()

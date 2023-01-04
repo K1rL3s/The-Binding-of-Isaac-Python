@@ -39,6 +39,8 @@ def main():
                     game.move_main_hero(event.pos)
                 elif event.button == pg.BUTTON_RIGHT:
                     game.current_level.current_room.test_func_set_bomb(event.pos)
+                elif event.button == pg.BUTTON_WHEELUP:
+                    game.current_level.current_room.test_func_set_pickable(event.pos)
 
             elif event.type == consts.MOVE_TO_NEXT_ROOM:
                 game.move_to_next_room(event.direction)

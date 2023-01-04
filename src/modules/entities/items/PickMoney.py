@@ -1,23 +1,20 @@
 import pygame as pg
 
 from src.modules.BaseClasses.PickableItem import PickableItem
-from src.utils.funcs import load_image, load_sound, crop
-from src.consts import PICKUP_LOOT
+from src.utils.funcs import load_image
 
 
-class PickBomb(PickableItem):
+class PickMoney(PickableItem):
     """
-    Подбираемая бомба.
+    Подбираемая монетка (penny, nickel, dime)
 
     :param xy_pos: Позиция в комнате.
-    :param main_hero: Главный герой.
     :param collide_groups: Группы спрайтов, через спрайты которых нельзя пройти.
     :param groups: Группы спрайтов.
     :param xy_pixels: Позиция в пикселях.
     """
 
-    bomb = crop(load_image("textures/room/bomb.png").subsurface(48, 0, 48, 48))
-    pickup_sound = load_sound("sounds/penny_pickup.mp3")
+    penny = load_image("textures/room/penny.png")
 
     def __init__(self,
                  xy_pos: tuple[int, int],
@@ -30,13 +27,4 @@ class PickBomb(PickableItem):
         self.set_rect()
 
     def set_image(self):
-        self.image = PickBomb.bomb
-
-    def pickup(self):
-        """
-        Подбор бомбы.
-        """
-        PickBomb.pickup_sound.play()
-        pg.event.post(pg.event.Event(PICKUP_LOOT, {'item': PickBomb}))
-        self.kill()
-
+        self.image = PickMoney.penny

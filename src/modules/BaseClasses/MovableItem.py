@@ -12,24 +12,28 @@ class MovableItem(BaseItem):
     Передвигаемый предмет.
 
     :param xy_pos: Позиция в комнате.
-    :param acceleration: Ускорение торможения в клетках/секунду.
     :param collide_groups: Группы спрайтов, через спрайты которых нельзя пройти.
     :param groups: Группы спрайтов.
+    :param acceleration: Ускорение торможения в клетках/секунду.
     :param xy_pixels: Позиция в пикселях.
     :param pickable: Можно ли подобрать.
     """
 
+    clear_collide_delay = 1
+
     def __init__(self,
                  xy_pos: tuple[int, int],
-                 acceleration: int | float,
                  collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
+                 acceleration: int | float = 1,
                  xy_pixels: tuple[int, int] = None,
                  pickable: bool = False):
         super().__init__(xy_pos, *groups, pickable=pickable, movable=True, collidable=False)
 
         self.a = acceleration
         self.collide_groups = collide_groups
+        self.collide_sprites: list[BaseSprite] = []
+        self.clear_collide_ticks = 0
 
         if xy_pixels:
             self.x_center, self.y_center = xy_pixels
@@ -44,6 +48,13 @@ class MovableItem(BaseItem):
         super().set_rect()
         if (self.x_center, self.y_center) != cell_to_pixels((self.x, self.y)):
             self.rect.center = (self.x_center, self.y_center)
+
+    def update(self, delta_t: float):
+        self.move(delta_t)
+        self.clear_collide_ticks += delta_t
+        if self.clear_collide_ticks >= MovableItem.clear_collide_delay:
+            self.clear_collide_ticks = 0
+            self.collide_sprites.clear()
 
     def set_speed(self, vx: int | float, vy: int | float):
         """
@@ -79,8 +90,9 @@ class MovableItem(BaseItem):
         for group in self.collide_groups:
             if sprites := pg.sprite.spritecollide(self, group, False):
                 for sprite in sprites:
-                    sprite: BaseSprite
-                    sprite.collide(self)
+                    if sprite != self:
+                        sprite: BaseSprite
+                        sprite.collide(self)
 
     def move_back(self, xy_center: tuple[int, int]):
         """
@@ -105,7 +117,13 @@ class MovableItem(BaseItem):
         Не факт, что работает корректно :)
         Пока что супер примитивно, ага
         """
+        if other == self:
+            return
+
         super().collide(other)
-        vx = 1 if self.rect.centerx - other.rect.centerx > 0 else -1
-        vy = 1 if self.rect.centery - other.rect.centery > 0 else -1
-        self.set_speed(self.vx + vx, self.vy + vy)
+
+        if other not in self.collide_sprites:
+            self.collide_sprites.append(other)
+            vx = 1 if self.rect.centerx - other.rect.centerx > 0 else -1
+            vy = 1 if self.rect.centery - other.rect.centery > 0 else -1
+            self.set_speed(self.vx + vx, self.vy + vy)

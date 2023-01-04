@@ -22,7 +22,9 @@ class Web(BaseItem):
     webs: list[pg.Surface] = [load_image("textures/room/web.png").subsurface(x * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)
                               for x in range(3)]
     destoryed: pg.Surface = load_image("textures/room/web.png").subsurface(3 * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE)
+
     slowdown_coef = 4 / 5
+    clear_collides_delay = 1
 
     def __init__(self,
                  xy_pos: tuple[int, int],
@@ -31,6 +33,8 @@ class Web(BaseItem):
         super().__init__(xy_pos, *groups, collidable=colliadble)
 
         self.collide_sprites: list[BaseSprite] = []
+        self.ticks = 0
+
         self.set_image()
         self.set_rect()
 
@@ -44,12 +48,16 @@ class Web(BaseItem):
         self.collidable = False
         self.image = Web.destoryed
 
+    def update(self, delta_t: float):
+        self.ticks += delta_t
+        if self.ticks >= Web.clear_collides_delay:
+            self.ticks = 0
+            self.collide_sprites.clear()
+
     def collide(self, other: BaseSprite):
         # Изменить MovingEnemy на MainCharacter или просто добавить MainCharacter?
         # Работает не очень норм, потому что скорости MovingEnemy обновляются сами и это не фиксирует паутина
-        temp_collides: list[BaseSprite] = []
         if self.collidable and isinstance(other, (MovingEnemy, MovableItem)):
-            temp_collides.append(other)
             if other not in self.collide_sprites:
+                self.collide_sprites.append(other)
                 other.set_speed(other.vx * Web.slowdown_coef, other.vy * Web.slowdown_coef)
-        self.collide_sprites = temp_collides

@@ -62,33 +62,19 @@ class BaseItem(BaseSprite):
         self.rect = pg.Rect(cell_x, cell_y, width, height)
         self.mask = pg.mask.from_surface(self.image)
 
-    def update(self, delta_t: float):
-        """
-        Обновление положения объекта (нужно при self.movable = True)
-
-        :param delta_t: Время с прошлого кадра.
-        """
-        pass
-
-    def pickup(self, *args, **kwargs):
-        """
-        Подбор предмета (ключ, монета, артефакт)
-        """
-        pass
-        # self.destroy()
-
     def collide(self, other: BaseSprite):
         """
         Обработка столкновения с энтити.
 
         :param other: Объект, с которым прозошло столкновение (персонаж, слеза, взрыв бомбы).
         """
+        if other == self:
+            return
+
         if self.collidable:
             other.move_back(self.rect.center)
             if isinstance(other, BaseTear):
                 other.destroy()
-        if self.pickable:
-            pass
         if self.hurtable:
             other.hurt(1)
 
