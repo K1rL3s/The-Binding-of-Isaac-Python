@@ -2,10 +2,10 @@ import pygame as pg
 
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 
 
-class MovableItem(BaseItem, MovableSprite):
+class MoveItem(BaseItem, MoveSprite):
     """
     Передвигаемый предмет.
 
@@ -14,7 +14,6 @@ class MovableItem(BaseItem, MovableSprite):
     :param groups: Группы спрайтов.
     :param acceleration: Ускорение торможения в клетках/секунду.
     :param xy_pixels: Позиция в пикселях.
-    :param pickable: Можно ли подобрать.
     """
 
     clear_collide_delay = 1
@@ -24,10 +23,9 @@ class MovableItem(BaseItem, MovableSprite):
                  collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  acceleration: int | float = 1,
-                 xy_pixels: tuple[int, int] = None,
-                 pickable: bool = False):
-        BaseItem.__init__(self, xy_pos, *groups, pickable=pickable, movable=True, collidable=False)
-        MovableSprite.__init__(self, xy_pos, collide_groups, *groups, acceleration=acceleration, xy_pixels=xy_pixels)
+                 xy_pixels: tuple[int, int] = None):
+        BaseItem.__init__(self, xy_pos, *groups, collidable=False)
+        MoveSprite.__init__(self, xy_pos, collide_groups, *groups, acceleration=acceleration, xy_pixels=xy_pixels)
 
         self.collide_sprites: list[BaseSprite] = []
         self.clear_collide_ticks = 0
@@ -35,7 +33,7 @@ class MovableItem(BaseItem, MovableSprite):
     def update(self, delta_t: float):
         self.move(delta_t)
         self.clear_collide_ticks += delta_t
-        if self.clear_collide_ticks >= MovableItem.clear_collide_delay:
+        if self.clear_collide_ticks >= MoveItem.clear_collide_delay:
             self.clear_collide_ticks = 0
             self.collide_sprites.clear()
 
@@ -45,8 +43,8 @@ class MovableItem(BaseItem, MovableSprite):
 
         :param delta_t: Время с прошлого кадра.
         """
-        MovableSprite.move(self, delta_t)
-        MovableSprite.check_collides(self)
+        MoveSprite.move(self, delta_t)
+        MoveSprite.check_collides(self)
 
     def move_back(self, xy_center: tuple[int, int]):
         """
@@ -54,7 +52,7 @@ class MovableItem(BaseItem, MovableSprite):
 
         :param xy_center: Центр спрайта, с которым было столкновение
         """
-        MovableSprite.move_back(self, xy_center)
+        MoveSprite.move_back(self, xy_center)
 
         centerx, centery = xy_center
         if self.rect.centerx < centerx and self.vx > 0:
@@ -66,7 +64,7 @@ class MovableItem(BaseItem, MovableSprite):
         if self.rect.centery < centery and self.vy > 0:
             self.vy = 0
 
-    def collide(self, other: MovableSprite):
+    def collide(self, other: MoveSprite):
         """
         Не факт, что работает корректно :)
         Пока что супер примитивно, ага

@@ -5,7 +5,7 @@ from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.utils.funcs import cell_to_pixels
 
 
-class MovableSprite(BaseSprite):
+class MoveSprite(BaseSprite):
     """
     Спрайт, который будет двигаться 100%.
 
@@ -14,7 +14,6 @@ class MovableSprite(BaseSprite):
     :param groups: Группы спрайтов.
     :param acceleration: Ускорение торможения в клетках/секунду.
     :param xy_pixels: Позиция в пикселях.
-    :param pickable: Можно ли подобрать.
     """
 
     def __init__(self,

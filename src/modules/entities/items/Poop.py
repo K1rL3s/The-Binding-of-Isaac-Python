@@ -28,9 +28,7 @@ class Poop(BaseItem):
                  collidable_group: pg.sprite.AbstractGroup,
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True):
-        destroyable = True
-        BaseItem.__init__(self, xy_pos, collidable_group, *groups,
-                          collidable=collidable, destroyable=destroyable)
+        BaseItem.__init__(self, xy_pos, collidable_group, *groups, collidable=collidable)
 
         self.collidable_group = collidable_group
 
@@ -81,7 +79,6 @@ class Poop(BaseItem):
         """
         self.image = self.stages[4]
         self.collidable = False
-        self.destroyable = False
         self.collidable_group.remove(self)
         random.choice(self.poop_destoryed).play()
         self.drop_something()

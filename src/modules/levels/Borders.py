@@ -2,7 +2,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 
 
 class Border(BaseSprite):
@@ -33,7 +33,7 @@ class Border(BaseSprite):
         # Для видимости, где это чудо
         pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height))
 
-    def collide(self, other: MovableSprite):
+    def collide(self, other: MoveSprite):
         if isinstance(other, BaseTear):
             other.destroy()
         if self.is_killing:

@@ -4,12 +4,12 @@ import random
 import pygame as pg
 
 from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image, load_sound
 
 
-class BaseTear(MovableSprite):
+class BaseTear(MoveSprite):
     all_tears: list[list[pg.Surface]] = [
         [
             load_image("textures/tears/tears.png").subsurface(x * 64, y * 64, 64, 64)
@@ -49,7 +49,7 @@ class BaseTear(MovableSprite):
                  acceleration: int | float = 0,
                  max_lifetime: int | float = 0,
                  is_friendly: bool = False):
-        MovableSprite.__init__(self, xy_pos, collide_groups, *groups, acceleration=acceleration, xy_pixels=xy_pixels)
+        MoveSprite.__init__(self, xy_pos, collide_groups, *groups, acceleration=acceleration, xy_pixels=xy_pixels)
 
         self.start_x, self.start_y = xy_pixels
         self.damage = damage
@@ -73,7 +73,7 @@ class BaseTear(MovableSprite):
         """
         self.lifetime_ticks += delta_t
 
-        MovableSprite.move(self, delta_t)
+        MoveSprite.move(self, delta_t)
         self.check_collides()
 
         if math.hypot(self.start_x - self.rect.x, self.start_y - self.rect.y) > self.max_distance * CELL_SIZE:
@@ -82,6 +82,9 @@ class BaseTear(MovableSprite):
             self.destroy()
 
     def check_collides(self):
+        """
+        Проверка столкновений.
+        """
         for collide_group in self.collide_groups:
             if pg.sprite.spritecollideany(self, collide_group):
                 for collide in pg.sprite.spritecollide(self, collide_group, False):

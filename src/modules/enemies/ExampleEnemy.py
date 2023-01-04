@@ -4,13 +4,14 @@ from typing import Type
 import pygame as pg
 
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
+from src.modules.BaseClasses.ShootingEnemy import ShootingEnemy
 from src.modules.BaseClasses.BaseTear import BaseTear
 from src.modules.entities.tears.ExampleTear import ExampleTear
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_sound
 
 
-class ExampleEnemy(MovingEnemy):
+class ExampleEnemy(MovingEnemy, ShootingEnemy):
     death_sounds = [load_sound(f"sounds/meat_death{i}.mp3") for i in range(1, 6)]
 
     def __init__(self,
@@ -24,19 +25,24 @@ class ExampleEnemy(MovingEnemy):
         hp: int = 10
         speed: int | float = 2
         damage_from_blow: int = 10
-        move_delay: int | float = 0.1
+        move_update_delay: int | float = 0.1
         shot_damage: int = 5
         shot_max_distance: int | float = 10
         shot_max_speed: int | float = 5
         shot_delay: int | float = 2
         tear_class: Type[BaseTear] = ExampleTear
-        MovingEnemy.__init__(self, xy_pos, hp, speed, damage_from_blow, move_delay, room_graph,
-                             shot_damage, shot_max_distance, shot_max_speed, shot_delay, tear_class,
-                             main_hero, enemy_collide_groups, tear_collide_groups, *groups,
-                             flyable=flyable)
+        MovingEnemy.__init__(self, xy_pos, hp, speed, damage_from_blow, move_update_delay, room_graph, main_hero,
+                             enemy_collide_groups, *groups, flyable=flyable)
+        ShootingEnemy.__init__(self, xy_pos, hp, damage_from_blow, room_graph, main_hero, enemy_collide_groups,
+                               shot_damage, shot_max_distance, shot_max_speed, shot_delay, tear_class,
+                               tear_collide_groups, *groups)
 
         self.set_image()
         self.set_rect()
+
+    def update(self, delta_t: float):
+        MovingEnemy.update(self, delta_t)
+        ShootingEnemy.update(self, delta_t)
 
     def set_image(self):
         self.image = pg.Surface((50, 50), pg.SRCALPHA, 32)

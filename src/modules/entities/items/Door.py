@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src import consts
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 from src.utils.funcs import load_image, crop
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
@@ -335,7 +335,7 @@ class Door(BaseItem, DoorTextures):
 
         self.update_image(self.state, self.direction)
 
-    def collide(self, other: MovableSprite):
+    def collide(self, other: MoveSprite):
         if other == self:
             return
 

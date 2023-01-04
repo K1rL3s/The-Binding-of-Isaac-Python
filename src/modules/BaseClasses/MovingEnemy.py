@@ -1,16 +1,14 @@
 import math
-from typing import Type
 
 import pygame as pg
 
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
-from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
 
 
-class MovingEnemy(BaseEnemy, MovableSprite):
+class MovingEnemy(BaseEnemy, MoveSprite):
     """
     Противник ходящий.
 
@@ -20,14 +18,8 @@ class MovingEnemy(BaseEnemy, MovableSprite):
     :param damage_from_blow: Урон получаемый от взрывов.
     :param move_update_delay: Задержка между перерасчётом пути до ГГ.
     :param room_graph: Графоподобный словарь клеток в комнате.
-    :param shot_damage: Урон слезы.
-    :param shot_max_distance: Максимальная дальность полёта слезы в клетках.
-    :param shot_max_speed: Максимальная скорость полёта слезы в клетках.
-    :param shot_delay: Задержка между выстрелами.
-    :param tear_class: Класс слезы.
     :param main_hero: Главный персонаж (у него должен быть .rect)
     :param enemy_collide_groups: Группы спрайтов, с которыми нужно обрабатывать столкновения этой сущности.
-    :param tear_collide_groups: Группы спрайтов, с которым нужно обрабатывать столкновения слёз.
     :param groups: Группы спрайтов.
     """
     def __init__(self,
@@ -37,27 +29,19 @@ class MovingEnemy(BaseEnemy, MovableSprite):
                  damage_from_blow: int,
                  move_update_delay: int | float,
                  room_graph: dict[tuple[int, int]],
-                 shot_damage: int | float,
-                 shot_max_distance: int | float,
-                 shot_max_speed: int | float,
-                 shot_delay: int | float,
-                 tear_class: Type[BaseTear],
                  main_hero: pg.sprite.Sprite,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
-                 tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  flyable: bool = False):
-        movable = True
-        BaseEnemy.__init__(self, xy_pos, hp, damage_from_blow, room_graph,
-                           shot_damage, shot_max_distance, shot_max_speed, shot_delay, tear_class,
-                           main_hero, enemy_collide_groups, tear_collide_groups, *groups,
-                           movable=movable, flyable=flyable)
-        MovableSprite.__init__(self, xy_pos, enemy_collide_groups, *groups, acceleration=0)
+        BaseEnemy.__init__(self, xy_pos, hp, damage_from_blow, room_graph, main_hero, enemy_collide_groups, *groups)
+        MoveSprite.__init__(self, xy_pos, enemy_collide_groups, *groups, acceleration=0)
 
         self.speed = speed
         self.move_update_delay = move_update_delay
         self.move_ticks = 0
         self.slowdown_coef: float = 1.0
+        self.flyable = flyable
+        self.path: list[tuple[int, int]] = []
 
     def update(self, delta_t: float):
         """
@@ -66,7 +50,7 @@ class MovingEnemy(BaseEnemy, MovableSprite):
         :param delta_t: Время с прошлого кадра.
         """
         BaseEnemy.update(self, delta_t)
-        MovableSprite.update(self, delta_t)
+        MoveSprite.update(self, delta_t)
         self.move_ticks += delta_t
 
         if self.move_ticks >= self.move_update_delay:
@@ -80,11 +64,11 @@ class MovingEnemy(BaseEnemy, MovableSprite):
 
         :param delta_t: Время с прошлого кадра.
         """
-        MovableSprite.move(self, delta_t)
+        MoveSprite.move(self, delta_t)
 
         # Проверка коллизий
         if not self.flyable:
-            MovableSprite.check_collides(self)
+            MoveSprite.check_collides(self)
 
         # Если координаты есть и если они отличаются от текущих, то обновляем скорости
         xy_cell = pixels_to_cell((self.x_center, self.y_center))
@@ -98,7 +82,7 @@ class MovingEnemy(BaseEnemy, MovableSprite):
 
         :param xy_center: Центр спрайта, с которым было столкновение
         """
-        MovableSprite.move_back(self, xy_center)
+        MoveSprite.move_back(self, xy_center)
         centerx, centery = xy_center
         if (self.rect.centerx < centerx and self.vx > 0) or (self.rect.centerx > centerx and self.vx < 0):
             self.set_speed(0, self.speed if self.vy > 0 else -self.speed)

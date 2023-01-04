@@ -1,10 +1,10 @@
 import pygame as pg
 
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
-from src.modules.BaseClasses.MovableItem import MovableItem
+from src.modules.BaseClasses.MovableItem import MoveItem
 
 
-class PickableItem(MovableItem):
+class PickableItem(MoveItem):
     """
     Подбираемый-передвигаемый предмет.
 
@@ -21,16 +21,15 @@ class PickableItem(MovableItem):
                  *groups: pg.sprite.AbstractGroup,
                  acceleration: int | float = 1,
                  xy_pixels: tuple[int, int] = None):
-        pickable = True
-        MovableItem.__init__(self, xy_pos, collide_groups, *groups,
-                             acceleration=acceleration, xy_pixels=xy_pixels, pickable=pickable)
+        MoveItem.__init__(self, xy_pos, collide_groups, *groups,
+                          acceleration=acceleration, xy_pixels=xy_pixels)
         self.pick_sound: pg.mixer.Sound | None = None
 
-    def collide(self, other: MovableItem):
+    def collide(self, other: MoveItem):
         if other == self:
             return
 
-        MovableItem.collide(self, other)
+        MoveItem.collide(self, other)
         # Заменить MovingEnemy на MainCharacter
         if isinstance(other, MovingEnemy):
             self.pickup()

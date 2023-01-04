@@ -4,7 +4,7 @@ from src.consts import CELL_SIZE
 from src.utils.funcs import load_image
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 
 
 class Spikes(BaseItem):
@@ -78,7 +78,7 @@ class Spikes(BaseItem):
             self.ticks = 0
             self.unhide()
 
-    def collide(self, other: MovableSprite):
+    def collide(self, other: MoveSprite):
         # Добавить MainCharacter
         if self.collidable and isinstance(other, (BaseEnemy,)):
             other.hurt(1)

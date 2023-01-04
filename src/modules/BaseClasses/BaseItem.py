@@ -3,7 +3,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 
 
 class BaseItem(BaseSprite):
@@ -12,10 +12,7 @@ class BaseItem(BaseSprite):
 
     :param xy_pos: Позиция в комнате.
     :param groups: Все группы, которым принадлежит предмет-спрайт.
-    :param colliadble: Можно ли столкнуться с объектом (непроходимый ли).
-    :param destroyable: Можно ли сломать слезой.
-    :param pickable: Можно ли подобрать.
-    :param movable: Двигается ли после взрыва бомбы или толчка игроком.
+    :param collidable: Можно ли столкнуться с объектом (непроходимый ли).
     :param hurtable: Наносит ли урон персонажу при прикосновении.
     """
 
@@ -23,18 +20,12 @@ class BaseItem(BaseSprite):
                  xy_pos: tuple[int, int],
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = False,
-                 destroyable: bool = False,
-                 pickable: bool = False,
-                 movable: bool = False,
                  hurtable: bool = False):
         BaseSprite.__init__(self, xy_pos, *groups)
         self.groups = groups
 
         self.x, self.y = xy_pos
         self.collidable = collidable
-        self.destroyable = destroyable
-        self.pickable = pickable
-        self.movable = movable
         self.hurtable = hurtable
 
         self.image: pg.Surface
@@ -44,7 +35,7 @@ class BaseItem(BaseSprite):
         self.vx = 0
         self.vy = 0
 
-    def collide(self, other: MovableSprite):
+    def collide(self, other: MoveSprite):
         """
         Обработка столкновения с энтити.
 

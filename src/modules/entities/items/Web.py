@@ -6,8 +6,8 @@ from src.consts import CELL_SIZE
 from src.utils.funcs import load_image
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
-from src.modules.BaseClasses.MovableItem import MovableItem
-from src.modules.BaseClasses.MoveSprite import MovableSprite
+from src.modules.BaseClasses.MovableItem import MoveItem
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 
 
 class Web(BaseItem):
@@ -32,7 +32,7 @@ class Web(BaseItem):
                  colliadble: bool = True):
         BaseItem.__init__(self, xy_pos, *groups, collidable=colliadble)
 
-        self.collide_sprites: list[MovableSprite] = []
+        self.collide_sprites: list[MoveSprite] = []
         self.ticks = 0
 
         self.set_image()
@@ -57,14 +57,14 @@ class Web(BaseItem):
 
     def reset_collides_sprites(self):
         for sprite in self.collide_sprites:
-            sprite: MovingEnemy | MovableItem
+            sprite: MovingEnemy | MoveItem
             sprite.slowdown_coef = 1
         self.collide_sprites.clear()
 
-    def collide(self, other: MovableSprite):
+    def collide(self, other: MoveSprite):
         # Изменить MovingEnemy на MainCharacter или просто добавить MainCharacter?
         # Работает не очень норм, потому что скорости MovingEnemy обновляются сами и это не фиксирует паутина
-        if self.collidable and isinstance(other, (MovingEnemy, MovableItem)):
+        if self.collidable and isinstance(other, (MovingEnemy, MoveItem)):
             if other not in self.collide_sprites:
                 self.collide_sprites.append(other)
                 other.slowdown_coef = Web.slowdown_coef
