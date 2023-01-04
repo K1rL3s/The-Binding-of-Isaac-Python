@@ -3,7 +3,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
-from src.consts import CELL_SIZE, WALL_SIZE
+from src.modules.BaseClasses.MovableSprite import MovableSprite
 
 
 class BaseItem(BaseSprite):
@@ -27,7 +27,7 @@ class BaseItem(BaseSprite):
                  pickable: bool = False,
                  movable: bool = False,
                  hurtable: bool = False):
-        super().__init__(*groups)
+        BaseSprite.__init__(self, xy_pos, *groups)
         self.groups = groups
 
         self.x, self.y = xy_pos
@@ -44,25 +44,7 @@ class BaseItem(BaseSprite):
         self.vx = 0
         self.vy = 0
 
-    def set_rect(self, width: int = None, height: int = None):
-        """
-        Установка объекта в центре своей клетки.
-        """
-        self.rect = self.image.get_rect()
-        if width:
-            self.rect.width = width
-        if height:
-            self.rect.height = height
-        cell_x = self.x * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.width) // 2
-        cell_y = self.y * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.height) // 2
-        if width is None:
-            width = self.image.get_width()
-        if height is None:
-            height = self.image.get_height()
-        self.rect = pg.Rect(cell_x, cell_y, width, height)
-        self.mask = pg.mask.from_surface(self.image)
-
-    def collide(self, other: BaseSprite):
+    def collide(self, other: MovableSprite):
         """
         Обработка столкновения с энтити.
 

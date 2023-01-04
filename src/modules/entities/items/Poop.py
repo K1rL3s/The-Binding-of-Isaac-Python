@@ -29,8 +29,8 @@ class Poop(BaseItem):
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True):
         destroyable = True
-        super().__init__(xy_pos, collidable_group, *groups,
-                         collidable=collidable, destroyable=destroyable)
+        BaseItem.__init__(self, xy_pos, collidable_group, *groups,
+                          collidable=collidable, destroyable=destroyable)
 
         self.collidable_group = collidable_group
 

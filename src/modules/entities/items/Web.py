@@ -5,9 +5,9 @@ import pygame as pg
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image
 from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 from src.modules.BaseClasses.MovableItem import MovableItem
+from src.modules.BaseClasses.MovableSprite import MovableSprite
 
 
 class Web(BaseItem):
@@ -30,9 +30,9 @@ class Web(BaseItem):
                  xy_pos: tuple[int, int],
                  *groups: pg.sprite.AbstractGroup,
                  colliadble: bool = True):
-        super().__init__(xy_pos, *groups, collidable=colliadble)
+        BaseItem.__init__(self, xy_pos, *groups, collidable=colliadble)
 
-        self.collide_sprites: list[BaseSprite] = []
+        self.collide_sprites: list[MovableSprite] = []
         self.ticks = 0
 
         self.set_image()
@@ -61,7 +61,7 @@ class Web(BaseItem):
             sprite.slowdown_coef = 1
         self.collide_sprites.clear()
 
-    def collide(self, other: BaseSprite):
+    def collide(self, other: MovableSprite):
         # Изменить MovingEnemy на MainCharacter или просто добавить MainCharacter?
         # Работает не очень норм, потому что скорости MovingEnemy обновляются сами и это не фиксирует паутина
         if self.collidable and isinstance(other, (MovingEnemy, MovableItem)):

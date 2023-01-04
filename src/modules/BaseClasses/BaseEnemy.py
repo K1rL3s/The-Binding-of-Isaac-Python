@@ -3,8 +3,8 @@ import math
 
 import pygame as pg
 
-from src.utils.funcs import cell_to_pixels, load_sound
-from src.consts import CELL_SIZE, WALL_SIZE
+from src.utils.funcs import load_sound
+from src.consts import CELL_SIZE
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
 
@@ -48,10 +48,9 @@ class BaseEnemy(BaseSprite):
                  *groups: pg.sprite.AbstractGroup,
                  movable: bool = False,
                  flyable: bool = False):
-        super().__init__(*groups)
+        BaseSprite.__init__(self, xy_pos, *groups)
         self.groups = groups
 
-        self.x, self.y = xy_pos
         self.hp = hp
         self.damage_from_blow = damage_from_blow
         self.room_graph = room_graph
@@ -66,8 +65,6 @@ class BaseEnemy(BaseSprite):
         self.movable = movable
         self.flyable = flyable
 
-        self.x_center, self.y_center = cell_to_pixels(xy_pos)
-        self.x_center_last, self.y_center_last = self.x_center, self.y_center
         self.path: list[tuple[int, int]] = []
         self.shot_ticks = 0
         self.tears = pg.sprite.Group()
@@ -88,24 +85,6 @@ class BaseEnemy(BaseSprite):
             self.shot()
 
         self.tears.update(delta_t)
-
-    def set_rect(self, width: int = None, height: int = None):
-        """
-        Установка объекта в центре своей клетки.
-        """
-        self.rect = self.image.get_rect()
-        if width:
-            self.rect.width = width
-        if height:
-            self.rect.height = height
-        cell_x = self.x * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.width) // 2
-        cell_y = self.y * CELL_SIZE + WALL_SIZE + (CELL_SIZE - self.rect.height) // 2
-        if width is None:
-            width = self.image.get_width()
-        if height is None:
-            height = self.image.get_height()
-        self.rect = pg.Rect(cell_x, cell_y, width, height)
-        self.mask = pg.mask.from_surface(self.image)
 
     def draw_tears(self, screen: pg.Surface):
         """
@@ -139,7 +118,7 @@ class BaseEnemy(BaseSprite):
             return
         vx = self.shot_max_speed * dx / distance + self.vx  # Учёт собственной скорости
         vy = self.shot_max_speed * dy / distance + self.vy  # Учёт собственной скорости
-        self.tear_class(self.rect.center, self.shot_damage, self.shot_max_distance, vx, vy,
+        self.tear_class((self.x, self.y), self.rect.center, self.shot_damage, self.shot_max_distance, vx, vy,
                         self.tear_collide_groups, self.tears)
 
     def update_room_graph(self, room_graph: dict[tuple[int, int]]):

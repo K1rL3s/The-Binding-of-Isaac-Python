@@ -4,7 +4,7 @@ from src.consts import CELL_SIZE
 from src.utils.funcs import load_image
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.BaseSprite import BaseSprite
+from src.modules.BaseClasses.MovableSprite import MovableSprite
 
 
 class Spikes(BaseItem):
@@ -31,7 +31,7 @@ class Spikes(BaseItem):
                  hiding_delay: int | float = 0,
                  hiding_time: int | float = 0,
                  colliadble: bool = True):
-        super().__init__(xy_pos, *groups, collidable=colliadble)
+        BaseItem.__init__(self, xy_pos, *groups, collidable=colliadble)
 
         self.hiding_delay = hiding_delay
         self.hiding_time = hiding_time
@@ -44,7 +44,7 @@ class Spikes(BaseItem):
         self.image = Spikes.images[0]
 
     def set_rect(self, width: int = None, height: int = None):
-        super().set_rect(width, height)
+        BaseItem.set_rect(self, width, height)
         # Попытаться уменьшить Rect шипов, чтобы края не дамажили (уменьшить текстурку?)
 
     def hide(self, forever: bool = False):
@@ -78,7 +78,7 @@ class Spikes(BaseItem):
             self.ticks = 0
             self.unhide()
 
-    def collide(self, other: BaseSprite):
+    def collide(self, other: MovableSprite):
         # Добавить MainCharacter
         if self.collidable and isinstance(other, (BaseEnemy,)):
             other.hurt(1)

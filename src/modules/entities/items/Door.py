@@ -2,6 +2,7 @@ import pygame as pg
 
 from src import consts
 from src.modules.BaseClasses.BaseSprite import BaseSprite
+from src.modules.BaseClasses.MovableSprite import MovableSprite
 from src.utils.funcs import load_image, crop
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
@@ -224,9 +225,9 @@ class Door(BaseItem, DoorTextures):
         self.texture = ''
         self.direction = ''
 
-        super().__init__(self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
+        BaseItem.__init__(self, self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
         self.set_image()
-        super().set_rect()
+        BaseItem.set_rect(self)
         self.set_rect()
         self.event_rect = pg.Rect(self.rect.centerx - 25, self.rect.centery - 25, 50, 50)
 
@@ -270,7 +271,7 @@ class Door(BaseItem, DoorTextures):
             return
         if self.room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and not with_key:
             return
-        self.update_image("open")
+        self.update_image("open", with_sound=with_sound)
 
     def close(self, with_sound: bool = True):
         """
@@ -335,11 +336,12 @@ class Door(BaseItem, DoorTextures):
 
         self.update_image(self.state, self.direction)
 
-    def collide(self, other: MovingEnemy | BaseSprite):
+    def collide(self, other: MovableSprite):
         if other == self:
             return
 
-        super().collide(other)
+        BaseItem.collide(self, other)
+
         # Вместо MovingEnemy поставить MainCharacter или его туловище
         if isinstance(other, MovingEnemy) and self.event_rect.colliderect(other.rect):
             direction = None

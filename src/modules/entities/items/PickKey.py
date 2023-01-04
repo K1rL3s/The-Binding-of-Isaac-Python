@@ -36,7 +36,7 @@ class PickKey(PickableItem):
                  *groups: pg.sprite.AbstractGroup,
                  xy_pixels: tuple[int, int] = None,
                  count: int = 0):
-        super().__init__(xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
+        PickableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.count = count
         self.set_image()
@@ -54,4 +54,4 @@ class PickKey(PickableItem):
                                                   }
                                      )
                       )
-        super().pickup()
+        PickableItem.pickup(self)

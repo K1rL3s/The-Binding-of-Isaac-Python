@@ -32,7 +32,7 @@ class BlowBomb(MovableItem):
                  blow_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  xy_pixels: tuple[int, int] = None):
-        super().__init__(xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
+        MovableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.blow_groups = blow_groups
         self.ticks = 0
@@ -48,7 +48,7 @@ class BlowBomb(MovableItem):
 
         :param delta_t: Время с прошлого кадра.
         """
-        super().move(delta_t)
+        MovableItem.move(self, delta_t)
         self.ticks += delta_t
         if self.ticks >= BlowBomb.explosion_delay:
             self.blow_up()

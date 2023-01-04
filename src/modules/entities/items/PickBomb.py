@@ -24,7 +24,7 @@ class PickBomb(PickableItem):
                  collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  xy_pixels: tuple[int, int] = None):
-        super().__init__(xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
+        PickableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.set_image()
         self.set_rect()

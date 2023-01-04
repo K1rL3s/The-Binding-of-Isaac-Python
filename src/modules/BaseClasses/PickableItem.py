@@ -23,15 +23,15 @@ class PickableItem(MovableItem):
                  acceleration: int | float = 1,
                  xy_pixels: tuple[int, int] = None):
         pickable = True
-        super().__init__(xy_pos, collide_groups, *groups,
-                         acceleration=acceleration, xy_pixels=xy_pixels, pickable=pickable)
+        MovableItem.__init__(self, xy_pos, collide_groups, *groups,
+                             acceleration=acceleration, xy_pixels=xy_pixels, pickable=pickable)
         self.pick_sound: pg.mixer.Sound | None = None
 
-    def collide(self, other: BaseSprite):
+    def collide(self, other: MovableItem):
         if other == self:
             return
 
-        super().collide(other)
+        MovableItem.collide(self, other)
         # Заменить MovingEnemy на MainCharacter
         if isinstance(other, MovingEnemy):
             self.pickup()
@@ -44,4 +44,3 @@ class PickableItem(MovableItem):
         if isinstance(self.pick_sound, pg.mixer.Sound):
             self.pick_sound.play()
         self.kill()
-

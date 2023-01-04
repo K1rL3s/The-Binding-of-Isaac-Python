@@ -1,9 +1,21 @@
 import pygame as pg
 
+from src.utils.funcs import cell_to_pixels
+
 
 class BaseSprite(pg.sprite.Sprite):
-    def __init__(self, *groups):
-        super().__init__(*groups)
+    """
+    Базированный спрайт.
+
+    :param xy_pos: Позиция в комнате.
+    :param groups: Группы спрайтов
+    """
+    def __init__(self,
+                 xy_pos: tuple[int, int],
+                 *groups):
+        pg.sprite.Sprite.__init__(self, *groups)
+
+        self.x, self.y = xy_pos
 
     def update(self, delta_t: float):
         """
@@ -19,11 +31,16 @@ class BaseSprite(pg.sprite.Sprite):
         """
         pass
 
-    def set_rect(self):
+    def set_rect(self, width: int = None, height: int = None):
         """
-        Установка rect и, иногда, mask
+        Установка объекта в центре своей клетки.
         """
-        pass
+        self.rect = self.image.get_rect()
+        if width:
+            self.rect.width = width
+        if height:
+            self.rect.height = height
+        self.rect.center = cell_to_pixels((self.x, self.y))
 
     def hurt(self, damage: int):
         """
@@ -42,11 +59,5 @@ class BaseSprite(pg.sprite.Sprite):
         Обработка столкновений.
 
         :param other: наследник BaseSprite
-        """
-        pass
-
-    def move_back(self, xy_center: tuple[int, int]):
-        """
-        Перемещение назад при столкновении.
         """
         pass

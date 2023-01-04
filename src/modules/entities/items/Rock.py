@@ -35,7 +35,7 @@ class Rock(BaseItem):
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True,
                  hurtable: bool = False):
-        super().__init__(xy_pos, collidable_group, *groups, collidable=collidable, hurtable=hurtable)
+        BaseItem.__init__(self, xy_pos, collidable_group, *groups, collidable=collidable, hurtable=hurtable)
 
         self.collidable_group = collidable_group
         self.floor_type = floor_type

@@ -30,10 +30,10 @@ class ExampleEnemy(MovingEnemy):
         shot_max_speed: int | float = 5
         shot_delay: int | float = 2
         tear_class: Type[BaseTear] = ExampleTear
-        super().__init__(xy_pos, hp, speed, damage_from_blow, move_delay, room_graph, shot_damage, shot_max_distance,
-                         shot_max_speed, shot_delay, tear_class, main_hero,
-                         enemy_collide_groups, tear_collide_groups, *groups,
-                         flyable=flyable)
+        MovingEnemy.__init__(self, xy_pos, hp, speed, damage_from_blow, move_delay, room_graph,
+                             shot_damage, shot_max_distance, shot_max_speed, shot_delay, tear_class,
+                             main_hero, enemy_collide_groups, tear_collide_groups, *groups,
+                             flyable=flyable)
 
         self.set_image()
         self.set_rect()
@@ -69,4 +69,4 @@ class ExampleEnemy(MovingEnemy):
 
     def death(self):
         random.choice(ExampleEnemy.death_sounds).play()
-        super().death()
+        MovingEnemy.death(self)

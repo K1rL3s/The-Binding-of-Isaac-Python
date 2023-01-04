@@ -3,15 +3,14 @@ from typing import Type
 
 import pygame as pg
 
-from src.consts import CELL_SIZE
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
-from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseTear import BaseTear
+from src.modules.BaseClasses.MovableSprite import MovableSprite
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
 
 
-class MovingEnemy(BaseEnemy):
+class MovingEnemy(BaseEnemy, MovableSprite):
     """
     Противник ходящий.
 
@@ -49,10 +48,11 @@ class MovingEnemy(BaseEnemy):
                  *groups: pg.sprite.AbstractGroup,
                  flyable: bool = False):
         movable = True
-        super().__init__(xy_pos, hp, damage_from_blow, room_graph,
-                         shot_damage, shot_max_distance, shot_max_speed, shot_delay, tear_class,
-                         main_hero, enemy_collide_groups, tear_collide_groups, *groups,
-                         movable=movable, flyable=flyable)
+        BaseEnemy.__init__(self, xy_pos, hp, damage_from_blow, room_graph,
+                           shot_damage, shot_max_distance, shot_max_speed, shot_delay, tear_class,
+                           main_hero, enemy_collide_groups, tear_collide_groups, *groups,
+                           movable=movable, flyable=flyable)
+        MovableSprite.__init__(self, xy_pos, enemy_collide_groups, *groups, acceleration=0)
 
         self.speed = speed
         self.move_update_delay = move_update_delay
@@ -65,7 +65,8 @@ class MovingEnemy(BaseEnemy):
 
         :param delta_t: Время с прошлого кадра.
         """
-        super().update(delta_t)
+        BaseEnemy.update(self, delta_t)
+        MovableSprite.update(self, delta_t)
         self.move_ticks += delta_t
 
         if self.move_ticks >= self.move_update_delay:
@@ -79,19 +80,11 @@ class MovingEnemy(BaseEnemy):
 
         :param delta_t: Время с прошлого кадра.
         """
-        self.x_center_last, self.y_center_last = self.x_center, self.y_center
-        self.x_center += self.vx * CELL_SIZE * delta_t
-        self.y_center += self.vy * CELL_SIZE * delta_t
-        self.rect.center = self.x_center, self.y_center
+        MovableSprite.move(self, delta_t)
 
         # Проверка коллизий
         if not self.flyable:
-            for group in self.enemy_collide_groups:
-                if sprites := pg.sprite.spritecollide(self, group, False):
-                    for sprite in sprites:
-                        if sprite != self:
-                            sprite: BaseSprite
-                            sprite.collide(self)
+            MovableSprite.check_collides(self)
 
         # Если координаты есть и если они отличаются от текущих, то обновляем скорости
         xy_cell = pixels_to_cell((self.x_center, self.y_center))
@@ -105,8 +98,7 @@ class MovingEnemy(BaseEnemy):
 
         :param xy_center: Центр спрайта, с которым было столкновение
         """
-        self.x_center, self.y_center = self.x_center_last, self.y_center_last
-        self.rect.center = self.x_center, self.y_center
+        MovableSprite.move_back(self, xy_center)
         centerx, centery = xy_center
         if (self.rect.centerx < centerx and self.vx > 0) or (self.rect.centerx > centerx and self.vx < 0):
             self.set_speed(0, self.speed if self.vy > 0 else -self.speed)
@@ -143,13 +135,3 @@ class MovingEnemy(BaseEnemy):
         distance = math.hypot(dx, dy)
         if distance:
             self.set_speed(self.speed * dx / distance, self.speed * dy / distance)
-
-    def set_speed(self, vx: int | float, vy: int | float):
-        """
-        Задание скорости движения.
-
-        :param vx: Скорость по горизонтали в клетках/секунду.
-        :param vy: Скорость по вертикали в клетках/секунду.
-        """
-        self.vx = vx * self.slowdown_coef
-        self.vy = vy * self.slowdown_coef
