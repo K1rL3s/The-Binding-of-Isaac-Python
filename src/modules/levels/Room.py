@@ -8,6 +8,7 @@ import xml.etree.ElementTree as XMLTree
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.entities.items.PickBomb import PickBomb
+from src.modules.entities.items.PickKey import PickKey
 from src.modules.entities.items.PickMoney import PickMoney
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Poop import Poop
@@ -434,9 +435,13 @@ class Room(RoomTextures):
     def test_func_set_pickable(self, xy_pos: tuple[int, int]):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
         if room_pos := pixels_to_cell(xy_pos):
-            if random.random() > 0.5:
+            chance = random.random()
+            if chance > 0.66:
                 PickMoney(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
                           xy_pixels=xy_pos)
-            else:
+            elif chance > 0.33:
                 PickBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
                          xy_pixels=xy_pos)
+            else:
+                PickKey(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
+                        xy_pixels=xy_pos)

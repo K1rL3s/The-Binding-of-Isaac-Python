@@ -4,31 +4,30 @@ import pygame as pg
 
 from src.consts import PICKUP_LOOT
 from src.modules.BaseClasses.PickableItem import PickableItem
-from src.utils.funcs import load_image, load_sound
+from src.utils.funcs import load_image, load_sound, crop
+
+key_width, key_height = 48, 48  # Размеры клетки текстурки
 
 
-coin_width, coin_height = 48, 35  # Размеры клетки текстурки
-
-
-class PickMoney(PickableItem):
+class PickKey(PickableItem):
     """
-    Подбираемая монетка (penny, nickel, dime)
+    Класс подбираемого ключа.
 
     :param xy_pos: Позиция в комнате.
     :param collide_groups: Группы спрайтов, через спрайты которых нельзя пройти.
     :param groups: Группы спрайтов.
     :param xy_pixels: Позиция в пикселях.
-    :param count: Количество деняк при подборе (1, 5 или 10).
+    :param count: Количество ключей при подборе.
     """
 
-    coins_images = [
-        load_image("textures/room/coins.png").subsurface(coin_width * x, 0, coin_width, coin_height)
+    keys_images = [
+        crop(load_image("textures/room/keys.png").subsurface(x * key_width, 0, key_width, key_height))
         for x in range(3)
     ]
-    coins: dict[int, tuple[pg.Surface, pg.mixer.Sound]] = {
-        1: (coins_images[0], load_sound("sounds/penny_pickup.mp3")),
-        5: (coins_images[1], load_sound("sounds/nickel_pickup.mp3")),
-        10: (coins_images[2], load_sound("sounds/dime_pickup.mp3"))
+    keys: dict[int, tuple[pg.Surface, pg.mixer.Sound]] = {
+        1: (keys_images[0], load_sound("sounds/key_pickup.mp3")),
+        2: (keys_images[1], load_sound("sounds/key_pickup.mp3")),
+        99: (keys_images[2], load_sound("sounds/key_golden_pickup.mp3"))
     }
 
     def __init__(self,
@@ -45,8 +44,8 @@ class PickMoney(PickableItem):
 
     def set_image(self):
         if not self.count:
-            self.count = random.choices([1, 5, 10], [0.925, 0.060, 0.015])[0]
-        self.image, self.pick_sound = PickMoney.coins[self.count]
+            self.count = random.choices([1, 2, 99], [0.960, 0.035, 0.005])[0]
+        self.image, self.pick_sound = PickKey.keys[self.count]
 
     def pickup(self):
         pg.event.post(pg.event.Event(PICKUP_LOOT, {
@@ -56,4 +55,3 @@ class PickMoney(PickableItem):
                                      )
                       )
         super().pickup()
-
