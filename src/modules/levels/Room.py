@@ -5,8 +5,6 @@ import pygame as pg
 
 import xml.etree.ElementTree as XMLTree
 
-from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.BaseSprite import BaseSprite
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.entities.items.PickBomb import PickBomb
@@ -17,6 +15,7 @@ from src.modules.entities.items.Door import Door
 from src.modules.entities.items.Spikes import Spikes
 from src.modules.entities.items.Web import Web
 from src.modules.entities.items.BlowBomb import BlowBomb
+from src.modules.levels.Borders import Border
 from src.modules.enemies.ExampleEnemy import ExampleEnemy
 from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
@@ -37,8 +36,8 @@ class RoomTextures:
     secret_background: pg.Surface = load_image("textures/room/secret.png")
 
     minimap_cells: list[pg.Surface] = [load_image("textures/room/minimap_cells.png").subsurface(
-            (0, y * consts.MINIMAP_CELL_HEIGHT, consts.MINIMAP_CELL_WIDTH, consts.MINIMAP_CELL_HEIGHT)
-        )
+        (0, y * consts.MINIMAP_CELL_HEIGHT, consts.MINIMAP_CELL_WIDTH, consts.MINIMAP_CELL_HEIGHT)
+    )
         for y in range(3)
     ]
 
@@ -286,23 +285,23 @@ class Room(RoomTextures):
         Установка барьеров на краях экрана.
         """
         # Лево
-        KillingBorder(0, 0, 1, consts.GAME_HEIGHT,
-                      self.movement_borders, self.tears_borders, self.debug_render)
+        Border(0, 0, 1, consts.GAME_HEIGHT,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Лево доп
-        KillingBorder(consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
-                      self.movement_borders, self.tears_borders, self.debug_render)
+        Border(consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Верх
-        KillingBorder(0, 0, consts.WIDTH, 1,
-                      self.movement_borders, self.tears_borders, self.debug_render)
+        Border(0, 0, consts.WIDTH, 1,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Низ
-        KillingBorder(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
-                      self.movement_borders, self.tears_borders, self.debug_render)
+        Border(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Право
-        KillingBorder(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
-                      self.movement_borders, self.tears_borders, self.debug_render)
+        Border(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Право доп
-        KillingBorder(consts.WIDTH - consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
-                      self.movement_borders, self.tears_borders, self.debug_render)
+        Border(consts.WIDTH - consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
 
     def update_doors(self, state: str, with_sound: bool = True):
         """
@@ -441,55 +440,3 @@ class Room(RoomTextures):
             else:
                 PickBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
                          xy_pixels=xy_pos)
-
-
-class Border(BaseSprite):
-    """
-    Невидимый барьер для стен.
-
-    :param x: Пиксель на экране.
-    :param y: Пиксель на экране.
-    :param width: Ширина стены.
-    :param height: Высота стены.
-    """
-
-    def __init__(self,
-                 x: int,
-                 y: int,
-                 width: int,
-                 height: int,
-                 *groups):
-        super().__init__(*groups)
-
-        self.image = pg.Surface((width, height))
-        self.rect = pg.Rect(x, y, width, height)
-
-        # Для видимости, где это чудо
-        pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height))
-
-    def collide(self, other: BaseSprite):
-        other.move_back(self.rect.center)
-        if isinstance(other, BaseTear):
-            other.destroy()
-
-
-class KillingBorder(Border):
-    """
-    Невидимый барьер для краёв экрана, который убивает.
-
-    :param x: Пиксель на экране.
-    :param y: Пиксель на экране.
-    :param width: Ширина стены.
-    :param height: Высота стены.
-    """
-    def __init__(self,
-                 x: int,
-                 y: int,
-                 width: int,
-                 height: int,
-                 *groups):
-        super().__init__(x, y, width, height, *groups)
-
-    def collide(self, other: BaseSprite):
-        super().collide(other)
-        other.kill()
