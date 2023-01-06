@@ -25,15 +25,11 @@ class Poop(BaseItem):
 
     def __init__(self,
                  xy_pos: tuple[int, int],
-                 collidable_group: pg.sprite.AbstractGroup,
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True):
-        BaseItem.__init__(self, xy_pos, collidable_group, *groups, collidable=collidable)
-
-        self.collidable_group = collidable_group
+        BaseItem.__init__(self, xy_pos, *groups, collidable=collidable)
 
         self.stages: list[pg.Surface] = []
-        self.treasure: list[BaseItem] = []
         self.hp = Poop.max_hp
 
         self.set_image()
@@ -79,15 +75,12 @@ class Poop(BaseItem):
         """
         self.image = self.stages[4]
         self.collidable = False
-        self.collidable_group.remove(self)
         random.choice(self.poop_destoryed).play()
-        self.drop_something()
+        self.drop_loot()
 
-    def drop_something(self):
+    def drop_loot(self):
         """
         Выпадение лута после поломки.
         """
-        if self.treasure:
-            pass
-        elif random.random() > 0.9:
+        if random.random() > 0.9:
             pass

@@ -49,6 +49,14 @@ class DoorsCoords(Enum):
     LEFT = (-1, 3)
 
 
+class FirePlacesTypes(Enum):
+    """
+    Виды костров.
+    """
+    DEFAULT = 'default'
+    RED = 'red'
+
+
 FPS = 60                                          # А может 59.98?
 WIDTH, HEIGHT = 1280, 960                         # Весь экран
 GAME_WIDTH, GAME_HEIGHT = 1280, 812               # Часть экрана с игрой

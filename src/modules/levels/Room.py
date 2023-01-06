@@ -5,8 +5,10 @@ import pygame as pg
 
 import xml.etree.ElementTree as XMLTree
 
+from src.consts import FirePlacesTypes
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.BaseEnemy import BaseEnemy
+from src.modules.entities.items.FirePlace import FirePlace
 from src.modules.entities.items.PickBomb import PickBomb
 from src.modules.entities.items.PickKey import PickKey
 from src.modules.entities.items.PickMoney import PickMoney
@@ -169,8 +171,13 @@ class Room(RoomTextures):
                     self.is_friendly = False
                 elif chance > 0.6:
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
-                # elif chance > 0.5:
-                #     Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
+                elif chance > 0.5:
+                    FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
+                              fire_type=FirePlacesTypes.RED,
+                              tear_collide_groups=(self.colliadble_group, self.tears_borders, self.other, self.enemies),
+                              main_hero=self.main_hero)
+                elif chance > 0.49:
+                    Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
 
     def setup_graph(self):
         """
@@ -370,6 +377,7 @@ class Room(RoomTextures):
         self.other.update(delta_t)
         self.spikes.update(delta_t)
         self.webs.update(delta_t)
+        self.fires.update(delta_t)
 
         if self.is_over:
             return
@@ -419,7 +427,9 @@ class Room(RoomTextures):
             enemy: ExampleEnemy
             enemy.draw_tears(screen)
             # enemy.draw_stats(screen)  # СНИЖАЕТ ФПС!!!
-
+        for fire in self.fires.sprites():
+            fire: FirePlace
+            fire.draw_tears(screen)
         self.fires.draw(screen)
         self.doors.draw(screen)
         self.other.draw(screen)

@@ -74,21 +74,25 @@ class ShootingEnemy(BaseEnemy):
         """
         self.tears.draw(screen)
 
-    def shot(self):
+    def shot(self) -> bool:
         """
         Выстрел в сторону ГГ.
+
+        :return: Выстрелил ли.
         """
-        self.shot_ticks = 0
+
         x, y = self.main_hero.rect.center
         dx = x - self.rect.centerx
         dy = y - self.rect.centery
         distance = math.hypot(dx, dy)
         if distance > self.shot_max_distance * CELL_SIZE or distance == 0:  # Стреляет тогда, когда уже вплотную, ну хз.
-            return
+            return False
 
+        self.shot_ticks = 0
         vx = self.shot_max_speed * dx / distance + getattr(self, 'vx', 0)  # Учёт собственной скорости
         vy = self.shot_max_speed * dy / distance + getattr(self, 'vy', 0)  # Учёт собственной скорости
         self.tear_class((self.x, self.y), self.rect.center, self.shot_damage, self.shot_max_distance, vx, vy,
                         self.tear_collide_groups, self.tears)
+        return True
 
 

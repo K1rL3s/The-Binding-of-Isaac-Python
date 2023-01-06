@@ -89,7 +89,7 @@ class BaseTear(MoveSprite):
             if pg.sprite.spritecollideany(self, collide_group):
                 for collide in pg.sprite.spritecollide(self, collide_group, False):
                     collide: BaseSprite
-                    collide.hurt(self.damage)
+                    # collide.hurt(self.damage)
                     collide.collide(self)
 
     def set_rect(self, width: int = None, height: int = None):

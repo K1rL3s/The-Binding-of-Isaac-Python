@@ -2,7 +2,6 @@ import pygame as pg
 
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image
-from src.modules.BaseClasses.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.BaseItem import BaseItem
 from src.modules.BaseClasses.MoveSprite import MoveSprite
 
@@ -15,7 +14,7 @@ class Spikes(BaseItem):
     :param groups: Группы спрайтов.
     :param hiding_delay: С какой задержкой прячется в землю. 0 - не прячется.
     :param hiding_time: На сколько прячется в землю. 0 - навсегда.
-    :param colliadble: Наносит ли урон.
+    :param hurtable: Наносит ли урон.
     """
 
     images: list[pg.Surface] = [
@@ -29,9 +28,9 @@ class Spikes(BaseItem):
                  xy_pos: tuple[int, int],
                  *groups: pg.sprite.AbstractGroup,
                  hiding_delay: int | float = 0,
-                 hiding_time: int | float = 0,
-                 colliadble: bool = True):
-        BaseItem.__init__(self, xy_pos, *groups, collidable=colliadble)
+                 hiding_time: int | float = 0):
+        hurtable = True
+        BaseItem.__init__(self, xy_pos, *groups, hurtable=hurtable)
 
         self.hiding_delay = hiding_delay
         self.hiding_time = hiding_time
@@ -54,7 +53,7 @@ class Spikes(BaseItem):
         :param forever: Навсегда ли.
         """
         # Сделать анимацию и звук?
-        self.collidable = False
+        self.hurtable = False
         self.image = Spikes.images[-1]
         if forever:
             self.hiding_time = 0
@@ -64,22 +63,22 @@ class Spikes(BaseItem):
         Показать шипы.
         """
         # Сделать анимацию и звук?
-        self.collidable = True
+        self.hurtable = True
         self.image = Spikes.images[1]
 
     def update(self, delta_t: float):
         if not self.hiding_delay:
             return
         self.ticks += delta_t
-        if self.ticks >= self.hiding_delay and self.collidable:
+        if self.ticks >= self.hiding_delay and self.hurtable:
             self.ticks = 0
             self.hide()
-        if self.ticks >= self.hiding_time and not self.collidable and self.hiding_time:
+        if self.ticks >= self.hiding_time and not self.hurtable and self.hiding_time:
             self.ticks = 0
             self.unhide()
 
     def collide(self, other: MoveSprite):
         # Добавить MainCharacter
-        if self.collidable and isinstance(other, (BaseEnemy,)):
-            other.hurt(1)
+        if isinstance(other, (MoveSprite,)):
+            BaseItem.collide(self, other)
 

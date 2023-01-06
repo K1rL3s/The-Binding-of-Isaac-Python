@@ -1,5 +1,7 @@
 import pygame as pg
 
+from src.modules.BaseClasses.BaseTear import BaseTear
+from src.modules.BaseClasses.MoveSprite import MoveSprite
 from src.utils.funcs import load_sound
 from src.modules.BaseClasses.BaseSprite import BaseSprite
 
@@ -65,3 +67,8 @@ class BaseEnemy(BaseSprite):
         Смерть врага.
         """
         self.kill()
+
+    def collide(self, other: MoveSprite):
+        if isinstance(other, BaseTear) and not other.is_friendly:
+            self.hurt(other.damage)
+            other.destroy()

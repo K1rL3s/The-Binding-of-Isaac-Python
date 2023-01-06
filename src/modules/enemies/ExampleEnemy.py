@@ -26,7 +26,7 @@ class ExampleEnemy(MovingEnemy, ShootingEnemy):
         speed: int | float = 2
         damage_from_blow: int = 10
         move_update_delay: int | float = 0.1
-        shot_damage: int = 5
+        shot_damage: int = 2
         shot_max_distance: int | float = 10
         shot_max_speed: int | float = 5
         shot_delay: int | float = 2
