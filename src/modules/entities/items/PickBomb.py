@@ -2,7 +2,6 @@ import pygame as pg
 
 from src.modules.BaseClasses.PickableItem import PickableItem
 from src.utils.funcs import load_image, load_sound, crop
-from src.consts import PICKUP_LOOT
 
 
 class PickBomb(PickableItem):
@@ -26,17 +25,11 @@ class PickBomb(PickableItem):
                  xy_pixels: tuple[int, int] = None):
         PickableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
+        self.count = 1
+
         self.set_image()
         self.set_rect()
 
     def set_image(self):
         self.image = PickBomb.bomb
-
-    def pickup(self):
-        """
-        Подбор бомбы.
-        """
-        PickBomb.pickup_sound.play()
-        pg.event.post(pg.event.Event(PICKUP_LOOT, {'item': PickBomb}))
-        self.kill()
-
+        self.pick_sound = PickBomb.pickup_sound

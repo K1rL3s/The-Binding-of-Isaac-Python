@@ -2,7 +2,6 @@ import random
 
 import pygame as pg
 
-from src.consts import PICKUP_LOOT
 from src.modules.BaseClasses.PickableItem import PickableItem
 from src.utils.funcs import load_image, load_sound, crop
 
@@ -39,6 +38,7 @@ class PickKey(PickableItem):
         PickableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.count = count
+
         self.set_image()
         self.set_rect()
 
@@ -46,12 +46,3 @@ class PickKey(PickableItem):
         if not self.count:
             self.count = random.choices([1, 2, 99], [0.960, 0.035, 0.005])[0]
         self.image, self.pick_sound = PickKey.keys[self.count]
-
-    def pickup(self):
-        pg.event.post(pg.event.Event(PICKUP_LOOT, {
-                                                   'item': self.__class__,
-                                                   'count': self.count,
-                                                  }
-                                     )
-                      )
-        PickableItem.pickup(self)

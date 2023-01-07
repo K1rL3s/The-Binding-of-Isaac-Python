@@ -40,6 +40,7 @@ class PickMoney(PickableItem):
         PickableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.count = count
+
         self.set_image()
         self.set_rect()
 
@@ -47,13 +48,4 @@ class PickMoney(PickableItem):
         if not self.count:
             self.count = random.choices([1, 5, 10], [0.925, 0.060, 0.015])[0]
         self.image, self.pick_sound = PickMoney.coins[self.count]
-
-    def pickup(self):
-        pg.event.post(pg.event.Event(PICKUP_LOOT, {
-                                                   'item': self.__class__,
-                                                   'count': self.count,
-                                                  }
-                                     )
-                      )
-        PickableItem.pickup(self)
 

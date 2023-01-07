@@ -1,5 +1,6 @@
 import pygame as pg
 
+from src.consts import PICKUP_LOOT
 from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 from src.modules.BaseClasses.MovableItem import MoveItem
 
@@ -23,7 +24,9 @@ class PickableItem(MoveItem):
                  xy_pixels: tuple[int, int] = None):
         MoveItem.__init__(self, xy_pos, collide_groups, *groups,
                           acceleration=acceleration, xy_pixels=xy_pixels)
+
         self.pick_sound: pg.mixer.Sound | None = None
+        self.count: int = 0
 
     def collide(self, other: MoveItem) -> bool:
         """
@@ -48,4 +51,10 @@ class PickableItem(MoveItem):
         """
         if isinstance(self.pick_sound, pg.mixer.Sound):
             self.pick_sound.play()
+        pg.event.post(pg.event.Event(PICKUP_LOOT, {
+                                                  'item': self.__class__,
+                                                  'count': self.count,
+                                                   }
+                                     )
+                      )
         self.kill()

@@ -9,13 +9,13 @@ from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT
 @cache
 def load_image(name: str,
                colorkey: pg.Color | int | None = None,
-               crop_background: bool = False) -> pg.Surface:
+               crop_it: bool = False) -> pg.Surface:
     """
     Загрузка изображения в pygame.Surface.
 
     :param name: Путь до файла, начиная от src/data, e.g. "textures/room/basement.png"
     :param colorkey: Пиксель, по которому будет удаляться задний фон. Если -1, то по левому верхнему.
-    :param crop_background: Обрезать ли изображение по прозрачному фону.
+    :param crop_it: Обрезать ли изображение по прозрачному фону.
     :return: pygame.Surface
     """
     fullname = os.path.join('src', 'data', name)
@@ -31,7 +31,7 @@ def load_image(name: str,
     else:
         image = image.convert_alpha()
 
-    if crop_background:
+    if crop_it:
         image = crop(image)
 
     return image
