@@ -7,13 +7,15 @@ from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT
 
 
 @cache
-def load_image(name: str, colorkey: pg.Color | int | None = None, crop_background: bool = False) -> pg.Surface:
+def load_image(name: str,
+               colorkey: pg.Color | int | None = None,
+               crop_background: bool = False) -> pg.Surface:
     """
     Загрузка изображения в pygame.Surface.
 
     :param name: Путь до файла, начиная от src/data, e.g. "textures/room/basement.png"
     :param colorkey: Пиксель, по которому будет удаляться задний фон. Если -1, то по левому верхнему.
-    :param crop_background: Обрезать ли изображение по фону.
+    :param crop_background: Обрезать ли изображение по прозрачному фону.
     :return: pygame.Surface
     """
     fullname = os.path.join('src', 'data', name)
@@ -40,7 +42,7 @@ def load_sound(name) -> pg.mixer.Sound:
     """
     Загрузка звука в pygame.Sound.
 
-    :param name: Путь до файла, начиная от src/data, e.g. "sounds/fart.mp23"
+    :param name: Путь до файла, начиная от src/data, e.g. "sounds/fart.mp3"
     :return: pygame.Sound
     """
     fullname = os.path.join('src', 'data', name)
@@ -81,6 +83,7 @@ def crop(screen: pg.Surface) -> pg.Surface:
 def pixels_to_cell(xy_pos: tuple[int, int] | tuple[float, float]) -> tuple[int, int] | None:
     """
     Переводит пиксели на экране в клетку комнаты.
+
     :param xy_pos: Координаты в пикселях.
     :return: Координаты в клетках.
     """
@@ -95,6 +98,7 @@ def pixels_to_cell(xy_pos: tuple[int, int] | tuple[float, float]) -> tuple[int, 
 def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     """
     Переводит клетку комнаты в пиксели на экране (центр клетки).
+
     :param xy_pos: Координаты клекти.
     :return: Координаты в пикселях (центр).
     """
