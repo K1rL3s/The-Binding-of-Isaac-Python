@@ -35,7 +35,10 @@ class BaseSprite(pg.sprite.Sprite):
         """
         Установка объекта в центре своей клетки.
         """
-        self.rect = self.image.get_rect()
+        try:  # ЗАТЫЧКА ДЛЯ ВРЕМЕННОГО ГГ!!! УБРАТЬ!!!
+            self.rect = self.image.get_rect()
+        except AttributeError:  # ЗАТЫЧКА ДЛЯ ВРЕМЕННОГО ГГ!!! УБРАТЬ!!!
+            return  # ЗАТЫЧКА ДЛЯ ВРЕМЕННОГО ГГ!!! УБРАТЬ!!!
         if width:
             self.rect.width = width
         if height:
@@ -54,10 +57,11 @@ class BaseSprite(pg.sprite.Sprite):
         """
         pass
 
-    def collide(self, other: pg.sprite.Sprite):
+    def collide(self, other: pg.sprite.Sprite) -> bool:
         """
         Обработка столкновений.
 
         :param other: наследник BaseSprite
+        :return: Будет ли столкновение (разные ли объекты).
         """
-        pass
+        return other != self

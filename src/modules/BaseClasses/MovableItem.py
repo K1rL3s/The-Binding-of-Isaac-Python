@@ -64,18 +64,20 @@ class MoveItem(BaseItem, MoveSprite):
         if self.rect.centery < centery and self.vy > 0:
             self.vy = 0
 
-    def collide(self, other: MoveSprite):
+    def collide(self, other: MoveSprite) -> bool:
         """
         Не факт, что работает корректно :)
         Пока что супер примитивно, ага
-        """
-        if other == self:
-            return
 
-        BaseItem.collide(self, other)
+        :return: Было ли изменение скоростей.
+        """
+        if not BaseItem.collide(self, other):
+            return False
 
         if other not in self.collide_sprites:
             self.collide_sprites.append(other)
             vx = 1 if self.rect.centerx - other.rect.centerx > 0 else -1
             vy = 1 if self.rect.centery - other.rect.centery > 0 else -1
             self.set_speed(self.vx + vx, self.vy + vy)
+
+        return True

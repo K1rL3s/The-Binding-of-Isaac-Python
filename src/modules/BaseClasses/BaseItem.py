@@ -35,22 +35,24 @@ class BaseItem(BaseSprite):
         self.vx = 0
         self.vy = 0
 
-    def collide(self, other: MoveSprite):
+    def collide(self, other: MoveSprite) -> bool:
         """
         Обработка столкновения с энтити.
 
         :param other: Объект, с которым прозошло столкновение (персонаж, слеза, взрыв бомбы).
+        :return: Произошло ли столкновение.
         """
-        if other == self:
-            return
+        if not BaseSprite.collide(self, other):
+            return False
 
         if self.collidable:
             other.move_back(self.rect.center)
             if isinstance(other, BaseTear):
-                self.hurt(other.damage)
                 other.destroy()
         if self.hurtable:
             other.hurt(1)
+
+        return True
 
     def destroy(self, *args, **kwargs):
         """

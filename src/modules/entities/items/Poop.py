@@ -4,10 +4,10 @@ import pygame as pg
 
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image, load_sound
-from src.modules.BaseClasses.BaseItem import BaseItem
+from src.modules.BaseClasses.DestroyableItem import DestroyableItem
 
 
-class Poop(BaseItem):
+class Poop(DestroyableItem):
     """
     Класс Poop'a.
 
@@ -27,7 +27,7 @@ class Poop(BaseItem):
                  xy_pos: tuple[int, int],
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True):
-        BaseItem.__init__(self, xy_pos, *groups, collidable=collidable)
+        DestroyableItem.__init__(self, xy_pos, *groups, collidable=collidable)
 
         self.stages: list[pg.Surface] = []
         self.hp = Poop.max_hp
@@ -42,21 +42,15 @@ class Poop(BaseItem):
         self.stages = [Poop.poops.subsurface(texture_x, y * CELL_SIZE, CELL_SIZE, CELL_SIZE) for y in range(5)]
         self.image = self.stages[0]
 
-    def blow(self):
-        """
-        Взрыв Poop'a.
-        """
-        self.hurt(self.hp)
-
     def hurt(self, damage: int):
         """
         Нанесение урона Poop'y.
 
         :param damage: сколько урона.
         """
-        if not self.hp:
+        if not DestroyableItem.hurt(self, damage):
             return
-        self.hp = max(0, self.hp - damage)
+
         percent = self.hp / Poop.max_hp
         if percent >= 0.75:
             self.image = self.stages[0]
@@ -73,14 +67,6 @@ class Poop(BaseItem):
         """
         Уничтожение Poop после взрыва/поломки.
         """
+        DestroyableItem.destroy(self)
         self.image = self.stages[4]
-        self.collidable = False
         random.choice(self.poop_destoryed).play()
-        self.drop_loot()
-
-    def drop_loot(self):
-        """
-        Выпадение лута после поломки.
-        """
-        if random.random() > 0.9:
-            pass

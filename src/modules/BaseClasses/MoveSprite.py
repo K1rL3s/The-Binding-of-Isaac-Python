@@ -39,7 +39,7 @@ class MoveSprite(BaseSprite):
         """
         Установка объекта в центре своей клетки.
         """
-        super().set_rect()
+        BaseSprite.set_rect(self)
         if (self.x_center, self.y_center) != cell_to_pixels((self.x, self.y)):
             self.rect.center = (self.x_center, self.y_center)
 

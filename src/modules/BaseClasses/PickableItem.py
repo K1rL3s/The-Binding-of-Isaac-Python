@@ -25,14 +25,21 @@ class PickableItem(MoveItem):
                           acceleration=acceleration, xy_pixels=xy_pixels)
         self.pick_sound: pg.mixer.Sound | None = None
 
-    def collide(self, other: MoveItem):
-        if other == self:
-            return
+    def collide(self, other: MoveItem) -> bool:
+        """
+        Обработка столкновений.
 
-        MoveItem.collide(self, other)
+        :param other: С кем было столкновение.
+        :return: Было ли столкновение.
+        """
+        if not MoveItem.collide(self, other):
+            return False
+
         # Заменить MovingEnemy на MainCharacter
         if isinstance(other, MovingEnemy):
             self.pickup()
+
+        return True
 
     def pickup(self):
         """

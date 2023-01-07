@@ -72,3 +72,5 @@ class BaseEnemy(BaseSprite):
         if isinstance(other, BaseTear) and not other.is_friendly:
             self.hurt(other.damage)
             other.destroy()
+            return True
+        return False

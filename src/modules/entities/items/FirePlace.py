@@ -3,12 +3,11 @@ import random
 import pygame as pg
 
 from src.consts import CELL_SIZE, FirePlacesTypes
-from src.modules.BaseClasses.BaseTear import BaseTear
 from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses.DestroyableItem import DestroyableItem
+from src.modules.BaseClasses.ShootingEnemy import ShootingEnemy
 from src.utils.funcs import load_image, load_sound
 from src.modules.entities.tears.ExampleTear import ExampleTear
-from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.ShootingEnemy import ShootingEnemy
 
 
 class FireTextures:
@@ -56,7 +55,7 @@ class FireTextures:
     fireplace_shot = load_sound("sounds/fire_shot.wav")
 
 
-class FirePlace(BaseItem, ShootingEnemy, FireTextures):
+class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
     """
     Костёр. Бьётся. Ломается.
 
@@ -84,7 +83,7 @@ class FirePlace(BaseItem, ShootingEnemy, FireTextures):
         tear_delay = 7
         tear_class = ExampleTear
 
-        BaseItem.__init__(self, xy_pos, *groups, hurtable=hurtable)
+        DestroyableItem.__init__(self, xy_pos, *groups, hurtable=hurtable)
         if fire_type == FirePlacesTypes.RED:
             assert tear_collide_groups and main_hero
             ShootingEnemy.__init__(self, xy_pos, FirePlace.max_hp, FirePlace.max_hp, dict(), main_hero, (),
@@ -92,15 +91,12 @@ class FirePlace(BaseItem, ShootingEnemy, FireTextures):
                                    *groups)
 
         self.fire_type = fire_type
-
         self.stages: list[list[pg.Surface]] = [[]]
         self.stage: list[pg.Surface] = []
         self.woods: list[pg.Surface] = []
-        self.is_alive = True
         self.ticks = 0
         self.frame = 0
         self.hp = FirePlace.max_hp
-
         self.set_image()
         self.set_rect()
 
@@ -117,6 +113,9 @@ class FirePlace(BaseItem, ShootingEnemy, FireTextures):
         self.update_image()
 
     def update_image(self):
+        """
+        Обновление изображения, установка на Surface дров и потом огня, если горит.
+        """
         self.image = pg.Surface((CELL_SIZE, CELL_SIZE * 1.25), pg.SRCALPHA, 32)
         self.image.blit(self.woods[not self.is_alive], (0, CELL_SIZE * 0.25))
         if self.is_alive:
@@ -127,11 +126,11 @@ class FirePlace(BaseItem, ShootingEnemy, FireTextures):
             )
 
     def update(self, delta_t: float):
-        if not self.is_alive:
-            return
-
         if self.fire_type == FirePlacesTypes.RED:
             ShootingEnemy.update(self, delta_t)
+
+        if not self.is_alive:
+            return
 
         # Сделать это красивее
         self.ticks += delta_t
@@ -141,14 +140,11 @@ class FirePlace(BaseItem, ShootingEnemy, FireTextures):
             self.update_image()
 
     def shot(self):
+        """
+        Стрельба в ГГ, если костёр стреляющий.
+        """
         if ShootingEnemy.shot(self):
             FireTextures.fireplace_shot.play()
-
-    def blow(self):
-        """
-        Подрыв костра.
-        """
-        self.hurt(self.hp)
 
     def hurt(self, damage: int):
         """
@@ -156,11 +152,10 @@ class FirePlace(BaseItem, ShootingEnemy, FireTextures):
 
         :param damage: Сколько урона.
         """
-        if not self.hp:
+        if not DestroyableItem.hurt(self, damage):
             return
-        self.hp = max(0, self.hp - damage)
+
         percent = self.hp / FirePlace.max_hp
-        self.image = pg.Surface((CELL_SIZE, CELL_SIZE))
         if percent >= 0.67:
             self.stage = self.stages[0]
         elif percent >= 0.33:
@@ -169,31 +164,26 @@ class FirePlace(BaseItem, ShootingEnemy, FireTextures):
             self.stage = self.stages[2]
         else:
             self.destroy()
-        if self.hp:
+        if self.is_alive:
             self.update_image()
 
     def destroy(self):
         """
         Уничтожение костра после взрыва/поломки.
         """
-        self.hurtable = False
-        self.is_alive = False
+        DestroyableItem.destroy(self)
         self.update_image()
         random.choice(self.fireplace_destoryed).play()
-        self.drop_loot()
 
     def draw_tears(self, screen: pg.Surface):
+        """
+        Отрисовка слёз, если костёр стреляющий.
+        :param screen: Surface.
+        """
         if self.fire_type == FirePlacesTypes.RED:
             ShootingEnemy.draw_tears(self, screen)
 
     def collide(self, other: MoveSprite):
         if self.fire_type == FirePlacesTypes.RED and other in self.tears:
             return
-        BaseItem.collide(self, other)
-        if isinstance(other, BaseTear):
-            self.hurt(other.damage)
-            other.destroy()
-
-    def drop_loot(self):
-        if random.random() > 0.9:
-            pass
+        DestroyableItem.collide(self, other)

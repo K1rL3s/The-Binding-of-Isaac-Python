@@ -336,10 +336,8 @@ class Door(BaseItem, DoorTextures):
         self.update_image(self.state, self.direction)
 
     def collide(self, other: MoveSprite):
-        if other == self:
+        if not BaseItem.collide(self, other):
             return
-
-        BaseItem.collide(self, other)
 
         # Вместо MovingEnemy поставить MainCharacter или его туловище
         if isinstance(other, MovingEnemy) and self.event_rect.colliderect(other.rect):

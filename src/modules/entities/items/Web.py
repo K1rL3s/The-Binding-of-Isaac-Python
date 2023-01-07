@@ -56,14 +56,18 @@ class Web(BaseItem):
             self.reset_collides_sprites()
 
     def reset_collides_sprites(self):
+        """
+        Обнуление списка столкновений и возврат коэфициента скорости.
+        """
         for sprite in self.collide_sprites:
-            sprite: MovingEnemy | MoveItem
+            sprite: MoveSprite
             sprite.slowdown_coef = 1
         self.collide_sprites.clear()
 
     def collide(self, other: MoveSprite):
         # Изменить MovingEnemy на MainCharacter или просто добавить MainCharacter?
-        # Работает не очень норм, потому что скорости MovingEnemy обновляются сами и это не фиксирует паутина
+        # Работает уже лучше, потому что коэф есть, но он с задержкой убирается,
+        # можно сделать Web.clear_collides_delay меньше.
         if self.collidable and isinstance(other, (MovingEnemy, MoveItem)):
             if other not in self.collide_sprites:
                 self.collide_sprites.append(other)
