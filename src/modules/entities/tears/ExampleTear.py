@@ -2,7 +2,7 @@ import pygame as pg
 
 from src.utils.funcs import crop
 from src.modules.animations.OneTimeAnimation import OneTimeAnimation
-from src.modules.BaseClasses.BaseTear import BaseTear
+from src.modules.BaseClasses.Based.BaseTear import BaseTear
 
 
 class ExampleTear(BaseTear):

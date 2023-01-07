@@ -2,7 +2,7 @@ import random
 
 import pygame as pg
 
-from src.modules.BaseClasses.PickableItem import PickableItem
+from src.modules.BaseClasses import PickableItem
 from src.utils.funcs import load_image, load_sound, crop
 
 key_width, key_height = 48, 48  # Размеры клетки текстурки

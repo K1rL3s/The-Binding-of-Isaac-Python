@@ -1,3 +1,1 @@
-"""
-Все противники - от мух до боссов.
-"""
+from src.modules.enemies.ExampleEnemy import ExampleEnemy

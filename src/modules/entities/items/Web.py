@@ -4,10 +4,7 @@ import pygame as pg
 
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image
-from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.MovingEnemy import MovingEnemy
-from src.modules.BaseClasses.MovableItem import MoveItem
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses import BaseItem, MovingEnemy, MovableItem, MoveSprite
 
 
 class Web(BaseItem):
@@ -68,7 +65,7 @@ class Web(BaseItem):
         # Изменить MovingEnemy на MainCharacter или просто добавить MainCharacter?
         # Работает уже лучше, потому что коэф есть, но он с задержкой убирается,
         # можно сделать Web.clear_collides_delay меньше.
-        if self.collidable and isinstance(other, (MovingEnemy, MoveItem)):
+        if self.collidable and isinstance(other, (MovingEnemy, MovableItem)):
             if other not in self.collide_sprites:
                 self.collide_sprites.append(other)
                 other.slowdown_coef = Web.slowdown_coef

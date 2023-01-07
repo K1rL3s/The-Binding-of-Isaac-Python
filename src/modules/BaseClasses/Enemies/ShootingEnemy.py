@@ -4,8 +4,8 @@ from typing import Type
 import pygame as pg
 
 from src.consts import CELL_SIZE
-from src.modules.BaseClasses.BaseEnemy import BaseEnemy
-from src.modules.BaseClasses.BaseTear import BaseTear
+from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.Based.BaseTear import BaseTear
 
 
 class ShootingEnemy(BaseEnemy):

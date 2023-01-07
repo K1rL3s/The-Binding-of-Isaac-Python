@@ -1,10 +1,8 @@
 import pygame as pg
 
 from src import consts
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses import BaseItem, MoveSprite, MovingEnemy
 from src.utils.funcs import load_image, crop
-from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.MovingEnemy import MovingEnemy
 
 
 DOOR_CELL_SIZE = int(consts.CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.

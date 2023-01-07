@@ -3,8 +3,8 @@ import random
 
 import pygame as pg
 
-from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses.Based.BaseSprite import BaseSprite
+from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image, load_sound
 

@@ -1,11 +1,16 @@
 import pygame as pg
 
 
-from src.modules.levels.Level import Level
+from src.modules.levels import Level
 from src.consts import MINIMAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_CELL_WIDTH, MINIMAP_CELL_HEIGHT
 
 
 class Minimap:
+    """
+    Класс миникарты.
+
+    :param level: Текущий этаж.
+    """
     def __init__(self,
                  level: Level):
         self.level = level

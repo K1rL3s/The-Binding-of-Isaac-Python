@@ -3,9 +3,7 @@ from typing import Type
 
 import pygame as pg
 
-from src.modules.BaseClasses.MovingEnemy import MovingEnemy
-from src.modules.BaseClasses.ShootingEnemy import ShootingEnemy
-from src.modules.BaseClasses.BaseTear import BaseTear
+from src.modules.BaseClasses import MovingEnemy, ShootingEnemy, BaseTear
 from src.modules.entities.tears.ExampleTear import ExampleTear
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_sound

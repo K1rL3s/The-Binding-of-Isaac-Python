@@ -4,7 +4,7 @@ import pygame as pg
 
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_image, load_sound
-from src.modules.BaseClasses.DestroyableItem import DestroyableItem
+from src.modules.BaseClasses import DestroyableItem
 
 
 class Poop(DestroyableItem):

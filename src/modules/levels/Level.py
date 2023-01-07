@@ -1,18 +1,15 @@
 import pygame as pg
 
 from src import consts
-from src.utils.graph import valid_coords
-from src.modules.levels.Room import Room
-from src.utils.graph import get_neighbors_coords
-from src.modules.levels.LevelGenerator import generate_level
+from src.utils.graph import valid_coords, get_neighbors_coords
+from src.modules.levels import Room, generate_level
 from src.modules.animations.MovingRoomAnimation import MovingRoomAnimation
-
-from src.modules.BaseClasses.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses import BaseEnemy
 
 
 class Level:
     """
-    Класс уровня/'этажа'.
+    Класс уровня/этажа.
 
     :param floor_type: Тип этажа.
     :param main_hero: Главный персонаж.

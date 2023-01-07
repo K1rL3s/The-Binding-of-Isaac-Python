@@ -3,9 +3,7 @@ import random
 import pygame as pg
 
 from src.consts import CELL_SIZE, FirePlacesTypes
-from src.modules.BaseClasses.MoveSprite import MoveSprite
-from src.modules.BaseClasses.DestroyableItem import DestroyableItem
-from src.modules.BaseClasses.ShootingEnemy import ShootingEnemy
+from src.modules.BaseClasses import MoveSprite, DestroyableItem, ShootingEnemy
 from src.utils.funcs import load_image, load_sound
 from src.modules.entities.tears.ExampleTear import ExampleTear
 

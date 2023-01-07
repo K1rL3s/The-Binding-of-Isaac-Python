@@ -1,3 +1,2 @@
-"""
-Сущности, такие как двери, подбираемые предметы и слёзы (возможно и препятствия (камни), если не в src/modules/levels).
-"""
+from src.modules.entities.items import BlowBomb, Door, FirePlace, PickBomb, PickKey, PickMoney, Poop, Rock, Spikes, Web
+from src.modules.entities.tears import ExampleTear

@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src.consts import CELL_SIZE
-from src.modules.BaseClasses.BaseSprite import BaseSprite
+from src.modules.BaseClasses.Based.BaseSprite import BaseSprite
 from src.utils.funcs import cell_to_pixels
 
 

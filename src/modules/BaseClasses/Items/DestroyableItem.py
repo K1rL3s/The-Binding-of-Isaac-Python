@@ -1,8 +1,8 @@
 import pygame as pg
 
-from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses.Items.BaseItem import BaseItem
+from src.modules.BaseClasses.Based.BaseTear import BaseTear
+from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 
 
 class DestroyableItem(BaseItem):

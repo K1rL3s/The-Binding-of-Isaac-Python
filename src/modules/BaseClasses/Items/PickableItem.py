@@ -1,11 +1,11 @@
 import pygame as pg
 
 from src.consts import PICKUP_LOOT
-from src.modules.BaseClasses.MovingEnemy import MovingEnemy
-from src.modules.BaseClasses.MovableItem import MoveItem
+from src.modules.BaseClasses.Enemies.MovingEnemy import MovingEnemy
+from src.modules.BaseClasses.Items.MovableItem import MovableItem
 
 
-class PickableItem(MoveItem):
+class PickableItem(MovableItem):
     """
     Подбираемый-передвигаемый предмет.
 
@@ -22,20 +22,20 @@ class PickableItem(MoveItem):
                  *groups: pg.sprite.AbstractGroup,
                  acceleration: int | float = 1,
                  xy_pixels: tuple[int, int] = None):
-        MoveItem.__init__(self, xy_pos, collide_groups, *groups,
-                          acceleration=acceleration, xy_pixels=xy_pixels)
+        MovableItem.__init__(self, xy_pos, collide_groups, *groups,
+                             acceleration=acceleration, xy_pixels=xy_pixels)
 
         self.pick_sound: pg.mixer.Sound | None = None
         self.count: int = 0
 
-    def collide(self, other: MoveItem) -> bool:
+    def collide(self, other: MovableItem) -> bool:
         """
         Обработка столкновений.
 
         :param other: С кем было столкновение.
         :return: Было ли столкновение.
         """
-        if not MoveItem.collide(self, other):
+        if not MovableItem.collide(self, other):
             return False
 
         # Заменить MovingEnemy на MainCharacter

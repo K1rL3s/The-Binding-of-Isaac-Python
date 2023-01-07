@@ -5,21 +5,11 @@ import pygame as pg
 
 import xml.etree.ElementTree as XMLTree
 
-from src.consts import FirePlacesTypes
-from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.BaseEnemy import BaseEnemy
-from src.modules.entities.items.FirePlace import FirePlace
-from src.modules.entities.items.PickBomb import PickBomb
-from src.modules.entities.items.PickKey import PickKey
-from src.modules.entities.items.PickMoney import PickMoney
-from src.modules.entities.items.Rock import Rock
-from src.modules.entities.items.Poop import Poop
-from src.modules.entities.items.Door import Door
-from src.modules.entities.items.Spikes import Spikes
-from src.modules.entities.items.Web import Web
-from src.modules.entities.items.BlowBomb import BlowBomb
-from src.modules.levels.Borders import Border
-from src.modules.enemies.ExampleEnemy import ExampleEnemy
+from src.modules.BaseClasses import BaseItem, BaseEnemy
+from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
+                                        Rock, Poop, Door, Spikes, Web, BlowBomb)
+from src.modules.levels import Border
+from src.modules.enemies import ExampleEnemy
 from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
 from src import consts
@@ -173,7 +163,7 @@ class Room(RoomTextures):
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
                 elif chance > 0.5:
                     FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
-                              fire_type=FirePlacesTypes.RED,
+                              fire_type=consts.FirePlacesTypes.RED,
                               tear_collide_groups=(self.colliadble_group, self.tears_borders, self.other, self.enemies),
                               main_hero=self.main_hero)
                 elif chance > 0.49:

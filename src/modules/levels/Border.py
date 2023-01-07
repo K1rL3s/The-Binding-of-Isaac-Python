@@ -1,8 +1,6 @@
 import pygame as pg
 
-from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses import BaseSprite, BaseTear, MoveSprite
 
 
 class Border(BaseSprite):

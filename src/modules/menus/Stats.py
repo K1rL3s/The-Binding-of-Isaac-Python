@@ -9,6 +9,12 @@ from src.utils.funcs import load_image
 
 
 class Stats:
+    """
+    Класс полоски сверху.
+
+    :param isaac: Главный герой.
+    :param level: Текущий этаж.
+    """
     black_line = load_image("textures/room/black_line.png")
 
     def __init__(self,

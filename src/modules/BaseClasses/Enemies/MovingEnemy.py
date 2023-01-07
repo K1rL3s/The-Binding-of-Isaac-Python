@@ -2,8 +2,8 @@ import math
 
 import pygame as pg
 
-from src.modules.BaseClasses.BaseEnemy import BaseEnemy
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
+from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
 

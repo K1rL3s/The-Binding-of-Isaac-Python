@@ -1,9 +1,9 @@
 import pygame as pg
 
-from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses.Based.BaseTear import BaseTear
+from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.utils.funcs import load_sound
-from src.modules.BaseClasses.BaseSprite import BaseSprite
+from src.modules.BaseClasses.Based.BaseSprite import BaseSprite
 
 
 class BaseEnemy(BaseSprite):

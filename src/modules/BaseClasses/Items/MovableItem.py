@@ -1,11 +1,11 @@
 import pygame as pg
 
-from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.MoveSprite import MoveSprite
+from src.modules.BaseClasses.Items.BaseItem import BaseItem
+from src.modules.BaseClasses.Based.BaseSprite import BaseSprite
+from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 
 
-class MoveItem(BaseItem, MoveSprite):
+class MovableItem(BaseItem, MoveSprite):
     """
     Передвигаемый предмет.
 
@@ -33,7 +33,7 @@ class MoveItem(BaseItem, MoveSprite):
     def update(self, delta_t: float):
         self.move(delta_t)
         self.clear_collide_ticks += delta_t
-        if self.clear_collide_ticks >= MoveItem.clear_collide_delay:
+        if self.clear_collide_ticks >= MovableItem.clear_collide_delay:
             self.clear_collide_ticks = 0
             self.collide_sprites.clear()
 
