@@ -16,7 +16,7 @@ def load_image(name: str, colorkey: pg.Color | int | None = None, crop_backgroun
     :param crop_background: Обрезать ли изображение по фону.
     :return: pygame.Surface
     """
-    fullname = os.path.join('src', 'data', name.replace('/', '\\'))
+    fullname = os.path.join('src', 'data', name)
     if not os.path.isfile(fullname):
         exit(f"Файл с изображением '{fullname}' не найден")
     image = pg.image.load(fullname)
@@ -43,7 +43,7 @@ def load_sound(name) -> pg.mixer.Sound:
     :param name: Путь до файла, начиная от src/data, e.g. "sounds/fart.mp23"
     :return: pygame.Sound
     """
-    fullname = os.path.join('src', 'data', name.replace('/', '\\'))
+    fullname = os.path.join('src', 'data', name)
     if not os.path.isfile(fullname):
         exit(f"Файл с звуком '{fullname}' не найден")
     sound = pg.mixer.Sound(fullname)
