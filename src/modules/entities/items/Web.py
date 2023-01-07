@@ -68,4 +68,3 @@ class Web(BaseItem):
             if other not in self.collide_sprites:
                 self.collide_sprites.append(other)
                 other.slowdown_coef = Web.slowdown_coef
-                other.set_speed(other.vx, other.vy)

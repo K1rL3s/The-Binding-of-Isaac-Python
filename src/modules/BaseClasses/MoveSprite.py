@@ -62,8 +62,8 @@ class MoveSprite(BaseSprite):
                     self.vy = max((0, self.vy - self.a * delta_t))
 
         self.x_center_last, self.y_center_last = self.x_center, self.y_center
-        self.x_center += self.vx * CELL_SIZE * delta_t
-        self.y_center += self.vy * CELL_SIZE * delta_t
+        self.x_center += self.vx * CELL_SIZE * self.slowdown_coef * delta_t
+        self.y_center += self.vy * CELL_SIZE * self.slowdown_coef * delta_t
         self.rect.center = self.x_center, self.y_center
 
     def check_collides(self):
@@ -90,5 +90,5 @@ class MoveSprite(BaseSprite):
         :param vx: Скорость по горизонтали в клетках/секунду.
         :param vy: Скорость по вертикали в клетках/секунду.
         """
-        self.vx = vx * self.slowdown_coef
-        self.vy = vy * self.slowdown_coef
+        self.vx = vx
+        self.vy = vy

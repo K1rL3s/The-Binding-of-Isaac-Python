@@ -413,10 +413,12 @@ class Room(RoomTextures):
 
     def render(self, screen: pg.Surface):
         screen.blit(self.background, (0, 0))
+        self.doors.draw(screen)
         self.rocks.draw(screen)
         self.poops.draw(screen)
         self.webs.draw(screen)
         self.spikes.draw(screen)
+        self.fires.draw(screen)
         self.enemies.draw(screen)
 
         # ЗАТЫЧКА ГГ
@@ -430,8 +432,7 @@ class Room(RoomTextures):
         for fire in self.fires.sprites():
             fire: FirePlace
             fire.draw_tears(screen)
-        self.fires.draw(screen)
-        self.doors.draw(screen)
+
         self.other.draw(screen)
         self.bombs.draw(screen)
 
