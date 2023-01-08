@@ -6,10 +6,17 @@ import pygame as pg
 from src.modules.BaseClasses.Based.BaseSprite import BaseSprite
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.consts import CELL_SIZE
+from src.modules.animations.Animation import Animation
 from src.utils.funcs import load_image, load_sound
 
 
-class BaseTear(MoveSprite):
+class PopsImage:
+    all_ends = load_image("textures/tears/tears_pop.png")
+    width = all_ends.get_width()
+    height = 64
+
+
+class BaseTear(MoveSprite, PopsImage):
     all_tears: list[list[pg.Surface]] = [
         [
             load_image("textures/tears/tears.png").subsurface(x * 64, y * 64, 64, 64)
@@ -17,7 +24,6 @@ class BaseTear(MoveSprite):
         ]
         for y in range(2)
     ]
-    all_ends: pg.surface = load_image("textures/tears/tears_pop.png")
 
     impacts: list[pg.mixer.Sound] = [load_sound(f"sounds/tear_impact{i}.mp3") for i in range(1, 4)]
 
@@ -60,6 +66,8 @@ class BaseTear(MoveSprite):
         self.is_friendly = is_friendly
         self.max_lifetime = max_lifetime
         self.lifetime_ticks = 0
+        self.destroyed = False
+        self.animation: Animation | None = None
 
         self.image: pg.Surface
         self.rect: pg.Rect
@@ -71,6 +79,10 @@ class BaseTear(MoveSprite):
 
         :param delta_t: Время с прошлого кадра.
         """
+        if self.destroyed:
+            self.destroy_animation(delta_t)
+            return
+
         self.lifetime_ticks += delta_t
 
         MoveSprite.move(self, delta_t)
@@ -105,4 +117,15 @@ class BaseTear(MoveSprite):
         Смерть слезы...
         """
         random.choice(BaseTear.impacts).play()
-        self.kill()
+        self.destroyed = True
+
+    def destroy_animation(self, delta_t: float):
+        if not self.animation:
+            raise SyntaxError("Нет анимации при наследовании от BaseTear / "
+                              "Не переопределён update или destor_animation")
+        status = self.animation.update(delta_t)
+        self.image = self.animation.image
+        self.rect = self.animation.rect
+        self.rect.center = self.x_center, self.y_center
+        if status is None:
+            self.kill()

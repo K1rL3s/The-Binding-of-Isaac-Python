@@ -54,7 +54,7 @@ class Animation:
         self.ticks_counter = 0
         self.cur_frame = 0
 
-    def update(self, delta_t: float) -> bool:
+    def update(self, delta_t: float) -> bool | None:
         """
         Обновление кадра в анимации, если пришло его время.
 
@@ -67,7 +67,7 @@ class Animation:
             index = self.cur_frame + 1
 
             if self.single_play and index == len(self.frames):
-                return False
+                return None
 
             self.cur_frame = index % len(self.frames)
             self.image = self.frames[self.cur_frame]
