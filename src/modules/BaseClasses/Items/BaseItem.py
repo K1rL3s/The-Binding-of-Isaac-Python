@@ -46,7 +46,7 @@ class BaseItem(BaseSprite):
             return False
 
         if self.collidable:
-            other.move_back(self.rect.center)
+            other.move_back(self.rect)
             if isinstance(other, BaseTear):
                 other.destroy()
         if self.hurtable:

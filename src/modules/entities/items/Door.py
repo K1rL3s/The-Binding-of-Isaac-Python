@@ -228,7 +228,7 @@ class Door(BaseItem, DoorTextures):
         self.set_rect()
         self.event_rect = pg.Rect(self.rect.centerx - 25, self.rect.centery - 25, 50, 50)
 
-    def set_rect(self, width: int | None = None, height: int | None = None):
+    def set_rect(self, width: int | None = None, height: int | None = None, up: int = 0, left: int = 0):
         if self.room_type == consts.RoomsTypes.SECRET:
             image: pg.Surface = getattr(DoorTextures, f'{self.floor_type.value}_blow_{self.direction}')
             self.rect = image.get_rect()

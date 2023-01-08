@@ -8,7 +8,7 @@ import xml.etree.ElementTree as XMLTree
 from src.modules.BaseClasses import BaseItem, BaseEnemy
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
                                         Rock, Poop, Door, Spikes, Web, BlowBomb)
-from src.modules.levels import Border
+from src.modules.levels.Border import Border
 from src.modules.enemies import ExampleEnemy
 from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
@@ -97,7 +97,6 @@ class Room(RoomTextures):
         self.spikes = pg.sprite.Group()
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
-        self.bombs = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
@@ -285,9 +284,6 @@ class Room(RoomTextures):
         # Лево
         Border(0, 0, 1, consts.GAME_HEIGHT,
                self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
-        # Лево доп
-        Border(consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
-               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Верх
         Border(0, 0, consts.WIDTH, 1,
                self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
@@ -296,9 +292,6 @@ class Room(RoomTextures):
                self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Право
         Border(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
-               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
-        # Право доп
-        Border(consts.WIDTH - consts.WALL_SIZE, 0, 1, consts.WALL_SIZE,
                self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
 
     def update_doors(self, state: str, with_sound: bool = True):
@@ -409,6 +402,7 @@ class Room(RoomTextures):
         self.webs.draw(screen)
         self.spikes.draw(screen)
         self.fires.draw(screen)
+        self.other.draw(screen)
         self.enemies.draw(screen)
 
         # ЗАТЫЧКА ГГ
@@ -422,10 +416,6 @@ class Room(RoomTextures):
         for fire in self.fires.sprites():
             fire: FirePlace
             fire.draw_tears(screen)
-
-        self.other.draw(screen)
-        self.bombs.draw(screen)
-
         # self.debug_render.draw(screen)
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):

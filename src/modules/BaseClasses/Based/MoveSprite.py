@@ -35,11 +35,11 @@ class MoveSprite(BaseSprite):
         self.slowdown_coef: float = 1.0
         self.vx, self.vy = 0, 0
 
-    def set_rect(self, width: int = None, height: int = None):
+    def set_rect(self, width: int = None, height: int = None, up: int = 0, left: int = 0):
         """
         Установка объекта в центре своей клетки.
         """
-        BaseSprite.set_rect(self)
+        BaseSprite.set_rect(self, width, height, up, left)
         if (self.x_center, self.y_center) != cell_to_pixels((self.x, self.y)):
             self.rect.center = (self.x_center, self.y_center)
 
@@ -74,12 +74,14 @@ class MoveSprite(BaseSprite):
                         sprite: BaseSprite
                         sprite.collide(self)
 
-    def move_back(self, xy_center: tuple[int, int]):
+    def move_back(self, rect: pg.Rect):
         """
         Обработка коллизии (отход нахад)
 
-        :param xy_center: Центр спрайта, с которым было столкновение
+        :param rect: Rect того, с чем было столкновение.
         """
+        # Придумать как-то отбрасывать на край объекта вместо переноса на прошлую позицию?
+
         self.x_center, self.y_center = self.x_center_last, self.y_center_last
         self.rect.center = self.x_center, self.y_center
 

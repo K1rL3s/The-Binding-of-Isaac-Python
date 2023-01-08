@@ -31,7 +31,7 @@ class BaseSprite(pg.sprite.Sprite):
         """
         pass
 
-    def set_rect(self, width: int = None, height: int = None):
+    def set_rect(self, width: int = None, height: int = None, up: int = 0, left: int = 0):
         """
         Установка объекта в центре своей клетки.
         """
@@ -43,7 +43,8 @@ class BaseSprite(pg.sprite.Sprite):
             self.rect.width = width
         if height:
             self.rect.height = height
-        self.rect.center = cell_to_pixels((self.x, self.y))
+        x, y = cell_to_pixels((self.x, self.y))
+        self.rect.center = x - left, y - up
 
     def hurt(self, damage: int):
         """

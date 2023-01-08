@@ -41,7 +41,7 @@ class Spikes(BaseItem):
     def set_image(self):
         self.image = Spikes.images[0]
 
-    def set_rect(self, width: int = None, height: int = None):
+    def set_rect(self, width: int = None, height: int = None, up: int = 0, left: int = 0):
         BaseItem.set_rect(self, width, height)
         # Попытаться уменьшить Rect шипов, чтобы края не дамажили (уменьшить текстурку?)
 

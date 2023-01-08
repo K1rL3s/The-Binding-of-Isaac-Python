@@ -37,5 +37,5 @@ class Border(BaseSprite):
         if self.is_killing:
             other.kill()
         else:
-            other.move_back(self.rect.center)
+            other.move_back(self.rect)
 

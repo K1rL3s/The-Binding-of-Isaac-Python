@@ -4,6 +4,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
+from src.modules.levels.Border import Border
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
 
@@ -67,7 +68,9 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         MoveSprite.move(self, delta_t)
 
         # Проверка коллизий
-        if not self.flyable:
+        if self.flyable:
+            self.check_fly_collides()
+        else:
             MoveSprite.check_collides(self)
 
         # Если координаты есть и если они отличаются от текущих, то обновляем скорости
@@ -76,14 +79,14 @@ class MovingEnemy(BaseEnemy, MoveSprite):
             self.x, self.y = xy_cell
             self.update_move_speed()
 
-    def move_back(self, xy_center: tuple[int, int]):
+    def move_back(self, rect: pg.Rect):
         """
         Обработка коллизии и изменение скоростей для обхода препятствия.
 
-        :param xy_center: Центр спрайта, с которым было столкновение
+        :param rect: Центр спрайта, с которым было столкновение
         """
-        MoveSprite.move_back(self, xy_center)
-        centerx, centery = xy_center
+        MoveSprite.move_back(self, rect)
+        centerx, centery = rect.center
         if (self.rect.centerx < centerx and self.vx > 0) or (self.rect.centerx > centerx and self.vx < 0):
             self.set_speed(0, self.speed if self.vy > 0 else -self.speed)
         if (self.rect.centery > centery and self.vy < 0) or (self.rect.centery < centery and self.vy > 0):
@@ -119,3 +122,12 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         distance = math.hypot(dx, dy)
         if distance:
             self.set_speed(self.speed * dx / distance, self.speed * dy / distance)
+
+    def check_fly_collides(self):
+        for group in self.collide_groups:
+            if sprites := pg.sprite.spritecollide(self, group, False):
+                for sprite in sprites:
+                    # Добавлять сюда то, с чем должны сталкиваться летающие
+                    if sprite != self and isinstance(sprite, (Border,)):
+                        sprite: Border
+                        sprite.collide(self)

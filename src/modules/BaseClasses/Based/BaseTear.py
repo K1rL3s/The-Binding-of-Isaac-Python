@@ -92,7 +92,7 @@ class BaseTear(MoveSprite):
                     # collide.hurt(self.damage)
                     collide.collide(self)
 
-    def set_rect(self, width: int = None, height: int = None):
+    def set_rect(self, width: int = None, height: int = None, up: int = 0, left: int = 0):
         """
         Установка rect и mask слезы.
         """

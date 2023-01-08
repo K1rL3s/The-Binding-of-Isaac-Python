@@ -46,15 +46,15 @@ class MovableItem(BaseItem, MoveSprite):
         MoveSprite.move(self, delta_t)
         MoveSprite.check_collides(self)
 
-    def move_back(self, xy_center: tuple[int, int]):
+    def move_back(self, rect: pg.Rect):
         """
         Обработка коллизии и изменение скоростей при столкновении.
 
-        :param xy_center: Центр спрайта, с которым было столкновение
+        :param rect: Rect того, с чем было столкновение.
         """
-        MoveSprite.move_back(self, xy_center)
+        MoveSprite.move_back(self, rect)
 
-        centerx, centery = xy_center
+        centerx, centery = rect.center
         if self.rect.centerx < centerx and self.vx > 0:
             self.vx = 0
         if self.rect.centerx > centerx and self.vx < 0:
