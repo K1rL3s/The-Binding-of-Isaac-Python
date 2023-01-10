@@ -64,6 +64,8 @@ class Animation:
         self.ticks_counter += delta_t
 
         if self.ticks_counter >= self.frame_delimiter:
+            self.ticks_counter = 0
+
             index = self.cur_frame + 1
 
             if self.single_play and index == len(self.frames):
@@ -71,7 +73,6 @@ class Animation:
 
             self.cur_frame = index % len(self.frames)
             self.image = self.frames[self.cur_frame]
-            self.ticks_counter = 0
 
             return True
 

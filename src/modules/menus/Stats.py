@@ -32,5 +32,3 @@ class Stats:
     def render(self, screen: pg.Surface):
         self.minimap.render(screen)
         screen.blit(Stats.black_line, (0, STATS_HEIGHT - Stats.black_line.get_height() // 2))
-
-
