@@ -12,8 +12,6 @@ class Poop(DestroyableItem):
     Класс Poop'a.
 
     :param xy_pos: Позиция в комнате.
-    :param poop_group: Группа спрайтов, где все спрайты - Poop'ы.
-    :param collidable_group: Группа спрайтов, где все спрайты - препятствия.
     :param *groups: Остальные группы спрайтов.
     :param collidable: Можно ли столкнуться с объектом (непроходимый ли).
     """

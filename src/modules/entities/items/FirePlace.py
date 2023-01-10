@@ -139,7 +139,7 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
         """
         Стрельба в ГГ, если костёр стреляющий.
         """
-        if ShootingEnemy.shot(self):
+        if self.is_alive and ShootingEnemy.shot(self):
             FireTextures.fireplace_shot.play()
 
     def hurt(self, damage: int):
