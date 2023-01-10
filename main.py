@@ -2,23 +2,26 @@ import pygame as pg
 
 from src import consts
 
-
 pg.init()
 pg.font.init()
 pg.mixer.init()
 screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 
-
 from src.modules.Game import Game
-
+from src.modules.mainmenu import startscrean
+from src.modules.mainmenu import choisehero
+from src.modules.mainmenu.startscrean import load_image
 
 def main():
+    pg.mixer.music.load(load_image('main_theme.mp3', musik=True))
+    pg.mixer.music.play()
+    startscrean.start_screen()
+    choisehero.choise_menu()
     running = True
     timer = pg.time.Clock()
     background = pg.Color(27, 24, 24)
-
     game = Game()
-
+    pg.mixer.music.stop()
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
