@@ -4,6 +4,7 @@ from typing import Type
 import pygame as pg
 
 from src.modules.BaseClasses import MovingEnemy, ShootingEnemy, BaseTear
+from src.modules.characters.parents import Player
 from src.modules.entities.tears.ExampleTear import ExampleTear
 from src.consts import CELL_SIZE
 from src.utils.funcs import load_sound
@@ -15,7 +16,7 @@ class ExampleEnemy(MovingEnemy, ShootingEnemy):
     def __init__(self,
                  xy_pos: tuple[int, int],
                  room_graph: dict[tuple[int, int]],
-                 main_hero: pg.sprite.Sprite,
+                 main_hero: Player,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
