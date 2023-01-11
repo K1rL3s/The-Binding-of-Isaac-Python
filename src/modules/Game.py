@@ -4,18 +4,17 @@ from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
 from src.modules.menus.Stats import Stats
 from src.consts import FloorsTypes, Moves, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT
-
-from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
+from src.modules.characters.parents import Player
+#from src.modules.BaseClasses.dddddEnemies.BaseEnemy import BaseEnemy
 
 
 # Заглушка (переделать!)
 class Game:
     def __init__(self):
-        # ЗАТЫЧКА ГГ
-        self.main_hero = BaseEnemy((0, 0), 10, 10, dict(), None, None)
-        self.main_hero.image = pg.Surface((50, 50))
-        pg.draw.rect(self.main_hero.image, 'black', (0, 0, 50, 50))
-        self.main_hero.rect = pg.Rect(0, 0, 50, 50)
+        # ЗАТЫЧКА ГГ BaseEnemy((0, 0), 10, 10, dict(), None, None)
+
+        self.main_hero = Player((300, 500), 100, 10, 10, 4, 5, 2)
+
         # ЗАТЫЧКА ГГ
 
         self.screen = pg.Surface((GAME_WIDTH, GAME_HEIGHT))
@@ -42,6 +41,7 @@ class Game:
 
     def update(self, delta_t: float):
         self.current_level.update(delta_t)
+        self.main_hero.update(delta_t)
 
     def render(self, screen: pg.Surface):
         self.stats.render(screen)
