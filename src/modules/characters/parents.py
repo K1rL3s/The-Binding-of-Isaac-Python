@@ -35,7 +35,7 @@ head_images_dict: dict = {"DOWN": load_image('textures/heroes/head/forward.png')
 
 class Body(MoveSprite):
     def __init__(self):
-        super().__init__((0, 0), ())
+        super().__init__((0, 0), (), acceleration=0)
         self.image = body_images_dict["DOWN"][0]
         self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0}
 
