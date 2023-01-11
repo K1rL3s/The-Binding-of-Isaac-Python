@@ -5,20 +5,14 @@ import pygame as pg
 
 import xml.etree.ElementTree as XMLTree
 
-from src import consts
-from src.modules.BaseClasses.BaseTear import BaseTear
-from src.modules.BaseClasses.MovingEnemy import MovingEnemy
-from src.utils.funcs import load_image
-from src.modules.BaseClasses.BaseSprite import BaseSprite
-from src.modules.BaseClasses.BaseItem import BaseItem
-from src.modules.BaseClasses.BaseEnemy import BaseEnemy
-from src.modules.entities.items.Rock import Rock
-from src.modules.entities.items.Poop import Poop
-from src.modules.entities.items.Door import Door
-from src.modules.entities.items.BlowBomb import BlowBomb
-from src.modules.enemies.ExampleEnemy import ExampleEnemy
+from src.modules.BaseClasses import BaseItem, BaseEnemy
+from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
+                                        Rock, Poop, Door, Spikes, Web, BlowBomb)
+from src.modules.levels.Border import Border
+from src.modules.enemies import ExampleEnemy
+from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
-from src.utils.funcs import pixels_to_cell
+from src import consts
 
 
 class RoomTextures:
@@ -35,8 +29,8 @@ class RoomTextures:
     secret_background: pg.Surface = load_image("textures/room/secret.png")
 
     minimap_cells: list[pg.Surface] = [load_image("textures/room/minimap_cells.png").subsurface(
-            (0, y * consts.MINIMAP_CELL_HEIGHT, consts.MINIMAP_CELL_WIDTH, consts.MINIMAP_CELL_HEIGHT)
-        )
+        (0, y * consts.MINIMAP_CELL_HEIGHT, consts.MINIMAP_CELL_WIDTH, consts.MINIMAP_CELL_HEIGHT)
+    )
         for y in range(3)
     ]
 
@@ -77,8 +71,10 @@ class Room(RoomTextures):
         self.room_type = room_type
         self.texture_variant = texture_variant if texture_variant else random.randint(1, 4)
         self.minimap_cell: pg.Surface = pg.Surface((0, 0))
-        self.background: pg.Surfac = pg.Surface((0, 0))
+        self.background: pg.Surface = pg.Surface((0, 0))
         self.paths_update_ticks = 0
+        self.is_over = False  # Пройдена ли комната
+        self.is_friendly = True  # Комната содержит только шипы, троль-бомбы итп, т.е. двери открыти, но ловушки есть
 
         # Отображение на мини-карте разными цветами
         self.is_spotted = False
@@ -97,6 +93,8 @@ class Room(RoomTextures):
         self.enemies = pg.sprite.Group()
         self.rocks = pg.sprite.Group()
         self.poops = pg.sprite.Group()
+        self.webs = pg.sprite.Group()
+        self.spikes = pg.sprite.Group()
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
@@ -154,11 +152,21 @@ class Room(RoomTextures):
                          self.obstacles, self.blowable)
                 elif chance > 0.8:
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
-                elif chance > 0.7:  # and no_enemy:
+                elif chance > 0.7:
                     ExampleEnemy((j, i), self.paths, self.main_hero,
-                                 (self.colliadble_group, self.movement_borders),
+                                 (self.colliadble_group, self.movement_borders, self.other),
                                  (self.colliadble_group, self.tears_borders, self.other),
                                  self.enemies, self.blowable)
+                    self.is_friendly = False
+                elif chance > 0.6:
+                    Web((j, i), self.colliadble_group, self.webs, self.blowable)
+                elif chance > 0.5:
+                    FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
+                              fire_type=consts.FirePlacesTypes.RED,
+                              tear_collide_groups=(self.colliadble_group, self.tears_borders, self.other, self.enemies),
+                              main_hero=self.main_hero)
+                elif chance > 0.49:
+                    Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
 
     def setup_graph(self):
         """
@@ -194,48 +202,48 @@ class Room(RoomTextures):
 
             if coords == consts.DoorsCoords.LEFT:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE + math.ceil(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
+                       consts.WALL_SIZE + math.ceil(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.RIGHT:
                 Border(consts.WIDTH - consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WIDTH - consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE + 4 * consts.CELL_SIZE,
+                       consts.WALL_SIZE + 4 * consts.CELL_SIZE,
                        1,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.UP:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.debug_render)
                 Border(consts.WALL_SIZE + math.ceil(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.DOWN:
                 Border(consts.WALL_SIZE,
-                       consts.HEIGHT - consts.WALL_SIZE,
+                       consts.GAME_HEIGHT - consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WALL_SIZE + math.ceil(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       consts.HEIGHT - consts.WALL_SIZE,
+                       consts.GAME_HEIGHT - consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.tears_borders, self.debug_render)
@@ -243,28 +251,28 @@ class Room(RoomTextures):
         for coords in all_coords:
             if coords == consts.DoorsCoords.LEFT:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        consts.ROOM_HEIGHT * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.RIGHT:
                 Border(consts.WIDTH - consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        1,
                        consts.ROOM_HEIGHT * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.UP:
                 Border(consts.WALL_SIZE,
-                       consts.STATS_HEIGHT + consts.WALL_SIZE,
+                       consts.WALL_SIZE,
                        consts.ROOM_WIDTH * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.DOWN:
                 Border(consts.WALL_SIZE,
-                       consts.HEIGHT - consts.WALL_SIZE,
+                       consts.GAME_HEIGHT - consts.WALL_SIZE,
                        consts.ROOM_WIDTH * consts.CELL_SIZE,
                        1,
                        self.movement_borders, self.tears_borders, self.debug_render)
@@ -274,23 +282,17 @@ class Room(RoomTextures):
         Установка барьеров на краях экрана.
         """
         # Лево
-        Border(0, consts.STATS_HEIGHT, 1, consts.GAME_HEIGHT,
-               self.movement_borders, self.tears_borders, self.debug_render)
-        # Лево доп
-        Border(consts.WALL_SIZE, consts.STATS_HEIGHT, 1, consts.WALL_SIZE,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        Border(0, 0, 1, consts.GAME_HEIGHT,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Верх
-        Border(0, consts.STATS_HEIGHT, consts.WIDTH, 1,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        Border(0, 0, consts.WIDTH, 1,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Низ
-        Border(0, consts.HEIGHT - 1, consts.WIDTH, 1,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        Border(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Право
-        Border(consts.WIDTH - 1, consts.STATS_HEIGHT, 1, consts.GAME_HEIGHT,
-               self.movement_borders, self.tears_borders, self.debug_render)
-        # Право доп
-        Border(consts.WIDTH - consts.WALL_SIZE, consts.STATS_HEIGHT, 1, consts.WALL_SIZE,
-               self.movement_borders, self.tears_borders, self.debug_render)
+        Border(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
+               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
 
     def update_doors(self, state: str, with_sound: bool = True):
         """
@@ -355,13 +357,23 @@ class Room(RoomTextures):
         """
         Обновление комнаты (перемещение врагов, просчёт коллизий)
         """
+        self.other.update(delta_t)
+        self.spikes.update(delta_t)
+        self.webs.update(delta_t)
+        self.fires.update(delta_t)
+
+        if self.is_over:
+            return
+
         self.paths_update_ticks += delta_t
         if self.paths_update_ticks >= self.paths_update_delay:
             self.paths_update_ticks = 0
             self.setup_graph()
             self.update_enemies_paths()
         self.enemies.update(delta_t)
-        self.other.update(delta_t)
+
+        if not self.enemies.sprites():
+            self.win_room()
 
     def update_enemies_paths(self):
         """
@@ -371,59 +383,60 @@ class Room(RoomTextures):
             enemy: BaseEnemy
             enemy.update_room_graph(self.paths)
 
+    def win_room(self):
+        """
+        Открытие всех дверей итд, когда все враги умерли.
+        """
+        self.is_over = True
+        self.update_doors("open")
+        if not self.is_friendly:
+            for spikes in self.spikes.sprites():
+                spikes: Spikes
+                spikes.hide(True)
+
+    def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
+        return (self.colliadble_group, self.movement_borders, self.other), (self.colliadble_group, self.tears_borders, self.other)
+
     def render(self, screen: pg.Surface):
-        screen.blit(self.background, (0, consts.STATS_HEIGHT))
+        screen.blit(self.background, (0, 0))
+        self.doors.draw(screen)
         self.rocks.draw(screen)
         self.poops.draw(screen)
+        self.webs.draw(screen)
+        self.spikes.draw(screen)
+        self.fires.draw(screen)
+        self.other.draw(screen)
         self.enemies.draw(screen)
 
         # ЗАТЫЧКА ГГ
-        screen.blit(self.main_hero.image, (self.main_hero.rect.x, self.main_hero.rect.y))
+        self.main_hero_group.draw(screen)
         # ЗАТЫЧКА ГГ
 
         for enemy in self.enemies.sprites():
             enemy: ExampleEnemy
             enemy.draw_tears(screen)
             # enemy.draw_stats(screen)  # СНИЖАЕТ ФПС!!!
-
-        self.fires.draw(screen)
-        self.doors.draw(screen)
-        self.other.draw(screen)
-
-        self.debug_render.draw(screen)
+        for fire in self.fires.sprites():
+            fire: FirePlace
+            fire.draw_tears(screen)
+        # self.debug_render.draw(screen)
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
+        xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
         if room_pos := pixels_to_cell(xy_pos):
-            bomb = BlowBomb(room_pos, (self.colliadble_group, self.movement_borders), (self.blowable, self.other),
-                            self.other, xy_pixels=xy_pos)
-            bomb.set_start_speed(random.randint(-20, 20) / 10, random.randint(-20, 20) / 10)
+            BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), (self.blowable, self.other),
+                     self.other, xy_pixels=xy_pos)
 
-
-class Border(BaseSprite):
-    """
-    Невидимый барьер для стен.
-
-    :param x: Пиксель на экране.
-    :param y: Пиксель на экране.
-    :param width: Ширина стены.
-    :param height: Высота стены.
-    """
-
-    def __init__(self,
-                 x: int,
-                 y: int,
-                 width: int,
-                 height: int,
-                 # collide_groups: tuple[pg.sprite.AbstractGroup, ...],
-                 *groups):
-        super().__init__(*groups)
-
-        # self.collide_groups = collide_groups
-        self.image = pg.Surface((width, height))
-        self.rect = pg.Rect(x, y, width, height)
-
-        # Для видимости, где это чудо
-        pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height))
-
-    def collide(self, other: MovingEnemy | BaseTear):
-        other.move_back(self.rect.center)
+    def test_func_set_pickable(self, xy_pos: tuple[int, int]):
+        xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
+        if room_pos := pixels_to_cell(xy_pos):
+            chance = random.random()
+            if chance > 0.66:
+                PickMoney(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
+                          xy_pixels=xy_pos)
+            elif chance > 0.33:
+                PickBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
+                         xy_pixels=xy_pos)
+            else:
+                PickKey(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
+                        xy_pixels=xy_pos)
