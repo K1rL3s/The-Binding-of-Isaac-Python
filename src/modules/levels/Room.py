@@ -71,7 +71,7 @@ class Room(RoomTextures):
         self.room_type = room_type
         self.texture_variant = texture_variant if texture_variant else random.randint(1, 4)
         self.minimap_cell: pg.Surface = pg.Surface((0, 0))
-        self.background: pg.Surfac = pg.Surface((0, 0))
+        self.background: pg.Surface = pg.Surface((0, 0))
         self.paths_update_ticks = 0
         self.is_over = False  # Пройдена ли комната
         self.is_friendly = True  # Комната содержит только шипы, троль-бомбы итп, т.е. двери открыти, но ловушки есть
@@ -394,6 +394,9 @@ class Room(RoomTextures):
                 spikes: Spikes
                 spikes.hide(True)
 
+    def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
+        return (self.colliadble_group, self.movement_borders, self.other), (self.colliadble_group, self.tears_borders, self.other)
+
     def render(self, screen: pg.Surface):
         screen.blit(self.background, (0, 0))
         self.doors.draw(screen)
@@ -406,7 +409,7 @@ class Room(RoomTextures):
         self.enemies.draw(screen)
 
         # ЗАТЫЧКА ГГ
-        screen.blit(self.main_hero.image, (self.main_hero.rect.x, self.main_hero.rect.y))
+        self.main_hero_group.draw(screen)
         # ЗАТЫЧКА ГГ
 
         for enemy in self.enemies.sprites():
