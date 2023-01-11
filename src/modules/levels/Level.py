@@ -6,6 +6,7 @@ from src.modules.levels.Room import Room
 from src.modules.levels.LevelGenerator import generate_level
 from src.modules.animations.MovingRoomAnimation import MovingRoomAnimation
 from src.modules.BaseClasses import BaseEnemy
+from src.modules.characters.parents import Player
 
 
 class Level:
@@ -19,7 +20,7 @@ class Level:
     """
     def __init__(self,
                  floor_type: consts.FloorsTypes | str,
-                 main_hero: BaseEnemy,
+                 main_hero: Player,
                  width: int = 10,
                  height: int = 6):
         self.floor_type = floor_type
@@ -46,6 +47,8 @@ class Level:
                 room.setup_doors(self.get_doors(x, y))
                 if room_type == consts.RoomsTypes.SPAWN:
                     self.current_room = room
+                    self.main_hero.update_room_groups(self.current_room.get_room_groups())
+
                 # room.update_doors('blow')
                 # room.update_doors('open')
                 # room.update_doors('close')
@@ -120,7 +123,9 @@ class Level:
             from_room = self.current_room
             to_room = self.rooms[y][x]
             self.moving_room_animation(from_room, to_room, direction)
-
+########################
+            self.main_hero.update_room_groups(self.current_room.get_room_groups())
+########################
             self.current_room = self.rooms[y][x]
             self.current_room.update_detection_state(is_active=True)
             self.change_rooms_state(x, y)
