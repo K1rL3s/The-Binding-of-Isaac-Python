@@ -185,7 +185,7 @@ class Room(RoomTextures):
 
         for obj in self.obstacles.sprites():
             obj: BaseItem
-            if obj.collidable:
+            if obj.collidable or obj.hurtable:
                 cells[obj.y][obj.x] = consts.RoomsTypes.EMPTY
         self.paths = make_neighbors_graph(cells)
 
