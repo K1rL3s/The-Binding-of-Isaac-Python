@@ -2,13 +2,13 @@ import random
 
 import pygame as pg
 
-from src.modules.BaseClasses import PickableItem
+from src.modules.BaseClasses import PickMovableItem
 from src.utils.funcs import load_image, load_sound, crop
 
 key_width, key_height = 48, 48  # Размеры клетки текстурки
 
 
-class PickKey(PickableItem):
+class PickKey(PickMovableItem):
     """
     Класс подбираемого ключа.
 
@@ -35,7 +35,7 @@ class PickKey(PickableItem):
                  *groups: pg.sprite.AbstractGroup,
                  xy_pixels: tuple[int, int] = None,
                  count: int = 0):
-        PickableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
+        PickMovableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.count = count
 
