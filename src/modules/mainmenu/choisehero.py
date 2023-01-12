@@ -1,12 +1,10 @@
 import pygame
-from src.modules.mainmenu.startscrean import load_image
+from src.modules.mainmenu.startscrean import start_screen
 from src.modules.mainmenu.startscrean import MenuSprite
+import src.consts
+from src.utils.funcs import load_image
 
-pygame.init()
-pygame.key.set_repeat(200, 70)
-WIDTH, HEIGHT = 1280, 960
-STEP = 50
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
 
 
 def create_sprite(lst, hero_choise_sprites):
@@ -49,7 +47,7 @@ def return_cheack(j, i):
 
 
 # Возвращает имя персонажа (допилить возврат управления)
-def choise_menu():
+def choise_menu(screen):
     fon = pygame.transform.scale(load_image('choise_fon.png'), (WIDTH, HEIGHT))
     whoam = pygame.sprite.Group()
     list_hero = ["isaac.png", "cain.png", "lost.png"]
@@ -113,6 +111,8 @@ def choise_menu():
                 elif event.key == pygame.K_RETURN:
                     if return_cheack(j, i) is not None:
                         return return_cheack(j, i)
+                elif event.key == pygame.K_ESCAPE:
+                    return start_screen(screen)
 
             whoam.draw(screen)
             hero_choise_sprites.draw(screen)
