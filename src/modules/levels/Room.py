@@ -6,8 +6,9 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
-from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
-                                        Rock, Poop, Door, Spikes, Web, BlowBomb)
+from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
+                                        Door, Spikes, Web, BlowBomb, Pedestal)
+from src.modules.entities.artifacts.FreshMeat import FreshMeat
 from src.modules.levels.Border import Border
 from src.modules.enemies import ExampleEnemy
 from src.utils.funcs import pixels_to_cell, load_image
@@ -98,6 +99,7 @@ class Room(RoomTextures):
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
+        self.arts = pg.sprite.Group()  # Артефакты
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
 
@@ -161,12 +163,16 @@ class Room(RoomTextures):
                 elif chance > 0.6:
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
                 elif chance > 0.5:
-                    FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
+                    FirePlace((j, i), self.colliadble_group, self.fires, self.blowable, self.obstacles,
                               fire_type=consts.FirePlacesTypes.RED,
                               tear_collide_groups=(self.colliadble_group, self.tears_borders, self.other, self.enemies),
                               main_hero=self.main_hero)
                 elif chance > 0.49:
-                    Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
+                    Spikes((j, i), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
+                elif chance > 0.4:
+                    p = Pedestal((j, i), self.obstacles, self.colliadble_group, self.other)
+                    if chance > 0.35:
+                        p.set_artifact(FreshMeat, self.arts)
 
     def setup_graph(self):
         """
@@ -404,6 +410,7 @@ class Room(RoomTextures):
         self.fires.draw(screen)
         self.other.draw(screen)
         self.enemies.draw(screen)
+        self.arts.draw(screen)
 
         # ЗАТЫЧКА ГГ
         screen.blit(self.main_hero.image, (self.main_hero.rect.x, self.main_hero.rect.y))
