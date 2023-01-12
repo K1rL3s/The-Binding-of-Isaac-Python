@@ -1,4 +1,5 @@
 import pygame as pg
+import pygame.sprite
 
 from src import consts
 
@@ -9,14 +10,13 @@ screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 
 from src.modules.Game import Game
 from src.modules.mainmenu import startscrean
-from src.modules.mainmenu import choisehero
-from src.modules.mainmenu.startscrean import load_image
+from src.utils.funcs import load_sound
 
+print(type(pygame.sprite.Group()))
 def main():
-    pg.mixer.music.load(load_image('main_theme.mp3', musik=True))
+    pg.mixer.music.load(load_sound('sounds/main_theme.mp3', name_flag=True))
     pg.mixer.music.play()
-    startscrean.start_screen()
-    choisehero.choise_menu()
+    startscrean.start_screen(screen)
     running = True
     timer = pg.time.Clock()
     background = pg.Color(27, 24, 24)

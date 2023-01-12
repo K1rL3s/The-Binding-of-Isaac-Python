@@ -38,7 +38,7 @@ def load_image(name: str,
 
 
 @cache
-def load_sound(name) -> pg.mixer.Sound:
+def load_sound(name, name_flag = False) -> pg.mixer.Sound | str:
     """
     Загрузка звука в pygame.Sound.
 
@@ -48,6 +48,8 @@ def load_sound(name) -> pg.mixer.Sound:
     fullname = os.path.join('src', 'data', name)
     if not os.path.isfile(fullname):
         exit(f"Файл с звуком '{fullname}' не найден")
+    if name_flag:
+        return fullname
     sound = pg.mixer.Sound(fullname)
     return sound
 
