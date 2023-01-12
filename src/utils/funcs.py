@@ -38,17 +38,18 @@ def load_image(name: str,
 
 
 @cache
-def load_sound(name, name_flag = False) -> pg.mixer.Sound | str:
+def load_sound(name, return_path=False) -> pg.mixer.Sound | str:
     """
     Загрузка звука в pygame.Sound.
 
     :param name: Путь до файла, начиная от src/data, e.g. "sounds/fart.mp3"
-    :return: pygame.Sound
+    :param return_path: Вернуть ли путь до файла вместо самого звука.
+    :return: pygame.Sound или путь до файла
     """
     fullname = os.path.join('src', 'data', name)
     if not os.path.isfile(fullname):
         exit(f"Файл с звуком '{fullname}' не найден")
-    if name_flag:
+    if return_path:
         return fullname
     sound = pg.mixer.Sound(fullname)
     return sound

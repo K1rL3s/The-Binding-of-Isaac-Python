@@ -1,5 +1,4 @@
 import pygame as pg
-import pygame.sprite
 
 from src import consts
 
@@ -12,9 +11,9 @@ from src.modules.Game import Game
 from src.modules.mainmenu import startscrean
 from src.utils.funcs import load_sound
 
-print(type(pygame.sprite.Group()))
+
 def main():
-    pg.mixer.music.load(load_sound('sounds/main_theme.mp3', name_flag=True))
+    pg.mixer.music.load(load_sound('sounds/main_theme.mp3', return_path=True))
     pg.mixer.music.play()
     startscrean.start_screen(screen)
     running = True
