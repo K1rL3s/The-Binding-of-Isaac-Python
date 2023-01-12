@@ -1,24 +1,27 @@
 import pygame as pg
+import pygame.sprite
 
 from src import consts
-
 
 pg.init()
 pg.font.init()
 pg.mixer.init()
 screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 
-
 from src.modules.Game import Game
+from src.modules.mainmenu import startscrean
+from src.utils.funcs import load_sound
 
-
+print(type(pygame.sprite.Group()))
 def main():
+    pg.mixer.music.load(load_sound('sounds/main_theme.mp3', name_flag=True))
+    pg.mixer.music.play()
+    startscrean.start_screen(screen)
     running = True
     timer = pg.time.Clock()
     background = pg.Color(27, 24, 24)
-
     game = Game()
-
+    pg.mixer.music.stop()
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
