@@ -10,17 +10,23 @@ screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 from src.modules.Game import Game
 from src.modules.mainmenu import startscrean
 from src.utils.funcs import load_sound
+from src.modules.Banners.BaseFont import BaseFont
 
 
 def main():
     pg.mixer.music.load(load_sound('sounds/main_theme.mp3', return_path=True))
     pg.mixer.music.play()
     startscrean.start_screen(screen)
+    game = Game()
+    pg.mixer.music.stop()
+
     running = True
     timer = pg.time.Clock()
     background = pg.Color(27, 24, 24)
-    game = Game()
-    pg.mixer.music.stop()
+
+    print(len("abcdefghijklmnopqrstuvwxyz0123456789$%€=?+-_ "))
+    font = BaseFont("fonts/upheaval.png", "abcdefghijklmnopqrstuvwxyz0123456789$%€=?+-_ ", 26, 2, total=45)
+
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -53,6 +59,7 @@ def main():
         screen.fill(background)
         game.update(delta_t)
         game.render(screen)
+        font.place_text(screen, "hello world", (300, 100))
         pg.display.flip()
 
     pg.quit()

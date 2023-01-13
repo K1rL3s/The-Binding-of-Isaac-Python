@@ -111,13 +111,15 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     return int(x), int(y)
 
 
-def load_font(name: str, columns: int, rows: int, scale_sizes: tuple[int, int] = None) -> list[pg.Surface]:
+def load_font(name: str, columns: int, rows: int,
+              total: int = None, scale_sizes: tuple[int, int] = None) -> list[pg.Surface]:
     """
     Загрузка шрифта.
 
-    :param name: Путь до файла, начиная от src/data, e.g. "textures/room/prices.png"
+    :param name: Путь до файла, начиная от src/data, e.g. "font/prices.png"
     :param columns: Количество столбцов.
     :param rows: Количество строк.
+    :param total: Сколько всего букв (если есть пустые клетки).
     :param scale_sizes: До каких размеров scale'ить (ширина, высота)
     :return: Список с Surface, где все Surface - число/буква шрифта.
     """
@@ -131,6 +133,8 @@ def load_font(name: str, columns: int, rows: int, scale_sizes: tuple[int, int] =
     )
 
     for y in range(rows):
+        if total is not None and len(frames) == total:
+            break
         for x in range(columns):
             frame_location = (rect.w * x, rect.h * y)
             part = sheet.subsurface(pg.Rect(frame_location, rect.size))
@@ -139,5 +143,8 @@ def load_font(name: str, columns: int, rows: int, scale_sizes: tuple[int, int] =
                 part = pg.transform.scale(part, scale_sizes)
 
             frames.append(part)
+
+            if total is not None and len(frames) == total:
+                break
 
     return frames

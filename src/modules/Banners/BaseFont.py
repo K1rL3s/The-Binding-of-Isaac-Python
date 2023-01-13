@@ -7,10 +7,11 @@ class BaseFont:
     """
     Класс шрифта.
 
-    :param name: Путь до файла, начиная от src/data, e.g. "textures/room/prices.png"
+    :param name: Путь до файла, начиная от src/data, e.g. "font/prices.png"
     :param alphabet: Буквы по порядку с картинки шрифта.
     :param columns: Количество столбцов.
     :param rows: Количество строк.
+    :param total: Сколько всего букв (если есть пустые клетки).
     :param scale_sizes: До каких размеров scale'ить (ширина, высота)
     """
 
@@ -19,8 +20,9 @@ class BaseFont:
                  alphabet: str,
                  columns: int,
                  rows: int,
+                 total: int = None,
                  scale_sizes: tuple[int, int] = None):
-        self.letters = load_font(name, columns, rows, scale_sizes=scale_sizes)
+        self.letters = load_font(name, columns, rows, total=total, scale_sizes=scale_sizes)
         self.alphabet = alphabet
 
         assert len(self.letters) == len(alphabet), "Неверно введены буквы или неверно указан путь до шрифта"
@@ -33,6 +35,7 @@ class BaseFont:
         :return: Поверхность с этим текстом.
         """
 
+        text = text.lower()
         width, height = self.letters[0].get_size()
         surface = pg.Surface((len(text) * width, height), pg.SRCALPHA, 32)
 
