@@ -109,3 +109,35 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     x = x_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
     y = y_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
     return int(x), int(y)
+
+
+def load_font(name: str, columns: int, rows: int, scale_sizes: tuple[int, int] = None) -> list[pg.Surface]:
+    """
+    Загрузка шрифта.
+
+    :param name: Путь до файла, начиная от src/data, e.g. "textures/room/prices.png"
+    :param columns: Количество столбцов.
+    :param rows: Количество строк.
+    :param scale_sizes: До каких размеров scale'ить (ширина, высота)
+    :return: Список с Surface, где все Surface - число/буква шрифта.
+    """
+
+    frames: list[pg.Surface] = []
+    sheet = load_image(name)
+    rect = pg.Rect(
+        0, 0,
+        sheet.get_width() // columns,
+        sheet.get_height() // rows
+    )
+
+    for y in range(rows):
+        for x in range(columns):
+            frame_location = (rect.w * x, rect.h * y)
+            part = sheet.subsurface(pg.Rect(frame_location, rect.size))
+
+            if scale_sizes:
+                part = pg.transform.scale(part, scale_sizes)
+
+            frames.append(part)
+
+    return frames

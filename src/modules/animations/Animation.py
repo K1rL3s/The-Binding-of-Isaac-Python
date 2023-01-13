@@ -38,9 +38,9 @@ class Animation:
             sheet.get_width() // columns,
             sheet.get_height() // rows
         )
-        for j in range(rows):
-            for i in range(columns):
-                frame_location = (self.rect.w * i, self.rect.h * j)
+        for y in range(rows):
+            for x in range(columns):
+                frame_location = (self.rect.w * x, self.rect.h * y)
 
                 part = sheet.subsurface(pg.Rect(frame_location, self.rect.size))
                 if scale_sizes:
