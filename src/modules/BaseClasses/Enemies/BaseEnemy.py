@@ -70,7 +70,7 @@ class BaseEnemy(BaseSprite):
         self.kill()
 
     def collide(self, other: MoveSprite):
-        if isinstance(other, BaseTear) and not other.is_friendly:
+        if isinstance(other, BaseTear):
             self.hurt(other.damage)
             other.destroy()
             return True

@@ -35,7 +35,6 @@ class ExampleEnemy(MovingEnemy, ShootingEnemy):
         ShootingEnemy.__init__(self, xy_pos, hp, damage_from_blow, room_graph, main_hero, enemy_collide_groups,
                                shot_damage, shot_max_distance, shot_max_speed, shot_delay, tear_class,
                                tear_collide_groups, *groups)
-
         self.set_image()
         self.set_rect()
 

@@ -3,7 +3,7 @@ import pygame as pg
 from src import consts
 from src.modules.BaseClasses import BaseItem, MoveSprite, MovingEnemy
 from src.utils.funcs import load_image, crop
-
+from src.modules.characters.parents import Body
 
 DOOR_CELL_SIZE = int(consts.CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
 
@@ -338,18 +338,26 @@ class Door(BaseItem, DoorTextures):
             return
 
         # Вместо MovingEnemy поставить MainCharacter или его туловище
-        if isinstance(other, MovingEnemy) and self.event_rect.colliderect(other.rect):
-            direction = None
+        if isinstance(other, Body) and self.event_rect.colliderect(other.rect):
+            direction, next_coords = None, None
             if self.xy_pos == consts.DoorsCoords.UP.value:
                 direction = consts.Moves.UP
+                next_coords = consts.DoorsCoords.DOWN.value
+                next_coords = next_coords[0], next_coords[1] - 1
             elif self.xy_pos == consts.DoorsCoords.DOWN.value:
                 direction = consts.Moves.DOWN
+                next_coords = consts.DoorsCoords.UP.value
+                next_coords = next_coords[0] , next_coords[1] + 1
             elif self.xy_pos == consts.DoorsCoords.RIGHT.value:
                 direction = consts.Moves.RIGHT
+                next_coords = consts.DoorsCoords.LEFT.value
+                next_coords = next_coords[0] + 1, next_coords[1]
             elif self.xy_pos == consts.DoorsCoords.LEFT.value:
                 direction = consts.Moves.LEFT
+                next_coords = consts.DoorsCoords.RIGHT.value
+                next_coords = next_coords[0] - 1, next_coords[1]
             assert direction
-            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM, {'direction': direction}))
+            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM, {'direction': direction, 'next_coords': next_coords}))
 
             # Реализовать закрытие двери после входа в секретку:
             # if self.room_type == consts.RoomsTypes.SECRET:

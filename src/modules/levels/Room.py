@@ -88,7 +88,7 @@ class Room(RoomTextures):
         self.obstacles = pg.sprite.Group()  # Препятствия для построения графа комнаты
         self.blowable = pg.sprite.Group()  # То, что взрывается
         self.main_hero_group = pg.sprite.Group()
-        # self.main_hero_group.add(main_hero)
+        self.main_hero_group.add(main_hero.body)
         self.movement_borders = pg.sprite.Group()  # Барьеры, не дающие пройти через себя
         self.tears_borders = pg.sprite.Group()  # Барьеры, не дающие слезам пролететь через себя
 
@@ -104,6 +104,7 @@ class Room(RoomTextures):
         self.fly_paths = dict()  # Пути для летающих врагов
 
         self.main_hero = main_hero
+
         self.setup_background()
         self.setup_entities(xml_description)
         self.setup_graph()
@@ -157,7 +158,7 @@ class Room(RoomTextures):
                 elif chance > 0.7:
                     ExampleEnemy((j, i), self.paths, self.main_hero,
                                  (self.colliadble_group, self.movement_borders, self.other),
-                                 (self.colliadble_group, self.tears_borders, self.other),
+                                 (self.colliadble_group, self.tears_borders, self.other, self.main_hero_group),
                                  self.enemies, self.blowable)
                     self.is_friendly = False
                 elif chance > 0.6:
@@ -398,8 +399,8 @@ class Room(RoomTextures):
 
     def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
         return (
-            (self.colliadble_group, self.movement_borders, self.other),
-            (self.colliadble_group, self.tears_borders, self.other)
+            (self.colliadble_group, self.movement_borders, self.other, self.doors),
+            (self.colliadble_group, self.tears_borders, self.other, self.enemies)
         )
 
     def render(self, screen: pg.Surface):
@@ -427,8 +428,8 @@ class Room(RoomTextures):
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
         if room_pos := pixels_to_cell(xy_pos):
-            BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), (self.blowable, self.other),
-                     self.other, xy_pixels=xy_pos)
+            BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other),
+                     (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
 
     def test_func_set_pickable(self, xy_pos: tuple[int, int]):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)

@@ -43,13 +43,14 @@ class MoveSprite(BaseSprite):
         if (self.x_center, self.y_center) != cell_to_pixels((self.x, self.y)):
             self.rect.center = (self.x_center, self.y_center)
 
-    def move(self, delta_t: float):
+    def move(self, delta_t: float, use_a: bool = True):
         """
         Перемещение сущности.
 
         :param delta_t: Время с прошлого кадра.
+        :param use_a: Крч, для ускорения \ торможения ГГ.
         """
-        if self.a:
+        if self.a and use_a:
             if self.vx:
                 if self.vx < 0:
                     self.vx = min((0, self.vx + self.a * delta_t))

@@ -38,10 +38,13 @@ def main():
                     game.move_to_next_level()
             if event.type == pg.KEYUP:
                 game.main_hero.set_flags_move(event, False)
+            if event.type == consts.MOVE_TO_NEXT_ROOM:
+                direction = event.direction
+                next_coords = event.next_coords
+                game.move_main_hero(next_coords)
+                game.move_to_next_room(direction)
             if event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == pg.BUTTON_LEFT:
-                    game.move_main_hero(event.pos)
-                elif event.button == pg.BUTTON_RIGHT:
+                if event.button == pg.BUTTON_RIGHT:
                     game.current_level.current_room.test_func_set_bomb(event.pos)
 
         delta_t = timer.tick(consts.FPS) / 1000

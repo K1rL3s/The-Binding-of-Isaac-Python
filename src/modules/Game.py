@@ -3,7 +3,8 @@ import pygame as pg
 from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
 from src.modules.menus.Stats import Stats
-from src.consts import FloorsTypes, Moves, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT
+from src.utils.funcs import cell_to_pixels
+from src.consts import FloorsTypes, Moves, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, CELL_SIZE
 from src.modules.characters.parents import Player
 #from src.modules.BaseClasses.dddddEnemies.BaseEnemy import BaseEnemy
 
@@ -11,9 +12,9 @@ from src.modules.characters.parents import Player
 # Заглушка (переделать!)
 class Game:
     def __init__(self):
-        # ЗАТЫЧКА ГГ BaseEnemy((0, 0), 10, 10, dict(), None, None)
+        # ЗАТЫЧКА ГГ
 
-        self.main_hero = Player((300, 500), 100, 10, 10, 4, 5, 2)
+        self.main_hero = Player((600, 1000), 100, 4, 10, 10, 5, 5, 0.5)
 
         # ЗАТЫЧКА ГГ
 
@@ -37,12 +38,7 @@ class Game:
         self.stats.update_minimap()
 
     def move_main_hero(self, xy_pos: tuple[int, int]):
-        x, y = xy_pos
-        y -= STATS_HEIGHT
-        self.main_hero.body.rect = pg.Rect(x - self.main_hero.body.rect.width // 2,
-                                           y - self.main_hero.body.rect.height // 2,
-                                           self.main_hero.body.rect.width,
-                                           self.main_hero.body.rect.height)
+        self.main_hero.move_to_cell(xy_pos)
 
     def update(self, delta_t: float):
         self.current_level.update(delta_t)

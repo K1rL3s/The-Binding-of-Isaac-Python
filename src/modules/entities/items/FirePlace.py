@@ -95,6 +95,7 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
         self.frame = 0
         self.hp = FirePlace.max_hp
         self.animation: Animation | None = None
+        self.is_alive = True
 
         self.set_image()
         # Криво дамажит из-за того, что image имеет высоту CELL_SIZE * 1.25,
