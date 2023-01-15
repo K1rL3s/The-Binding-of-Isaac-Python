@@ -23,8 +23,8 @@ class Animation:
                  single_play: bool = False,
                  scale_sizes: tuple[int, int] = None,
                  frame: int = 0):
-        self.rect = pg.Rect(0, 0, 0, 0)
         self.frames = cut_sheet(sheet, columns, rows, scale_sizes=scale_sizes)
+        self.rect = pg.Rect(0, 0, *self.frames[0].get_size())
 
         self.cur_frame = frame
         self.image = self.frames[self.cur_frame]
