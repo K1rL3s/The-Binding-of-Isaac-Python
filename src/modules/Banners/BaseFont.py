@@ -1,6 +1,6 @@
 import pygame as pg
 
-from src.utils.funcs import load_font
+from src.utils.funcs import cut_sheet
 
 
 class BaseFont:
@@ -22,7 +22,7 @@ class BaseFont:
                  rows: int,
                  total: int = None,
                  scale_sizes: tuple[int, int] = None):
-        self.letters = load_font(name, columns, rows, total=total, scale_sizes=scale_sizes)
+        self.letters = cut_sheet(name, columns, rows, total=total, scale_sizes=scale_sizes)
         self.alphabet = alphabet
 
         assert len(self.letters) == len(alphabet), "Неверно введены буквы или неверно указан путь до шрифта"

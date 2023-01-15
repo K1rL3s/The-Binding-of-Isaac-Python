@@ -111,12 +111,12 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     return int(x), int(y)
 
 
-def load_font(name: str, columns: int, rows: int,
+def cut_sheet(sheet: str | pg.Surface, columns: int, rows: int,
               total: int = None, scale_sizes: tuple[int, int] = None) -> list[pg.Surface]:
     """
     Загрузка шрифта.
 
-    :param name: Путь до файла, начиная от src/data, e.g. "font/prices.png"
+    :param sheet: Путь до файла, начиная от src/data, e.g. "font/prices.png" (или сразу Surface).
     :param columns: Количество столбцов.
     :param rows: Количество строк.
     :param total: Сколько всего букв (если есть пустые клетки).
@@ -125,7 +125,9 @@ def load_font(name: str, columns: int, rows: int,
     """
 
     frames: list[pg.Surface] = []
-    sheet = load_image(name)
+    if isinstance(sheet, str):
+        sheet = load_image(sheet)
+
     rect = pg.Rect(
         0, 0,
         sheet.get_width() // columns,
