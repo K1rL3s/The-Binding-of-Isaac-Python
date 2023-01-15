@@ -4,7 +4,6 @@ import pygame as pg
 
 from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
-from src.modules.characters.parents import Player
 from src.modules.levels.Border import Border
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
@@ -31,7 +30,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
                  damage_from_blow: int,
                  move_update_delay: int | float,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Player,
+                 main_hero: pg.sprite.Sprite,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  flyable: bool = False):
@@ -60,7 +59,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
 
         self.move(delta_t)
 
-    def move(self, delta_t: float):
+    def move(self, delta_t: float, change_speeds: bool = True):
         """
         Перемещение сущности.
 
@@ -78,7 +77,8 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         xy_cell = pixels_to_cell((self.x_center, self.y_center))
         if xy_cell and (self.x, self.y) != xy_cell:
             self.x, self.y = xy_cell
-            self.update_move_speed()
+            if change_speeds:
+                self.update_move_speed()
 
     def move_back(self, rect: pg.Rect):
         """
@@ -98,8 +98,8 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         Обновление вертикальной и горизонатальной скоростей для перемещения к ГГ.
         """
         if self.flyable:  # Летающие летят напрямую ахахаха)
-            dx = self.main_hero.body.rect.centerx - self.rect.centerx
-            dy = self.main_hero.body.rect.centery - self.rect.centery
+            dx = self.main_hero.rect.centerx - self.rect.centerx
+            dy = self.main_hero.rect.centery - self.rect.centery
             distance = math.hypot(dx, dy)
             if distance:
                 self.set_speed(self.speed * dx / distance, self.speed * dy / distance)
@@ -108,7 +108,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
             return
 
         self.move_ticks = 0
-        xy_end = self.main_hero.body.rect.center
+        xy_end = self.main_hero.rect.center
         xy_end = pixels_to_cell(xy_end)
         path_list = make_path_to_cell(self.room_graph, (self.x, self.y), xy_end)
         if not path_list or len(path_list) < 2:

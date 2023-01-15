@@ -20,7 +20,6 @@ class Game:
         self.screen = pg.Surface((GAME_WIDTH, GAME_HEIGHT))
         self.levels = [Level(floor_type, self.main_hero) for floor_type in FloorsTypes]
         self.current_level = self.levels[0]
-        self.current_level.update_main_hero_collide_groups()
         self.stats = Stats(None, self.current_level)
 
     def get_current_level_rooms(self) -> list[list[Room | None]]:
@@ -28,21 +27,17 @@ class Game:
 
     def move_to_next_level(self):
         self.current_level = self.levels[(self.levels.index(self.current_level) + 1) % len(self.levels)]
-        self.current_level.update_main_hero_collide_groups()
         self.stats = Stats(None, self.current_level)
 
     def move_to_next_room(self, direction: Moves):
         self.current_level.move_to_next_room(direction)
-        self.current_level.update_main_hero_collide_groups()
         self.stats.update_minimap()
 
     def move_main_hero(self, xy_pos: tuple[int, int]):
         x, y = xy_pos
         y -= STATS_HEIGHT
-        self.main_hero.body.rect = pg.Rect(x - self.main_hero.body.rect.width // 2,
-                                           y - self.main_hero.body.rect.height // 2,
-                                           self.main_hero.body.rect.width,
-                                           self.main_hero.body.rect.height)
+        self.main_hero.rect = pg.Rect(x - self.main_hero.rect.width // 2, y - self.main_hero.rect.height // 2,
+                                      self.main_hero.rect.width, self.main_hero.rect.height)
 
     def update(self, delta_t: float):
         self.current_level.update(delta_t)

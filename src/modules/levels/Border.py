@@ -39,3 +39,6 @@ class Border(BaseSprite):
         else:
             other.move_back(self.rect)
 
+    def get_rect(self):
+        return self.rect
+

@@ -6,7 +6,6 @@ import pygame as pg
 from src.consts import CELL_SIZE
 from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
-from src.modules.characters.parents import Player
 
 
 class ShootingEnemy(BaseEnemy):
@@ -35,7 +34,7 @@ class ShootingEnemy(BaseEnemy):
                  hp: int,
                  damage_from_blow: int,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Player,
+                 main_hero: pg.sprite.Sprite,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  shot_damage: int | float,
                  shot_max_distance: int | float,
@@ -82,7 +81,7 @@ class ShootingEnemy(BaseEnemy):
         :return: Выстрелил ли.
         """
 
-        x, y = self.main_hero.body.rect.center
+        x, y = self.main_hero.rect.center
         dx = x - self.rect.centerx
         dy = y - self.rect.centery
         distance = math.hypot(dx, dy)
@@ -95,5 +94,3 @@ class ShootingEnemy(BaseEnemy):
         self.tear_class((self.x, self.y), self.rect.center, self.shot_damage, self.shot_max_distance, vx, vy,
                         self.tear_collide_groups, self.tears)
         return True
-
-

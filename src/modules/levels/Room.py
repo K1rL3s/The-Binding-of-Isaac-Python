@@ -6,6 +6,7 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
+from src.modules.BaseClasses.Enemies.BossEnemy import BossEnemy
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
                                         Rock, Poop, Door, Spikes, Web, BlowBomb)
 from src.modules.levels.Border import Border
@@ -13,8 +14,6 @@ from src.modules.enemies import ExampleEnemy
 from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
 from src import consts
-
-from src.modules.characters.parents import Player
 
 
 class RoomTextures:
@@ -62,7 +61,7 @@ class Room(RoomTextures):
                  floor_type: consts.FloorsTypes,
                  room_type: consts.RoomsTypes,
                  xy_pos: tuple[int, int],
-                 main_hero: Player,
+                 main_hero,
                  xml_description: XMLTree,
                  texture_variant: int = None):
 
@@ -88,11 +87,12 @@ class Room(RoomTextures):
         self.obstacles = pg.sprite.Group()  # Препятствия для построения графа комнаты
         self.blowable = pg.sprite.Group()  # То, что взрывается
         self.main_hero_group = pg.sprite.Group()
-        # self.main_hero_group.add(main_hero)
+        self.main_hero_group.add(main_hero)
         self.movement_borders = pg.sprite.Group()  # Барьеры, не дающие пройти через себя
         self.tears_borders = pg.sprite.Group()  # Барьеры, не дающие слезам пролететь через себя
 
         self.enemies = pg.sprite.Group()
+        self.bosses = pg.sprite.Group()
         self.rocks = pg.sprite.Group()
         self.poops = pg.sprite.Group()
         self.webs = pg.sprite.Group()
@@ -105,9 +105,9 @@ class Room(RoomTextures):
 
         self.main_hero = main_hero
         self.setup_background()
+        self.setup_borders()
         self.setup_entities(xml_description)
         self.setup_graph()
-        self.setup_borders()
 
     def setup_background(self):
         texture_x = texture_y = 0
@@ -146,6 +146,7 @@ class Room(RoomTextures):
         Загрузка комнаты из json/xml, пока не выбрали.
         Сейчас - заглушка.
         """
+        k = 1
         for i in range(consts.ROOM_HEIGHT):
             for j in range(consts.ROOM_WIDTH):
                 chance = random.random()
@@ -154,21 +155,23 @@ class Room(RoomTextures):
                          self.obstacles, self.blowable)
                 elif chance > 0.8:
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
-                elif chance > 0.7:
-                    ExampleEnemy((j, i), self.paths, self.main_hero,
-                                 (self.colliadble_group, self.movement_borders, self.other),
-                                 (self.colliadble_group, self.tears_borders, self.other),
-                                 self.enemies, self.blowable)
+                elif chance > 0.7 and k == 1:
+                    k += 1
+
                     self.is_friendly = False
                 elif chance > 0.6:
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
                 elif chance > 0.5:
                     FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
-                              fire_type=consts.FirePlacesTypes.DEFAULT,
+                              fire_type=consts.FirePlacesTypes.RED,
                               tear_collide_groups=(self.colliadble_group, self.tears_borders, self.other, self.enemies),
-                              main_hero=self.main_hero.body)  # Передавать как-то хитрее?
+                              main_hero=self.main_hero)
                 elif chance > 0.49:
                     Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
+        if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
+            BossEnemy((6, 3), 40, self.paths, self.main_hero,
+                      (self.movement_borders,), 1, 2,
+                      self.bosses, self.blowable, flyable=True)
 
     def setup_graph(self):
         """
@@ -284,17 +287,17 @@ class Room(RoomTextures):
         Установка барьеров на краях экрана.
         """
         # Лево
-        Border(0, 0, 1, consts.GAME_HEIGHT,
-               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
+        self.left = Border(0, 0, 1, consts.GAME_HEIGHT,
+                           self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Верх
-        Border(0, 0, consts.WIDTH, 1,
-               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
+        self.up = Border(0, 0, consts.WIDTH, 1,
+                         self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Низ
-        Border(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
-               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
+        self.down = Border(0, consts.GAME_HEIGHT - 1, consts.WIDTH, 1,
+                           self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
         # Право
-        Border(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
-               self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
+        self.right = Border(consts.WIDTH - 1, 0, 1, consts.GAME_HEIGHT,
+                            self.movement_borders, self.tears_borders, self.debug_render, is_killing=True)
 
     def update_doors(self, state: str, with_sound: bool = True):
         """
@@ -363,6 +366,7 @@ class Room(RoomTextures):
         self.spikes.update(delta_t)
         self.webs.update(delta_t)
         self.fires.update(delta_t)
+        self.bosses.update(delta_t)
 
         if self.is_over:
             return
@@ -373,6 +377,7 @@ class Room(RoomTextures):
             self.setup_graph()
             self.update_enemies_paths()
         self.enemies.update(delta_t)
+        self.bosses.update(delta_t)
 
         if not self.enemies.sprites():
             self.win_room()
@@ -384,6 +389,9 @@ class Room(RoomTextures):
         for enemy in self.enemies:
             enemy: BaseEnemy
             enemy.update_room_graph(self.paths)
+        for bos in self.bosses:
+            bos: BaseEnemy
+            bos.update_room_graph(self.paths)
 
     def win_room(self):
         """
@@ -397,10 +405,8 @@ class Room(RoomTextures):
                 spikes.hide(True)
 
     def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
-        return (
-            (self.colliadble_group, self.movement_borders, self.other),
-            (self.colliadble_group, self.tears_borders, self.other)
-        )
+        return (self.colliadble_group, self.movement_borders, self.other), (
+        self.colliadble_group, self.tears_borders, self.other)
 
     def render(self, screen: pg.Surface):
         screen.blit(self.background, (0, 0))
@@ -412,6 +418,11 @@ class Room(RoomTextures):
         self.fires.draw(screen)
         self.other.draw(screen)
         self.enemies.draw(screen)
+        self.bosses.draw(screen)
+        self.movement_borders.draw(screen)
+        # ЗАТЫЧКА ГГ
+        self.main_hero_group.draw(screen)
+        # ЗАТЫЧКА ГГ
 
         for enemy in self.enemies.sprites():
             enemy: ExampleEnemy
@@ -421,8 +432,6 @@ class Room(RoomTextures):
             fire: FirePlace
             fire.draw_tears(screen)
         # self.debug_render.draw(screen)
-
-        self.main_hero.render(screen)
 
     def test_func_set_bomb(self, xy_pos: tuple[int, int]):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
