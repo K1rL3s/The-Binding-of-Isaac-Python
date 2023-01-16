@@ -7,6 +7,7 @@ import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
 from src.modules.BaseClasses.Enemies.BossEnemy import BossEnemy
+from src.modules.BaseClasses.Enemies.fistula import Fistula
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
                                         Rock, Poop, Door, Spikes, Web, BlowBomb)
 from src.modules.levels.Border import Border
@@ -168,8 +169,14 @@ class Room(RoomTextures):
                               main_hero=self.main_hero)
                 elif chance > 0.49:
                     Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
+
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
             BossEnemy((6, 3), 40, self.paths, self.main_hero,
+                      (self.movement_borders,), 1, 2,
+                      self.bosses, self.blowable, flyable=True)
+
+        if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
+            Fistula((6, 3), 40, self.paths, self.main_hero,
                       (self.movement_borders,), 1, 2,
                       self.bosses, self.blowable, flyable=True)
 
