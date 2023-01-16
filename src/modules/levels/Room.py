@@ -9,6 +9,7 @@ from src.modules.BaseClasses import BaseItem, BaseEnemy
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
                                         Door, Spikes, Web, BlowBomb, Pedestal)
 from src.modules.entities.artifacts.FreshMeat import FreshMeat
+from src.modules.entities.items.Trapdoor import Trapdoor
 from src.modules.levels.Border import Border
 from src.modules.enemies import ExampleEnemy
 from src.utils.funcs import pixels_to_cell, load_image
@@ -173,6 +174,9 @@ class Room(RoomTextures):
                     p = Pedestal((j, i), self.obstacles, self.colliadble_group, self.other)
                     if chance > 0.35:
                         p.set_artifact(FreshMeat, self.arts)
+
+        if self.room_type == consts.RoomsTypes.BOSS:
+            Trapdoor(self.colliadble_group, self.doors)
 
     def setup_graph(self):
         """
