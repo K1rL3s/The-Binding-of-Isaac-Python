@@ -6,8 +6,9 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
-from src.modules.BaseClasses.Enemies.BossEnemy import BossEnemy
-from src.modules.BaseClasses.Enemies.fistula import Fistula
+from src.modules.enemies.BossEnemy import BossEnemy
+from src.modules.enemies.Fly import Fly
+from src.modules.enemies.fistula import Fistula
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
                                         Rock, Poop, Door, Spikes, Web, BlowBomb)
 from src.modules.levels.Border import Border
@@ -161,7 +162,11 @@ class Room(RoomTextures):
 
                     self.is_friendly = False
                 elif chance > 0.6:
-                    Web((j, i), self.colliadble_group, self.webs, self.blowable)
+                    Fly((j, i), self.paths, self.main_hero,
+                        (self.movement_borders,),
+                        (self.main_hero_group, self.colliadble_group),
+                        self.enemies, self.blowable)
+                    self.is_friendly = False
                 elif chance > 0.5:
                     FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
                               fire_type=consts.FirePlacesTypes.RED,
@@ -174,11 +179,12 @@ class Room(RoomTextures):
             BossEnemy((6, 3), 40, self.paths, self.main_hero,
                       (self.movement_borders,), 1, 2,
                       self.bosses, self.blowable, flyable=True)
+            self.is_friendly = False
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
             Fistula((6, 3), 40, self.paths, self.main_hero,
-                      (self.movement_borders,), 1, 2,
-                      self.bosses, self.blowable, flyable=True)
+                    (self.movement_borders,), 1, 2,
+                    self.bosses, self.blowable, flyable=True)
 
     def setup_graph(self):
         """
@@ -413,7 +419,7 @@ class Room(RoomTextures):
 
     def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
         return (self.colliadble_group, self.movement_borders, self.other), (
-        self.colliadble_group, self.tears_borders, self.other)
+            self.colliadble_group, self.tears_borders, self.other)
 
     def render(self, screen: pg.Surface):
         screen.blit(self.background, (0, 0))
