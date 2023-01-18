@@ -57,6 +57,15 @@ class FirePlacesTypes(Enum):
     RED = 'red'
 
 
+class HeartsTypes(Enum):
+    """
+    Виды сердец персонажа.
+    """
+    RED = 'red'
+    BLUE = 'blue'
+    BLACK = 'black'
+
+
 FPS = 60                                          # А может 59.98?
 WIDTH, HEIGHT = 1280, 960                         # Весь экран
 GAME_WIDTH, GAME_HEIGHT = 1280, 812               # Часть экрана с игрой

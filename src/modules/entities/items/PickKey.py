@@ -23,9 +23,10 @@ class PickKey(PickMovableItem):
         crop(load_image("textures/room/keys.png").subsurface(x * key_width, 0, key_width, key_height))
         for x in range(3)
     ]
+    pickup_sound = load_sound("sounds/key_pickup.mp3")
     keys: dict[int, tuple[pg.Surface, pg.mixer.Sound]] = {
-        1: (keys_images[0], load_sound("sounds/key_pickup.mp3")),
-        2: (keys_images[1], load_sound("sounds/key_pickup.mp3")),
+        1: (keys_images[0], pickup_sound),
+        2: (keys_images[1], pickup_sound),
         99: (keys_images[2], load_sound("sounds/key_golden_pickup.mp3"))
     }
 

@@ -7,7 +7,7 @@ import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
-                                        Door, Spikes, Web, BlowBomb, Pedestal)
+                                        Door, Spikes, Web, BlowBomb, Pedestal, PickHeart)
 from src.modules.entities.artifacts.FreshMeat import FreshMeat
 from src.modules.levels.Border import Border
 from src.modules.enemies import ExampleEnemy
@@ -435,12 +435,15 @@ class Room(RoomTextures):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
         if room_pos := pixels_to_cell(xy_pos):
             chance = random.random()
-            if chance > 0.66:
+            if chance > 0.75:
                 PickMoney(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
                           xy_pixels=xy_pos)
-            elif chance > 0.33:
+            elif chance > 0.50:
                 PickBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
                          xy_pixels=xy_pos)
+            elif chance > 0.25:
+                PickHeart(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
+                          xy_pixels=xy_pos)
             else:
                 PickKey(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
                         xy_pixels=xy_pos)
