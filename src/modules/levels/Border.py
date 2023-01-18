@@ -25,11 +25,11 @@ class Border(BaseSprite):
         BaseSprite.__init__(self, (0, 0), *groups)
 
         self.is_killing = is_killing
-        self.image = pg.Surface((width, height))
+        self.image = pg.Surface((width, height), pg.SRCALPHA, 32)
         self.rect = pg.Rect(x, y, width, height)
 
         # Для видимости, где это чудо
-        pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height))
+        pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height), width=4)
 
     def collide(self, other: MoveSprite):
         if isinstance(other, BaseTear):

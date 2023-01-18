@@ -139,7 +139,7 @@ class Level:
         self.is_moving = MovingRoomAnimation(from_room, to_room, direction)
 
     def update_main_hero_collide_groups(self):
-        self.main_hero.update_room_groups(self.current_room.get_room_groups())
+        self.main_hero.update_room_groups(*self.current_room.get_room_groups())
 
     def update(self, delta_t: float):
         if self.is_moving:

@@ -76,6 +76,7 @@ class MoveSprite(BaseSprite):
                         sprite.collide(self)
 
     def move_back(self, rect: pg.Rect):
+
         """
         Обработка коллизии (отход нахад)
 

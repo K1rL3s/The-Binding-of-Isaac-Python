@@ -357,6 +357,7 @@ class Door(BaseItem, DoorTextures):
                 next_coords = consts.DoorsCoords.RIGHT.value
                 next_coords = next_coords[0] - 1, next_coords[1]
             assert direction
+            print(other)
             pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM, {'direction': direction, 'next_coords': next_coords}))
 
             # Реализовать закрытие двери после входа в секретку:

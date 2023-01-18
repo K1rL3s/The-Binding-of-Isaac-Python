@@ -3,7 +3,7 @@ from functools import cache
 
 import pygame as pg
 
-from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT
+from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT, Moves
 
 
 @cache
@@ -106,3 +106,34 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     x = x_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
     y = y_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
     return int(x), int(y)
+
+
+def get_direction(first_rect: pg.Rect, second_rect: pg.Rect) -> Moves | str:
+
+    """
+    :param first_rect: тело, которое врезалось
+    :param second_rect: тело, с которым произошло столкновение
+    Возвращает, с какой стороны второй rect
+
+    """
+    if second_rect.collidepoint(first_rect.midtop):
+        return Moves.UP
+    elif second_rect.collidepoint(first_rect.midbottom):
+        return Moves.DOWN
+    elif second_rect.collidepoint(first_rect.midleft):
+        return Moves.LEFT
+    elif second_rect.collidepoint(first_rect.midright):
+        return Moves.RIGHT
+
+    if second_rect.collidepoint(first_rect.topleft):
+        return "topleft"
+
+    elif second_rect.collidepoint(first_rect.topright):
+        return "topright"
+
+    elif second_rect.collidepoint(first_rect.bottomleft):
+        return "bottomleft"
+
+    elif second_rect.collidepoint(first_rect.bottomright):
+        return "bottomright"
+

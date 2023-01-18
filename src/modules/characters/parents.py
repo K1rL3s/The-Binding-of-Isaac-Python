@@ -1,6 +1,6 @@
 import pygame as pg
 
-from src.utils.funcs import crop, cell_to_pixels
+from src.utils.funcs import crop, cell_to_pixels, get_direction
 from src.modules.animations.Animation import Animation
 from typing import Type
 from src.utils.funcs import load_image
@@ -8,7 +8,8 @@ from src.consts import CELL_SIZE
 from src.consts import Moves
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
-#from src.modules.entities.tears.ExampleTear import ExampleTear
+
+# from src.modules.entities.tears.ExampleTear import ExampleTear
 
 # фишка в том, что когда сделаем меню, можно будет позволить игроку менять настройки управления, а в коде поменяются:
 settings_body = (pg.K_a, pg.K_d, pg.K_w, pg.K_s)  # это
@@ -31,9 +32,10 @@ head_images_dict: dict = {"DOWN": load_image('textures/heroes/head/forward.png')
 
 
 class Body(MoveSprite):
-    def __init__(self, hp, tears: pg.sprite.AbstractGroup):
-        super().__init__((1, 0), (), acceleration=0)
+    def __init__(self, hp, max_speed, a, tears: pg.sprite.AbstractGroup):
+        super().__init__((1, 1), (), acceleration=a)
         self.hp = hp
+        self.max_speed = max_speed
         self.tears = tears
         self.damage_from_blow: int = 10
         self.image = body_images_dict["DOWN"][0]
@@ -47,12 +49,19 @@ class Body(MoveSprite):
         self.flag_move_up: bool = False
         self.is_move: bool = False
 
+        self.x_collide = False
+        self.y_collide = False
+
+        self.last_name_direction: str = "DOWN"
+        self.move_last_direction: str | None = None
+
         # Заменить get_width и get_height на что-то типа cell_size // 2, или cell_size / 3 * 2, типо того
         # и смотреть, чтобы голова не съехала
         self.rect = pg.Rect((0, 0, self.image.get_width(), self.image.get_height()))
 
     def hurt(self, damage):
-        self.hp -= damage
+        self.hp += damage
+        print(self.rect.width, self.rect.height)
 
     def blow(self):
         self.hurt(self.damage_from_blow)
@@ -71,11 +80,50 @@ class Body(MoveSprite):
             self.flag_move_down = is_down
 
     # подумаю, как вынести в файл Animation.py
-    def animating(self, name: str):
+    def animating(self):
+        name = self.last_name_direction
         peremennaya = self.indexes[name] + 1
         self.settings()
         self.indexes[name] = peremennaya % len(body_images_dict["DOWN"])
         self.image = body_images_dict[name][self.indexes[name]] if self.is_move else body_images_dict["DOWN"][0]
+
+        self.image = pg.Surface((self.rect.w, self.rect.h), pg.SRCALPHA, 32)
+        pg.draw.rect(self.image, 'red', (0, 0, self.rect.w, self.rect.h), width=2)
+
+    def settings_move_speed(self, delta_t):
+        max_speed, a = self.max_speed, self.a * CELL_SIZE
+        if (self.flag_move_up or self.flag_move_down) and \
+                (self.flag_move_left or self.flag_move_right) and not \
+                (self.x_collide or self.y_collide):
+            max_speed *= 0.7  # cos 45
+            a *= 0.7  # sin 45
+
+        if self.flag_move_up and not self.flag_move_down and not self.y_collide:
+            self.vy = max(-max_speed, self.vy - a * delta_t)
+        elif self.vy < 0:
+            self.vy = min(0, self.vy + a * delta_t)
+
+        if self.flag_move_down and not self.flag_move_up and not self.y_collide:
+            self.vy = min(max_speed, self.vy + a * delta_t)
+        elif self.vy > 0:
+            self.vy = max(0, self.vy - a * delta_t)
+
+        if self.flag_move_left and not self.flag_move_right and not self.x_collide:
+            self.vx = max(-max_speed, self.vx - a * delta_t)
+        elif self.vx < 0:
+            self.vx = min(0, self.vx + a * delta_t)
+
+        if self.flag_move_right and not self.flag_move_left and not self.x_collide:
+            self.vx = min(max_speed, self.vx + a * delta_t)
+        elif self.vx > 0:
+            self.vx = max(0, self.vx - a * delta_t)
+
+        if self.flag_move_up or self.flag_move_down:
+            self.last_name_direction = "UP" if self.flag_move_up else "DOWN"
+        elif self.flag_move_right or self.flag_move_left:
+            self.last_name_direction = "LEFT" if self.flag_move_left else "RIGHT"
+
+        self.is_move = self.vx != 0 or self.vy != 0
 
     def check_collides(self):
         if self.collide_groups:
@@ -87,10 +135,76 @@ class Body(MoveSprite):
             other.destroy()
         MoveSprite.collide(self, other)
 
+    def reset_collides(self):
+        self.x_collide = self.y_collide = False
+
+    # def check_collide_borders(self, other: pg.Rect):
+
+    def move_back(self, rect: pg.Rect):
+        """
+        Обработка коллизии и изменение скоростей при столкновении.
+
+        :param rect: Rect того, с чем было столкновение.
+        """
+        direction = get_direction(self.rect, rect)
+        if (self.flag_move_up or self.flag_move_down) and (self.flag_move_left or self.flag_move_right):
+            if direction == Moves.RIGHT and self.vx > 0:
+                self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+                self.x_collide = True
+                self.vy /= 0.7 * 0.7
+                self.vx = 0
+
+            elif direction == Moves.LEFT and self.vx < 0:
+                self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+                self.x_collide = True
+                self.vy /= 0.7 * 0.7
+                self.vx = 0
+
+            elif direction == Moves.UP and self.vy < 0:
+                self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+
+                self.y_collide = True
+                self.vx /= 0.7 * 0.7
+                self.vy = 0
+
+            elif direction == Moves.DOWN and self.vy > 0:
+                self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+                self.y_collide = True
+                self.vx /= 0.7 * 0.7
+                self.vy = 0
+
+            elif direction in ['topleft', 'topright', 'bottomleft', ',bottomright']:
+                if self.move_last_direction in ['DOWN', 'UP']:
+                    self.vx = 0
+                elif self.move_last_direction in ['LEFT', 'RIGHT']:
+                    self.vy = 0
+            if self.x_collide:
+                self.x_center = self.x_center_last
+                self.rect.centerx = self.x_center
+            if self.y_collide:
+                self.y_center = self.y_center_last
+                self.rect.centery = self.y_center
+
+            if self.vx > self.max_speed:
+                self.vx = self.max_speed
+
+            elif self.vx < -self.max_speed:
+                self.vx = -self.max_speed
+
+            if self.vy > self.max_speed:
+                self.vy = self.max_speed
+
+            elif self.vy < -self.max_speed:
+                self.vy = -self.max_speed
+        else:
+            MoveSprite.move_back(self, rect)
+
+        # elif self.flag_move_down or self.flag_move_up or self.flag_move_right or self.flag_move_left:
+        #     self.vx, self.vy = 0, 0
+
 
 class Head(pg.sprite.Sprite):
     def __init__(self,
-                 xy_pix: tuple[int, int],
                  tears: pg.sprite.AbstractGroup,
                  shot_damage: int | float,
                  shot_max_distance: int | float,
@@ -114,7 +228,7 @@ class Head(pg.sprite.Sprite):
         self.vx_tear: int | float = 0
         self.vy_tear: int | float = 0
         self.last_name_direction = "DOWN"
-        self.rect = pg.Rect((xy_pix[0], xy_pix[1], self.image.get_width(), self.image.get_height()))
+        self.rect = pg.Rect((0, 0, self.image.get_width(), self.image.get_height()))
 
     def set_tear_collide_groups(self, tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...]):
         self.tear_collide_groups = tear_collide_groups
@@ -123,12 +237,12 @@ class Head(pg.sprite.Sprite):
         if self.is_rotated:
             if self.last_name_direction in ["LEFT", "RIGHT"]:
                 self.vx_tear = self.shot_speed if self.last_name_direction == "RIGHT" else -self.shot_speed
-                #if self.player_speed[1] != 0:
-                self.vy_tear += self.player_speed[1] * 0.3 # константа выведена практически
+                # if self.player_speed[1] != 0:
+                self.vy_tear += self.player_speed[1] * 0.3  # константа выведена практически
             elif self.last_name_direction in ["UP", "DOWN"]:
                 self.vy_tear = self.shot_speed if self.last_name_direction == "DOWN" else -self.shot_speed
-                #if self.player_speed[0] != 0:
-                self.vx_tear += self.player_speed[0] * 0.3 # константа выведена практически
+                # if self.player_speed[0] != 0:
+                self.vx_tear += self.player_speed[0] * 0.3  # константа выведена практически
 
     def set_player_speed(self, vx: int | float, vy: int | float):
         self.vy_tear, self.vx_tear = 0, 0
@@ -171,28 +285,26 @@ class Player:
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = (),
                  *groups: pg.sprite.AbstractGroup,
                  ):
+        self.k = 0
+
         self.damage_from_blow = damage_from_blow
-        self.max_speed = speed_body
-        self.a = 0.01
+        self.a = 0.25
+        self.count_bombs = 3
         ################################################################################################
-        self.speed = speed_body
+        self.speed = 5
         self.tears = pg.sprite.Group()
-        self.body = Body(hp, self.tears)
-        self.head = Head(xy_pix, self.tears, shot_damage, shot_max_distance, shot_speed, shot_delay, tear_collide_groups)
-        self.last_name_direction = "DOWN"
+        self.body = Body(hp, speed_body, self.a, self.tears)
+        self.head = Head(self.tears, shot_damage, shot_max_distance, shot_speed, shot_delay, tear_collide_groups)
         self.count_cadrs = 0
-        self.body.rect.center = xy_pix
         self.rect = self.body.rect
 
         self.player_sprites = pg.sprite.LayeredUpdates()
         self.player_sprites.add(self.body, layer=1)
         self.player_sprites.add(self.head, layer=2)
 
-        self.vx, self.vy = self.speed, self.speed
+        self.vx, self.vy = 0, 0
 
-    def update_room_groups(self, groups) -> None:
-        hero_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = groups[0]
-        tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = groups[1]
+    def update_room_groups(self, hero_collide_groups, tear_collide_groups) -> None:
         self.head.set_tear_collide_groups(tear_collide_groups)
         self.body.collide_groups = hero_collide_groups
 
@@ -214,83 +326,35 @@ class Player:
             self.rotation_head(directions_head[key])
 
     def update(self, delta_t):
-        self.count_cadrs += 1
-        self.head.set_player_speed(*self.get_speed())
-        self.settings_move_speed(delta_t)
-        self.step_out_body()
+        self.k += 1
+        if self.body.hp > 0:
+            self.count_cadrs += 1
 
-        self.head.update(delta_t)
+            self.step_out_body()
+            self.head.update(delta_t)
 
-        self.body.move(delta_t, use_a=False)
-        self.body.check_collides()
+            self.body.move(delta_t, use_a=False)
+            self.body.settings_move_speed(delta_t)
+            self.body.check_collides()
 
-        coords = self.body.rect.midtop
-        self.head.rect.center = coords[0], coords[1] - 8 # константа выведена практически (чтобы голова выглядела норм)
-
-    def settings_move_speed(self, delta_t):
-        max_speed, a = self.max_speed, self.a * CELL_SIZE
-        if (self.body.flag_move_up or self.body.flag_move_down) and \
-            (self.body.flag_move_left or self.body.flag_move_right):
-            max_speed *= 0.7
-            a *= 0.7
-        if self.body.flag_move_up:
-            self.vy = max(-max_speed, self.vy - a * delta_t)
-        elif self.vy < 0:
-            self.vy = min(0, self.vy + a * delta_t)
-
-        if self.body.flag_move_down:
-            self.vy = min(max_speed, self.vy + a * delta_t)
-        elif self.vy > 0:
-            self.vy = max(0, self.vy - a * delta_t)
-
-        if self.body.flag_move_left:
-            self.vx = max(-max_speed, self.vx - a * delta_t)
-        elif self.vx < 0:
-            self.vx = min(0, self.vx + a * delta_t)
-
-        if self.body.flag_move_right:
-            self.vx = min(max_speed, self.vx + a * delta_t)
-        elif self.vx > 0:
-            self.vx = max(0, self.vx - a * delta_t)
-
-        if self.body.flag_move_up or self.body.flag_move_down:
-            self.last_name_direction = "UP" if self.body.flag_move_up else "DOWN"
-        elif self.body.flag_move_right or self.body.flag_move_left:
-            self.last_name_direction = "LEFT" if self.body.flag_move_left else "RIGHT"
-
-        self.body.is_move = self.vx != 0 or self.vy != 0
-        # if self.vx != 0 and self.vy != 0:
-        #     self.vx *= 0.7  # cos 45
-        #     self.vy *= 0.7  # sin 45
+            self.body.reset_collides()
+            coords = self.body.rect.midtop
+            self.head.rect.center = coords[0], coords[1] - 8 # выведена на практике(чтобы голова выглядела норм)
+        else:
+            pass
+    def get_count_bombs(self) -> tuple[int, int] | None:
+        if self.count_bombs > 0:
+            self.count_bombs -= 1
+            return self.body.rect.midright
+        return None
 
     def get_speed(self):
-        # vx, vy = 0, 0
-        # if self.body.flag_move_up:
-        #     vy -= self.speed
-        # if self.body.flag_move_down:
-        #     vy += self.speed
-        # if self.body.flag_move_right:
-        #     vx += self.speed
-        # if self.body.flag_move_left:
-        #     vx -= self.speed
-        # self.body.is_move = vx != 0 or vy != 0
-        #
-        # if vy != 0:
-        #     self.last_name_direction = "UP" if vy < 0 else "DOWN"
-        # elif vx != 0:
-        #     self.last_name_direction = "LEFT" if vx < 0 else "RIGHT"
-        #
-        # if vx != 0 and vy != 0:
-        #     vx *= 0.7  # cos 45
-        #     vy *= 0.7  # sin 45
-
         return self.vx, self.vy
 
     # перемещение
     def step_out_body(self):
-        self.body.set_speed(*self.get_speed())
         if self.count_cadrs % 3 == 0:
-            self.body.animating(self.last_name_direction)
+            self.body.animating()
 
     # поворот головы
     def rotation_head(self, name_direction):

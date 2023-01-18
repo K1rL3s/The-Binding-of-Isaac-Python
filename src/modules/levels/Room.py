@@ -204,80 +204,80 @@ class Room(RoomTextures):
             all_coords.remove(coords)
 
             if coords == consts.DoorsCoords.LEFT:
-                Border(consts.WALL_SIZE,
+                Border(0,
                        consts.WALL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
-                Border(consts.WALL_SIZE,
+                Border(0,
                        consts.WALL_SIZE + math.ceil(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.RIGHT:
                 Border(consts.WIDTH - consts.WALL_SIZE,
                        consts.WALL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WIDTH - consts.WALL_SIZE,
                        consts.WALL_SIZE + 4 * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        math.floor(consts.ROOM_HEIGHT / 2) * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.UP:
                 Border(consts.WALL_SIZE,
-                       consts.WALL_SIZE,
+                       0,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        self.movement_borders, self.debug_render)
                 Border(consts.WALL_SIZE + math.ceil(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       consts.WALL_SIZE,
+                       0,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        self.movement_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.DOWN:
                 Border(consts.WALL_SIZE,
                        consts.GAME_HEIGHT - consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
                 Border(consts.WALL_SIZE + math.ceil(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
                        consts.GAME_HEIGHT - consts.WALL_SIZE,
                        math.floor(consts.ROOM_WIDTH / 2) * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
         for coords in all_coords:
             if coords == consts.DoorsCoords.LEFT:
-                Border(consts.WALL_SIZE,
+                Border(0,
                        consts.WALL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        consts.ROOM_HEIGHT * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.RIGHT:
                 Border(consts.WIDTH - consts.WALL_SIZE,
                        consts.WALL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        consts.ROOM_HEIGHT * consts.CELL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.UP:
                 Border(consts.WALL_SIZE,
-                       consts.WALL_SIZE,
+                       0,
                        consts.ROOM_WIDTH * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        self.movement_borders, self.debug_render)
 
             elif coords == consts.DoorsCoords.DOWN:
                 Border(consts.WALL_SIZE,
                        consts.GAME_HEIGHT - consts.WALL_SIZE,
                        consts.ROOM_WIDTH * consts.CELL_SIZE,
-                       1,
+                       consts.WALL_SIZE,
                        self.movement_borders, self.tears_borders, self.debug_render)
 
     def setup_borders(self):
@@ -399,7 +399,7 @@ class Room(RoomTextures):
 
     def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
         return (
-            (self.colliadble_group, self.movement_borders, self.other, self.doors),
+            (self.colliadble_group, self.movement_borders, self.other),
             (self.colliadble_group, self.tears_borders, self.other, self.enemies)
         )
 
@@ -421,15 +421,18 @@ class Room(RoomTextures):
         for fire in self.fires.sprites():
             fire: FirePlace
             fire.draw_tears(screen)
-        # self.debug_render.draw(screen)
+        self.debug_render.draw(screen)
 
         self.main_hero.render(screen)
 
-    def test_func_set_bomb(self, xy_pos: tuple[int, int]):
-        xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
-        if room_pos := pixels_to_cell(xy_pos):
-            BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other),
-                     (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
+    def test_func_set_bomb(self):
+        xy_pos: tuple[int, int] | None = self.main_hero.get_count_bombs()
+        print(xy_pos)
+        if xy_pos:
+            xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
+            if room_pos := pixels_to_cell(xy_pos):
+                BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other),
+                         (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
 
     def test_func_set_pickable(self, xy_pos: tuple[int, int]):
         xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)

@@ -19,7 +19,6 @@ def main():
     background = pg.Color(27, 24, 24)
 
     game = Game()
-
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -36,16 +35,19 @@ def main():
                     game.move_to_next_room(consts.Moves.LEFT)
                 elif event.key == pg.K_SPACE:
                     game.move_to_next_level()
+                elif event.key == pg.K_e:
+                    game.current_level.current_room.test_func_set_bomb()
             if event.type == pg.KEYUP:
                 game.main_hero.set_flags_move(event, False)
             if event.type == consts.MOVE_TO_NEXT_ROOM:
                 direction = event.direction
                 next_coords = event.next_coords
-                game.move_main_hero(next_coords)
+                #print(direction, next_coords)
                 game.move_to_next_room(direction)
-            if event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == pg.BUTTON_RIGHT:
-                    game.current_level.current_room.test_func_set_bomb(event.pos)
+                game.move_main_hero(next_coords)
+            # if event.type == pg.MOUSEBUTTONDOWN:
+            #     if event.button == pg.BUTTON_RIGHT:
+            #         game.current_level.current_room.test_func_set_bomb(event.pos)
 
         delta_t = timer.tick(consts.FPS) / 1000
         screen.fill(background)
