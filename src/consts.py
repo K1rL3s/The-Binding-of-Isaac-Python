@@ -69,4 +69,5 @@ MINIMAP_WIDTH, MINIMAP_HEIGHT = 410, 126          # Размер миникар�
 
 MOVE_TO_NEXT_ROOM = pg.USEREVENT + 1              # Переход между комнатами
 MOVE_TO_NEXT_LEVEL = pg.USEREVENT + 2             # Переход на следующий этаж
+DEATH_PLAYER = None                               # Смерть ГГ
 PICKUP_LOOT = pg.USEREVENT + 3                    # Подбор лута (бомба, ключ, монета etc)

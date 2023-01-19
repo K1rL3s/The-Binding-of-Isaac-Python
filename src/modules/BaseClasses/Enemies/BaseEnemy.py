@@ -4,6 +4,7 @@ from src.modules.BaseClasses.Based.BaseTear import BaseTear
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.utils.funcs import load_sound
 from src.modules.BaseClasses.Based.BaseSprite import BaseSprite
+from src.modules.characters.parents import Player
 
 
 class BaseEnemy(BaseSprite):
@@ -26,7 +27,7 @@ class BaseEnemy(BaseSprite):
                  hp: int,
                  damage_from_blow: int,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: pg.sprite.Sprite,
+                 main_hero: Player,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup):
         BaseSprite.__init__(self, xy_pos, *groups)
@@ -69,7 +70,7 @@ class BaseEnemy(BaseSprite):
         self.kill()
 
     def collide(self, other: MoveSprite):
-        if isinstance(other, BaseTear) and not other.is_friendly:
+        if isinstance(other, BaseTear):
             self.hurt(other.damage)
             other.destroy()
             return True

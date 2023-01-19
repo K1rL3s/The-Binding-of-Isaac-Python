@@ -5,6 +5,7 @@ import pygame as pg
 from src.consts import CELL_SIZE, FirePlacesTypes
 from src.modules.animations.Animation import Animation
 from src.modules.BaseClasses import MoveSprite, DestroyableItem, ShootingEnemy
+from src.modules.characters.parents import Player
 from src.utils.funcs import load_image, load_sound
 from src.modules.entities.tears.ExampleTear import ExampleTear
 
@@ -71,7 +72,7 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
                  *groups: pg.sprite.Group,
                  fire_type: FirePlacesTypes = FirePlacesTypes.DEFAULT,
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = None,
-                 main_hero: pg.sprite.Sprite = None,
+                 main_hero: Player = None,
                  hurtable: bool = True):
         tear_damage = 1
         tear_distance = 4
@@ -94,6 +95,7 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
         self.frame = 0
         self.hp = FirePlace.max_hp
         self.animation: Animation | None = None
+        self.is_alive = True
 
         self.set_image()
         # Криво дамажит из-за того, что image имеет высоту CELL_SIZE * 1.25,
@@ -139,7 +141,7 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
         """
         Стрельба в ГГ, если костёр стреляющий.
         """
-        if ShootingEnemy.shot(self):
+        if self.is_alive and ShootingEnemy.shot(self):
             FireTextures.fireplace_shot.play()
 
     def hurt(self, damage: int):

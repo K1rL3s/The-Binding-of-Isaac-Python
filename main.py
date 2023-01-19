@@ -1,7 +1,10 @@
+import pygame
 import pygame as pg
 import pygame.sprite
 
 from src import consts
+from src.utils.funcs import pixels_to_cell, cell_to_pixels
+
 
 pg.init()
 pg.font.init()
@@ -12,7 +15,7 @@ from src.modules.Game import Game
 from src.modules.mainmenu import startscrean
 from src.utils.funcs import load_sound
 
-print(type(pygame.sprite.Group()))
+
 def main():
     pg.mixer.music.load(load_sound('sounds/main_theme.mp3', name_flag=True))
     pg.mixer.music.play()
@@ -20,6 +23,7 @@ def main():
     running = True
     timer = pg.time.Clock()
     background = pg.Color(27, 24, 24)
+
     game = Game()
     pg.mixer.music.stop()
     while running:
@@ -27,6 +31,7 @@ def main():
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.KEYDOWN:
+                game.main_hero.set_flags_move(event, True)
                 if event.key == pg.K_UP:
                     game.move_to_next_room(consts.Moves.UP)
                 elif event.key == pg.K_DOWN:
@@ -37,18 +42,19 @@ def main():
                     game.move_to_next_room(consts.Moves.LEFT)
                 elif event.key == pg.K_SPACE:
                     game.move_to_next_level()
-            if event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == pg.BUTTON_LEFT:
-                    game.move_main_hero(event.pos)
-                elif event.button == pg.BUTTON_RIGHT:
-                    game.current_level.current_room.test_func_set_bomb(event.pos)
-                elif event.button in (pg.BUTTON_WHEELUP, pg.BUTTON_WHEELDOWN):
-                    game.current_level.current_room.test_func_set_pickable(event.pos)
-
-            elif event.type == consts.MOVE_TO_NEXT_ROOM:
-                game.move_to_next_room(event.direction)
-            elif event.type == consts.MOVE_TO_NEXT_LEVEL:
-                game.move_to_next_level()
+                elif event.key == pg.K_e:
+                    game.current_level.current_room.test_func_set_bomb()
+            if event.type == pg.KEYUP:
+                game.main_hero.set_flags_move(event, False)
+            if event.type == consts.MOVE_TO_NEXT_ROOM:
+                direction = event.direction
+                next_coords = event.next_coords
+                #print(direction, next_coords)
+                game.move_to_next_room(direction)
+                game.move_main_hero(next_coords)
+            # if event.type == pg.MOUSEBUTTONDOWN:
+            #     if event.button == pg.BUTTON_RIGHT:
+            #         game.current_level.current_room.test_func_set_bomb(event.pos)
 
         delta_t = timer.tick(consts.FPS) / 1000
         screen.fill(background)
