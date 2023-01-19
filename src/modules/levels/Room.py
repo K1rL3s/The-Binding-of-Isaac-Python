@@ -6,8 +6,10 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
-from src.modules.enemies.BossEnemy import BossEnemy
+from src.modules.enemies.Envy import Envy
+from src.modules.enemies.Teratoma import Teratoma
 from src.modules.enemies.Fly import Fly
+from src.modules.enemies.duke import Duke
 from src.modules.enemies.fistula import Fistula
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
                                         Rock, Poop, Door, Spikes, Web, BlowBomb)
@@ -159,13 +161,8 @@ class Room(RoomTextures):
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
                 elif chance > 0.7 and k == 1:
                     k += 1
-
                     self.is_friendly = False
                 elif chance > 0.6:
-                    Fly((j, i), self.paths, self.main_hero,
-                        (self.movement_borders,),
-                        (self.main_hero_group, self.colliadble_group),
-                        self.enemies, self.blowable)
                     self.is_friendly = False
                 elif chance > 0.5:
                     FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
@@ -176,15 +173,25 @@ class Room(RoomTextures):
                     Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
-            BossEnemy((6, 3), 40, self.paths, self.main_hero,
-                      (self.movement_borders,), 1, 2,
-                      self.bosses, self.blowable, flyable=True)
+            Teratoma((6, 3), 40, self.paths, self.main_hero,
+                     (self.movement_borders,), 1, 2,
+                     self.bosses, self.blowable, flyable=True)
             self.is_friendly = False
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
             Fistula((6, 3), 40, self.paths, self.main_hero,
                     (self.movement_borders,), 1, 2,
                     self.bosses, self.blowable, flyable=True)
+
+        if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.DEPTHS:
+            Duke((6, 3), self.paths, self.main_hero,
+                 (self.movement_borders,), (self.main_hero_group, self.colliadble_group), 1.4,
+                 self.bosses, self.blowable, flyable=True)
+
+        if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CAVES:
+            Envy((6, 3), 40, self.paths, self.main_hero,
+                 (self.movement_borders,), 1, 2,
+                 self.bosses, self.blowable, flyable=True)
 
     def setup_graph(self):
         """

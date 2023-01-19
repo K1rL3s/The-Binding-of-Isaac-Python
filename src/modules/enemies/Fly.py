@@ -23,7 +23,7 @@ class Fly(MovingEnemy, ShootingEnemy):
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup):
         hp: int = 10000
-        speed: int | float = 1
+        speed: int | float = 1 + 1.3 * random.random()
         damage_from_blow: int = 10000
         move_update_delay: int | float = 1
         shot_damage: int = 1
@@ -67,7 +67,7 @@ class Fly(MovingEnemy, ShootingEnemy):
         self.image = self.animation.image
 
     def update_move_speed(self):
-        if self.angry:
+        if self.angry and self.shooting <= 0.5:
             MovingEnemy.update_move_speed(self)
         else:
             self.vx = random.uniform(-self.speed, self.speed)

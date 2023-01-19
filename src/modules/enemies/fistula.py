@@ -4,12 +4,12 @@ import pygame
 from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.characters.parents import Player
-from src.utils.funcs import load_sound, load_image
+from src.utils.funcs import load_sound, load_image, crop
 
 
 class Fistula(MovingEnemy):
     death_sounds = [load_sound(f"sounds/meat_death{i}.mp3") for i in range(1, 6)]
-    images = [load_image(f'textures/bosses/fistula_{i}.png') for i in range(1, 4)]
+    images = [crop(load_image(f'textures/bosses/fistula_{i}.png')) for i in range(1, 4)]
 
     def __init__(self,
                  xy_pos: tuple[int, int],
@@ -38,27 +38,12 @@ class Fistula(MovingEnemy):
             center=(251, 251))
 
     def update(self, delta_t: float):
-        # MovingEnemy.update(self, delta_t)
-        # if pygame.sprite.spritecollideany(self, self.enemy_collide_groups[0]):
-        #     pos = pygame.sprite.spritecollideany(self, self.enemy_collide_groups[0]).get_rect().center
-        #     if pos[0] == 133 or pos[0] == 1147:
-        #         MovingEnemy.move_back(self, self.rect)
-        #     else:
-        #         MovingEnemy.move_back(self, self.rect)
         MovingEnemy.move(self, delta_t, change_speeds=False)
         if self.flyable:
             MovingEnemy.check_fly_collides(self)
         else:
             MovingEnemy.check_collides(self)
 
-    # def check_fly_collides(self):
-    #     for group in self.collide_groups:
-    #         if sprites := pg.sprite.spritecollide(self, group, False):
-    #             for sprite in sprites:
-    #                 # Добавлять сюда то, с чем должны сталкиваться летающие
-    #                 if sprite != self and isinstance(sprite, (Border,)):
-    #                     sprite: Border
-    #                     sprite.collide(self)
 
     def move_back(self, rect: pg.Rect):
         """
