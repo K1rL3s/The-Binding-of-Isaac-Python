@@ -53,6 +53,6 @@ class HeroTear(BaseTear):
         self.set_rect()
 
     def set_image(self):
-        self.image = crop(BaseTear.all_tears[1][5])
+        self.image = crop(BaseTear.all_tears[0][5])
         self.mask = pg.mask.from_surface(self.image)
 

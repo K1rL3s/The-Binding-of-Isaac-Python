@@ -1,6 +1,6 @@
 import pygame as pg
 
-from src.utils.funcs import crop, cell_to_pixels, get_direction
+from src.utils.funcs import cell_to_pixels, get_direction
 from src.modules.animations.Animation import Animation
 from typing import Type
 from src.utils.funcs import load_image, crop, load_sound
@@ -62,8 +62,7 @@ class Body(MoveSprite):
         self.rect = pg.Rect((0, 0, self.image.get_width(), self.image.get_height()))
 
     def hurt(self, damage):
-        self.hp += damage
-        print(self.rect.width, self.rect.height)
+        self.hp -= damage
 
     def blow(self):
         self.hurt(self.damage_from_blow)
@@ -281,6 +280,9 @@ class Head(pg.sprite.Sprite):
 
 # по факту - это родительский класс для песронажей( ГГ )
 class Player:
+    death = load_image("death_isaac (2) (1).png")
+    dying_animation = None
+
     def __init__(self,
                  hp: int,
                  speed_body,
@@ -333,18 +335,18 @@ class Player:
             self.count_cadrs += 1
             self.count_cadrs %= 3
 
-            self.step_out_body()
+            self.animating()
             self.head.update(delta_t)
-
             self.body.move(delta_t, use_a=False)
             self.body.settings_move_speed(delta_t)
             self.body.check_collides()
-
             self.body.reset_collides()
+
             coords = self.body.rect.midtop
             self.head.rect.center = coords[0], coords[1] - 8 # выведена на практике(чтобы голова выглядела норм)
         else:
-            pass
+            self.body.image = self.death
+            self.player_sprites.remove(self.head)
 
     def get_count_bombs(self) -> tuple[int, int] | None:
         print(self.body.rect.center)
@@ -356,8 +358,8 @@ class Player:
     def get_speed(self):
         return self.vx, self.vy
 
-    # перемещение
-    def step_out_body(self):
+    # анимация
+    def animating(self):
         if self.count_cadrs == 0:
             self.body.animating()
 
