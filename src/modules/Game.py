@@ -14,7 +14,7 @@ class Game:
     def __init__(self):
         # ЗАТЫЧКА ГГ
 
-        self.main_hero = Player((600, 1000), 100, 4, 10, 10, 5, 5, 0.5)
+        self.main_hero = Player(100, 4, 10, 10, 5, 5, 0.5)
 
         # ЗАТЫЧКА ГГ
 
