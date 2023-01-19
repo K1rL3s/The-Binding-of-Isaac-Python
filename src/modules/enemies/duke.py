@@ -2,6 +2,7 @@ import random
 
 import pygame as pg
 
+from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.animations.Animation import Animation
 from src.modules.characters.parents import Player
@@ -36,26 +37,29 @@ class Duke(MovingEnemy):
         self.vx = speed
         self.vy = speed
         self.groups = groups
-        self.time = 0
+
         self.tear_collide_groups = tear_collide_groups
         self.rect = self.image.get_rect(
             center=(251, 251))
-        self.rand = self.time >= 5 + random.randint(-1, 1)
+        self.time = 0
+        self.rand = random.randint(0, 1)
+        print(self.rand)
         self.flag = True
 
     def update(self, delta_t: float):
         MovingEnemy.move(self, delta_t, change_speeds=False)
         self.time += delta_t
-        if self.time >= 4.5 + self.rand:
+        if self.time >= 3 + self.rand:
             if self.flag:
                 self.animation = Animation(Duke.images[1], 2, 1, 60)
                 self.image = self.animation.image
-            if self.time >= 5 + self.rand and self.flag is True:
+            if self.time >= 3.5 + self.rand and self.flag is True:
                 self.atak()
                 self.flag = False
-            elif self.time >= 5.5 + self.rand:
+            elif self.time >= 4 + self.rand:
                 self.time = 0
                 self.flag = True
+                self.rand = random.randint(0, 1)
         else:
             self.image = Duke.images[4]
             self.image = pg.transform.scale2x(self.image)
@@ -64,6 +68,24 @@ class Duke(MovingEnemy):
         else:
             MovingEnemy.check_collides(self)
 
+    def move_back(self, rect: pg.Rect):
+        """
+        Обработка коллизии и изменение скоростей при столкновении.
+
+        :param rect: Rect того, с чем было столкновение.
+        """
+        self.x_center, self.y_center = self.x_center_last, self.y_center_last
+        self.rect.center = self.x_center, self.y_center
+
+        centerx, centery = rect.center
+        if centerx == GAME_WIDTH - WALL_SIZE and self.vx > 0:
+            self.vx = -self.vx
+        if centerx == WALL_SIZE and self.vx < 0:
+            self.vx = -self.vx
+        if centery == WALL_SIZE and self.vy < 0:
+            self.vy = -self.vy
+        if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
+            self.vy = -self.vy
 
     def death(self):
         MovingEnemy.death(self)

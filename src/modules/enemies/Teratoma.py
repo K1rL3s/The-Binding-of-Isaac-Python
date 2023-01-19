@@ -20,19 +20,11 @@ class Teratoma(Fistula):
                  speed: int | float,
                  *groups: pg.sprite.AbstractGroup,
                  flyable: bool = False):  # = True чтобы сделать летающим
-        damage_from_blow: int = 10
-        move_update_delay: int | float = 0.1
-        MovingEnemy.__init__(self, xy_pos, hp, speed, damage_from_blow, move_update_delay, room_graph, main_hero,
-                             enemy_collide_groups, *groups, flyable=flyable)
-        self.room_graph = room_graph
-        self.main_hero = main_hero
-        self.enemy_collide_groups = enemy_collide_groups
+        Fistula.__init__(self, xy_pos, hp, room_graph, main_hero,
+                         enemy_collide_groups, stage, speed,
+                         *groups, flyable=True)
         self.image = Teratoma.images[stage - 1]
         self.image = pg.transform.scale2x(self.image)
-        self.vx = speed
-        self.vy = speed
-        self.stage = stage
-        self.groups = groups
         self.rect = self.image.get_rect(
             center=(251, 251))
 
