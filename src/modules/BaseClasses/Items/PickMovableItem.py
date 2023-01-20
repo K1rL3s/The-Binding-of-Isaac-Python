@@ -9,7 +9,10 @@ class PickMovableItem(PickableItem, MovableItem):
     Подбираемый-передвигаемый предмет.
 
     :param xy_pos: Позиция в комнате.
+    :param collide_groups: Группы спрайтов, через спрайты которых нельзя пройти.
     :param groups: Группы спрайтов.
+    :param acceleration: Ускорение торможения в клетках/секунду.
+    :param xy_pixels: Позиция в пикселях.
     """
 
     def __init__(self,

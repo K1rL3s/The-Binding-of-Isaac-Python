@@ -25,7 +25,7 @@ class BlowBomb(MovableItem):
 
     explosion_delay: int | float = 2  # Задержка перед взрывом в секундах
     explosion_radius: int | float = 1.25 * CELL_SIZE  # Радиус взрыва в пикселях
-    explosion_fps: int = 15
+    explosion_fps: int = 30
 
     def __init__(self,
                  xy_pos: tuple[int, int],

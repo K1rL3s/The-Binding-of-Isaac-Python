@@ -9,6 +9,7 @@ from src.modules.BaseClasses import BaseItem, BaseEnemy
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
                                         Door, Spikes, Web, BlowBomb, Pedestal, PickHeart)
 from src.modules.entities.artifacts.FreshMeat import FreshMeat
+from src.modules.entities.items.ShopItem import ShopItem
 from src.modules.levels.Border import Border
 from src.modules.enemies import ExampleEnemy
 from src.utils.funcs import pixels_to_cell, load_image
@@ -171,8 +172,11 @@ class Room(RoomTextures):
                     Spikes((j, i), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
                 elif chance > 0.4:
                     p = Pedestal((j, i), self.obstacles, self.colliadble_group, self.other)
-                    if chance > 0.35:
+                    if chance > 0.45:
                         p.set_artifact(FreshMeat, self.arts)
+                elif chance > 0.3:
+                    ShopItem((j, i), random.choice([PickHeart, PickKey, PickMoney, PickBomb, FreshMeat]),
+                             self.other)
 
     def setup_graph(self):
         """
