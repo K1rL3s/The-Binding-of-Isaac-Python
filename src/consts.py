@@ -37,6 +37,10 @@ class Moves(Enum):
     DOWN = (0, 1)
     RIGHT = (1, 0)
     LEFT = (-1, 0)
+    TOPLEFT = (-1, -1)
+    TOPRIGHT = (1, -1)
+    BOTTOMRIGHT = (1, 1)
+    BOTTOMLEFT = (-1, 1)
 
 
 class DoorsCoords(Enum):
@@ -69,5 +73,6 @@ MINIMAP_WIDTH, MINIMAP_HEIGHT = 410, 126          # Размер миникар�
 
 MOVE_TO_NEXT_ROOM = pg.USEREVENT + 1              # Переход между комнатами
 MOVE_TO_NEXT_LEVEL = pg.USEREVENT + 2             # Переход на следующий этаж
-DEATH_PLAYER = None                               # Смерть ГГ
 PICKUP_LOOT = pg.USEREVENT + 3                    # Подбор лута (бомба, ключ, монета etc)
+DEATH_PLAYER = pg.USEREVENT + 6                   # Смерть ГГ
+GAME_OVER = pg.USEREVENT + 7

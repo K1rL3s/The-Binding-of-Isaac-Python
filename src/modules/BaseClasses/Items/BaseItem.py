@@ -30,7 +30,6 @@ class BaseItem(BaseSprite):
 
         self.image: pg.Surface
         self.rect: pg.Rect
-        self.mask: pg.mask.Mask = pg.mask.Mask((0, 0))
         self.hp = 0
         self.vx = 0
         self.vy = 0

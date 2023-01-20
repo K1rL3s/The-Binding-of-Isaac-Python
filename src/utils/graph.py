@@ -30,7 +30,7 @@ def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | st
     :param use_diagonals: Использовать ли диагональные пути.
     :return: Список со всеми координатами соседей, в которые можно пройти.
     """
-    moves = [move.value for move in consts.Moves]
+    moves = [(0, -1), (0, 1), (1, 0), (-1, 0)]
     if use_diagonals:
         moves += [(1, 1), (-1, -1), (1, -1), (-1, 1)]
     map_width, map_height = len(rooms[0]), len(rooms)

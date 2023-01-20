@@ -38,7 +38,7 @@ def load_image(name: str,
 
 
 @cache
-def load_sound(name, name_flag = False) -> pg.mixer.Sound | str:
+def load_sound(name, name_flag=False) -> pg.mixer.Sound | str:
     """
     Загрузка звука в pygame.Sound.
 
@@ -110,32 +110,90 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     return int(x), int(y)
 
 
-def get_direction(first_rect: pg.Rect, second_rect: pg.Rect) -> Moves | str:
-
+def get_direction(first_rect: pg.Rect, second_rect: pg.Rect) -> list[Moves]:
     """
-    :param first_rect: тело, которое врезалось
-    :param second_rect: тело, с которым произошло столкновение
     Возвращает, с какой стороны второй rect
 
+    :param first_rect: тело, которое врезалось
+    :param second_rect: тело, с которым произошло столкновение
     """
+
+    dirs = []
+
     if second_rect.collidepoint(first_rect.midtop):
-        return Moves.UP
-    elif second_rect.collidepoint(first_rect.midbottom):
-        return Moves.DOWN
-    elif second_rect.collidepoint(first_rect.midleft):
-        return Moves.LEFT
-    elif second_rect.collidepoint(first_rect.midright):
-        return Moves.RIGHT
+        dirs.append(Moves.UP)
+        # return Moves.UP
+
+    if second_rect.collidepoint(first_rect.midbottom):
+        dirs.append(Moves.DOWN)
+        # return Moves.DOWN
+
+    if second_rect.collidepoint(first_rect.midleft):
+        dirs.append(Moves.LEFT)
+        # return Moves.LEFT
+
+    if second_rect.collidepoint(first_rect.midright):
+        dirs.append(Moves.RIGHT)
+        # return Moves.RIGHT
 
     if second_rect.collidepoint(first_rect.topleft):
-        return "topleft"
+        dirs.append(Moves.TOPLEFT)
 
-    elif second_rect.collidepoint(first_rect.topright):
-        return "topright"
+    if second_rect.collidepoint(first_rect.topright):
+        dirs.append(Moves.TOPRIGHT)
 
-    elif second_rect.collidepoint(first_rect.bottomleft):
-        return "bottomleft"
+    if second_rect.collidepoint(first_rect.bottomleft):
+        dirs.append(Moves.BOTTOMLEFT)
 
-    elif second_rect.collidepoint(first_rect.bottomright):
-        return "bottomright"
+    if second_rect.collidepoint(first_rect.bottomright):
+        dirs.append(Moves.BOTTOMRIGHT)
+
+    return dirs
+
+
+def get_direction2(second_rect: pg.Rect, first_rect: pg.Rect):
+    if (first_rect.collidepoint(second_rect.midright) and
+            (first_rect.collidepoint(second_rect.topright) or first_rect.collidepoint(second_rect.bottomright)) and
+            not first_rect.collidepoint(second_rect.midleft) and (
+                    not first_rect.collidepoint(second_rect.topleft) or not first_rect.collidepoint(
+                second_rect.bottomleft))):
+        return Moves.RIGHT
+
+    if first_rect.collidepoint(second_rect.midleft) == True and (
+            first_rect.collidepoint(second_rect.topleft) == True or
+            first_rect.collidepoint(second_rect.bottomleft) == True) and \
+            first_rect.collidepoint(second_rect.midright) == False and (
+            first_rect.collidepoint(second_rect.topright) == False or
+            first_rect.collidepoint(second_rect.bottomright) == False):
+        return Moves.LEFT
+
+    if first_rect.collidepoint(second_rect.midbottom) == True and (
+                    first_rect.collidepoint(second_rect.bottomleft) == True or
+                    first_rect.collidepoint(second_rect.bottomright) == True) and \
+            first_rect.collidepoint(second_rect.midtop) == False and (
+                    first_rect.collidepoint(second_rect.topleft) == False or
+                    first_rect.collidepoint(second_rect.topright) == False):
+        return Moves.DOWN
+
+    if first_rect.collidepoint(second_rect.midtop) == True and (
+                    first_rect.collidepoint(second_rect.topleft) == True or
+                    first_rect.collidepoint(second_rect.topright) == True) and \
+            first_rect.collidepoint(second_rect.midbottom) == False and (
+                    first_rect.collidepoint(second_rect.bottomleft) == False or
+                    first_rect.collidepoint(second_rect.bottomright) == False):
+        return Moves.UP
+
+    first_rect, second_rect = second_rect, first_rect
+
+    if second_rect.collidepoint(first_rect.topleft):
+        return Moves.TOPLEFT
+
+    if second_rect.collidepoint(first_rect.topright):
+        return Moves.TOPRIGHT
+
+    if second_rect.collidepoint(first_rect.bottomleft):
+        return Moves.BOTTOMLEFT
+
+    if second_rect.collidepoint(first_rect.bottomright):
+        return Moves.BOTTOMRIGHT
 

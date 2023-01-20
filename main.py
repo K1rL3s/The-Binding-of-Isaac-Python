@@ -44,14 +44,22 @@ def main():
                     game.move_to_next_level()
                 elif event.key == pg.K_e:
                     game.current_level.current_room.test_func_set_bomb()
+                elif event.key == pg.K_q:
+                    game.main_hero.set_damage()
             if event.type == pg.KEYUP:
                 game.main_hero.set_flags_move(event, False)
             if event.type == consts.MOVE_TO_NEXT_ROOM:
                 direction = event.direction
                 next_coords = event.next_coords
-                #print(direction, next_coords)
                 game.move_to_next_room(direction)
                 game.move_main_hero(next_coords)
+            if event.type == consts.GAME_OVER:
+                pg.mixer.music.load(load_sound('sounds/main_theme.mp3', name_flag=True))
+                pg.mixer.music.play()
+                startscrean.start_screen(screen)
+                game = Game()
+                pg.mixer.music.stop()
+
             # if event.type == pg.MOUSEBUTTONDOWN:
             #     if event.button == pg.BUTTON_RIGHT:
             #         game.current_level.current_room.test_func_set_bomb(event.pos)

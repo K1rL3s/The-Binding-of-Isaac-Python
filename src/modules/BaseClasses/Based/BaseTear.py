@@ -71,7 +71,6 @@ class BaseTear(MoveSprite, PopsImage):
 
         self.image: pg.Surface
         self.rect: pg.Rect
-        self.mask: pg.mask.Mask = pg.mask.Mask((0, 0))
 
     def update(self, delta_t: float):
         """
@@ -106,11 +105,10 @@ class BaseTear(MoveSprite, PopsImage):
 
     def set_rect(self, width: int = None, height: int = None, up: int = 0, left: int = 0):
         """
-        Установка rect и mask слезы.
+        Установка rect слезы.
         """
         width, height = self.image.get_width(), self.image.get_height()
         self.rect = pg.Rect(self.start_x - width // 2, self.start_y - height // 2, width, height)
-        self.mask = pg.mask.from_surface(self.image)
 
     def destroy(self):
         """

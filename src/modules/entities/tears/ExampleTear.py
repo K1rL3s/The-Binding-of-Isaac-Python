@@ -22,13 +22,12 @@ class ExampleTear(BaseTear):
         BaseTear.__init__(self, xy_pos, xy_pixels, damage, max_distance, vx, vy, collide_groups, *groups,
                           is_friendly=is_friendly)
 
-        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True)
+        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True, None, 1)
         self.set_image()
         self.set_rect()
 
     def set_image(self):
         self.image = crop(BaseTear.all_tears[1][5])
-        self.mask = pg.mask.from_surface(self.image)
 
 
 class HeroTear(BaseTear):
@@ -44,15 +43,13 @@ class HeroTear(BaseTear):
                  vy: int | float,
                  collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.Group):
-        is_friendly = True
         BaseTear.__init__(self, xy_pos, xy_pixels, damage, max_distance, vx, vy, collide_groups, *groups,
-                          is_friendly=is_friendly)
+                          is_friendly=True)
 
-        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True)
+        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True, (None), 0)
         self.set_image()
         self.set_rect()
 
     def set_image(self):
         self.image = crop(BaseTear.all_tears[0][5])
-        self.mask = pg.mask.from_surface(self.image)
 

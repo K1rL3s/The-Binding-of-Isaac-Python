@@ -155,11 +155,11 @@ class Room(RoomTextures):
                          self.obstacles, self.blowable)
                 elif chance > 0.8:
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
-                elif chance > 0.7:
-                    ExampleEnemy((j, i), self.paths, self.main_hero,
-                                 (self.colliadble_group, self.movement_borders, self.other),
-                                 (self.colliadble_group, self.tears_borders, self.other, self.main_hero_group),
-                                 self.enemies, self.blowable)
+                # elif chance > 0.7:
+                #     ExampleEnemy((j, i), self.paths, self.main_hero,
+                #                  (self.colliadble_group, self.movement_borders, self.other),
+                #                  (self.colliadble_group, self.tears_borders, self.other, self.main_hero_group),
+                #                  self.enemies, self.blowable)
                     self.is_friendly = False
                 elif chance > 0.6:
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
@@ -427,9 +427,7 @@ class Room(RoomTextures):
 
     def test_func_set_bomb(self):
         xy_pos: tuple[int, int] | None = self.main_hero.get_count_bombs()
-        print(xy_pos)
         if xy_pos:
-            xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
             if room_pos := pixels_to_cell(xy_pos):
                 BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other),
                          (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)

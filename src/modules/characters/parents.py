@@ -1,10 +1,10 @@
 import pygame as pg
 
-from src.utils.funcs import cell_to_pixels, get_direction
+from src.utils.funcs import cell_to_pixels, get_direction, get_direction2
 from src.modules.animations.Animation import Animation
 from typing import Type
 from src.utils.funcs import load_image, crop, load_sound
-from src.consts import CELL_SIZE, ROOM_WIDTH, ROOM_HEIGHT
+from src.consts import CELL_SIZE, ROOM_WIDTH, ROOM_HEIGHT, GAME_OVER
 from src.consts import Moves
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
@@ -20,10 +20,10 @@ directions_head = {settings_head[0]: "LEFT",
                    settings_head[3]: "DOWN"}
 ###
 # специально разбил, чтобы можно было создавать множество персонажей(понятно будет в следующих коммитах)
-body_images_dict: dict = {"DOWN": [load_image(f'textures/heroes/body/forward/{i}.png') for i in range(10)],
-                          "LEFT": [load_image(f'textures/heroes/body/left/{i}.png') for i in range(10)],
-                          "RIGHT": [load_image(f'textures/heroes/body/right/{i}.png') for i in range(10)],
-                          "UP": [load_image(f'textures/heroes/body/up/{i}.png') for i in range(10)]}
+body_images_dict: dict = {"DOWN": [crop(load_image(f'textures/heroes/body/forward/{i}.png')) for i in range(10)],
+                          "LEFT": [crop(load_image(f'textures/heroes/body/left/{i}.png')) for i in range(10)],
+                          "RIGHT": [crop(load_image(f'textures/heroes/body/right/{i}.png')) for i in range(10)],
+                          "UP": [crop(load_image(f'textures/heroes/body/up/{i}.png')) for i in range(10)]}
 
 head_images_dict: dict = {"DOWN": load_image('textures/heroes/head/forward.png'),
                           "LEFT": load_image('textures/heroes/head/left.png'),
@@ -59,7 +59,8 @@ class Body(MoveSprite):
 
         # Заменить get_width и get_height на что-то типа cell_size // 2, или cell_size / 3 * 2, типо того
         # и смотреть, чтобы голова не съехала
-        self.rect = pg.Rect((0, 0, self.image.get_width(), self.image.get_height()))
+        size = max(self.image.get_width(), self.image.get_height())
+        self.rect = pg.Rect((0, 0, size, size))
 
     def hurt(self, damage):
         self.hp -= damage
@@ -128,10 +129,6 @@ class Body(MoveSprite):
 
         self.is_move = self.vx != 0 or self.vy != 0
 
-    def check_collides(self):
-        if self.collide_groups:
-            MoveSprite.check_collides(self)
-
     def collide(self, other):
         if isinstance(other, BaseTear) and other not in self.tears.sprites():
             self.hurt(other.damage)
@@ -141,43 +138,48 @@ class Body(MoveSprite):
     def reset_collides(self):
         self.x_collide = self.y_collide = False
 
-    def move_back(self, rect: pg.Rect):
+    def move_back_new(self, rect: pg.Rect):
         """
-        Обработка коллизии и изменение скоростей при столкновении.
+                Обработка коллизии и изменение скоростей при столкновении.
 
-        :param rect: Rect того, с чем было столкновение.
-        """
+                :param rect: Rect того, с чем было столкновение.
+                """
         direction = get_direction(self.rect, rect)
+        if not direction:
+            pass
+
+        self.y_collide = direction in (Moves.UP, Moves.DOWN)
+        self.x_collide = direction in (Moves.LEFT, Moves.RIGHT)
+
         if (self.flag_move_up or self.flag_move_down) and (self.flag_move_left or self.flag_move_right):
             if direction == Moves.RIGHT and self.vx > 0:
                 self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
-                self.x_collide = True
-                self.vy /= 0.7 * 0.7
+                # self.x_collide = True
+                self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
                 self.vx = 0
 
             elif direction == Moves.LEFT and self.vx < 0:
                 self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
-                self.x_collide = True
-                self.vy /= 0.7 * 0.7
+                # self.x_collide = True
+                self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
                 self.vx = 0
 
             elif direction == Moves.UP and self.vy < 0:
                 self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
-
-                self.y_collide = True
-                self.vx /= 0.7 * 0.7
+                # self.y_collide = True
+                self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
                 self.vy = 0
 
             elif direction == Moves.DOWN and self.vy > 0:
                 self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
-                self.y_collide = True
-                self.vx /= 0.7 * 0.7
+                # self.y_collide = True
+                self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
                 self.vy = 0
 
-            elif direction in ['topleft', 'topright', 'bottomleft', ',bottomright']:
-                if self.move_last_direction in ['DOWN', 'UP']:
+            elif direction in (Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT):
+                if self.move_last_direction in ('DOWN', 'UP'):
                     self.vx = 0
-                elif self.move_last_direction in ['LEFT', 'RIGHT']:
+                elif self.move_last_direction in ('LEFT', 'RIGHT'):
                     self.vy = 0
 
             if self.x_collide:
@@ -200,6 +202,82 @@ class Body(MoveSprite):
                 self.vy = -self.max_speed
         else:
             MoveSprite.move_back(self, rect)
+
+    def move_back(self, rect: pg.Rect):
+        """
+        Обработка коллизии и изменение скоростей при столкновении.
+
+        :param rect: Rect того, с чем было столкновение.
+        """
+        directions = [get_direction2(self.rect, rect)]
+        print(directions)
+        if not directions:
+            pass
+
+        self.y_collide = any([move in (Moves.UP, Moves.DOWN) for move in directions])
+        self.x_collide = any([move in (Moves.LEFT, Moves.RIGHT) for move in directions])
+
+        # self.y_collide = any(
+        #     [move in (Moves.UP, Moves.DOWN, Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT)
+        #      for move in directions]
+        # )
+        # self.x_collide = any(
+        #     [move in (Moves.LEFT, Moves.RIGHT, Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT)
+        #      for move in directions]
+        # )
+
+        for direction in directions:
+            # if (self.flag_move_up or self.flag_move_down) and (self.flag_move_left or self.flag_move_right):
+                if direction == Moves.RIGHT and self.vx > 0:
+                    self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+                    # self.x_collide = True
+                    self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
+                    self.vx = 0
+
+                elif direction == Moves.LEFT and self.vx < 0:
+                    self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+                    # self.x_collide = True
+                    self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
+                    self.vx = 0
+
+                elif direction == Moves.UP and self.vy < 0:
+                    self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+                    # self.y_collide = True
+                    self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
+                    self.vy = 0
+
+                elif direction == Moves.DOWN and self.vy > 0:
+                    self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+                    # self.y_collide = True
+                    self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
+                    self.vy = 0
+
+        y_move_dir = "UP" if self.vy < 0 else "DOWN"
+        x_move_dir = "LEFT" if self.vx < 0 else "RIGHT"
+        if any([direction in (Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT) for direction in directions]):
+            if y_move_dir in ('DOWN', 'UP'):
+                self.x_collide = True
+                self.vx = 0
+            if x_move_dir in ('LEFT', 'RIGHT'):
+                self.y_collide = True
+                self.vy = 0
+
+        if self.x_collide:
+            self.x_center = self.x_center_last
+            self.rect.centerx = self.x_center
+        if self.y_collide:
+            self.y_center = self.y_center_last
+            self.rect.centery = self.y_center
+
+        if self.vx > self.max_speed:
+            self.vx = self.max_speed
+        elif self.vx < -self.max_speed:
+            self.vx = -self.max_speed
+        if self.vy > self.max_speed:
+            self.vy = self.max_speed
+        elif self.vy < -self.max_speed:
+            self.vy = -self.max_speed
+
 
 
 class Head(pg.sprite.Sprite):
@@ -257,6 +335,9 @@ class Head(pg.sprite.Sprite):
             self.shot()
         self.tears.update(delta_t)
 
+    def set_damage(self):
+        self.shot_damage += 1
+
     def shot(self) -> None:
         self.shot_ticks = 0
         self.tear_class((0, 0), self.rect.center, self.shot_damage, self.shot_max_distance,
@@ -294,7 +375,7 @@ class Player:
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = (),
                  ):
         self.damage_from_blow = damage_from_blow
-        self.a = 0.25
+        self.a = 0.1
         self.count_bombs = 3
         ################################################################################################
         self.speed = 5
@@ -320,6 +401,7 @@ class Player:
         self.body.x_center_last = x
         self.body.y_center = y
         self.body.y_center_last = y
+        self.body.vx = self.body.vy = 0
 
     def set_flags_move(self, event: pg.event.Event, is_keydown: bool):
         key = event.key
@@ -329,6 +411,9 @@ class Player:
         elif key in settings_head:
             self.head.set_directions(directions_head[key], is_keydown)
             self.head.set_player_speed(*self.get_speed())
+
+    def set_damage(self):
+        self.head.set_damage()
 
     def update(self, delta_t):
         if self.body.hp > 0:
@@ -347,15 +432,15 @@ class Player:
         else:
             self.body.image = self.death
             self.player_sprites.remove(self.head)
+            pg.event.post(pg.event.Event(GAME_OVER))
 
     def get_count_bombs(self) -> tuple[int, int] | None:
-        print(self.body.rect.center)
         if self.count_bombs > 0:
             self.count_bombs -= 1
-            return self.body.rect.center
+            return self.body.rect.midright
         return None
 
-    def get_speed(self):
+    def get_speed(self) -> tuple[int, int]:
         return self.vx, self.vy
 
     # анимация
@@ -369,7 +454,7 @@ class Player:
 
 
 class HeroTear(BaseTear):
-    pop_animation = BaseTear.all_ends.subsurface(0, BaseTear.height, BaseTear.width, BaseTear.height)
+    pop_animation = BaseTear.all_ends.subsurface(0, 0, BaseTear.width, BaseTear.height)
     fps_animation = 30
 
     def __init__(self,
@@ -390,5 +475,9 @@ class HeroTear(BaseTear):
         self.set_rect()
 
     def set_image(self):
-        self.image = crop(BaseTear.all_tears[0][5])
-        self.mask = pg.mask.from_surface(self.image)
+        max_size = len(BaseTear.all_tears[0]) - 1
+        self.image = crop(BaseTear.all_tears[0][min(self.damage + 2, max_size)])
+
+
+class Soul(Animation):
+    pass
