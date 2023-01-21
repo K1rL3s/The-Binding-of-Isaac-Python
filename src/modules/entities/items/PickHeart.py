@@ -88,7 +88,7 @@ class PickHeart(PickMovableItem):
         if isinstance(self.pick_sound, pg.mixer.Sound):
             self.pick_sound.play()
         pg.event.post(pg.event.Event(PICKUP_LOOT, {
-                                                  'item': self.__class__,
+                                                  'item': self,
                                                   'count': self.count,
                                                   'heart_type': self.heart_type,
                                                   'self': self

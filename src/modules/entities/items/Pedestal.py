@@ -74,7 +74,7 @@ class Pedestal(PickableItem):
             random.choice(self.pick_sound).play()
 
         pg.event.post(pg.event.Event(PICKUP_ART, {
-                                                 'item': self.artifact.__class__,
+                                                 'item': self.artifact,
                                                  'self': self
                                                  }
                                      )

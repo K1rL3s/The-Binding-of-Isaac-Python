@@ -81,3 +81,4 @@ MOVE_TO_NEXT_LEVEL = pg.USEREVENT + 2             # Переход на след
 PICKUP_LOOT = pg.USEREVENT + 3                    # Подбор лута (бомба, ключ, монета etc)
 PICKUP_ART = pg.USEREVENT + 4                     # Подбор артефакта
 BUY_ITEM = pg.USEREVENT + 5                       # Покупка в магазине
+USE_BOMB = pg.USEREVENT + 6                       # Установка бомбы под персонажем
