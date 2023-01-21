@@ -16,11 +16,13 @@ def main():
     pg.mixer.music.load(load_sound('sounds/main_theme.mp3', return_path=True))
     pg.mixer.music.play()
     startscrean.start_screen(screen)
+    game = Game()
+    pg.mixer.music.stop()
+
     running = True
     timer = pg.time.Clock()
     background = pg.Color(27, 24, 24)
-    game = Game()
-    pg.mixer.music.stop()
+
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:

@@ -23,7 +23,7 @@ class PickBomb(PickMovableItem):
                  collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  xy_pixels: tuple[int, int] = None):
-        PickMovableItem.__init__(self, xy_pos, *groups)
+        PickMovableItem.__init__(self, xy_pos, collide_groups, *groups, xy_pixels=xy_pixels)
 
         self.count = 1
 
