@@ -6,6 +6,7 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
+from src.modules.BaseClasses.Enemies.ShootingEnemy import ShootingEnemy
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
                                         Door, Spikes, Web, BlowBomb, Pedestal, PickHeart)
 from src.modules.entities.artifacts.FreshMeat import FreshMeat
@@ -13,6 +14,7 @@ from src.modules.entities.items.Trapdoor import Trapdoor
 from src.modules.entities.items.ShopItem import ShopItem
 from src.modules.levels.Border import Border
 from src.modules.enemies import ExampleEnemy
+from src.modules.enemies.Guts import Guts
 from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
 from src import consts
@@ -157,10 +159,12 @@ class Room(RoomTextures):
                 elif chance > 0.8:
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
                 elif chance > 0.7:
-                    ExampleEnemy((j, i), self.paths, self.main_hero,
-                                 (self.colliadble_group, self.movement_borders, self.other),
-                                 (self.colliadble_group, self.tears_borders, self.other),
-                                 self.enemies, self.blowable)
+                    # ExampleEnemy((j, i), self.paths, self.main_hero,
+                    #              (self.colliadble_group, self.movement_borders, self.other),
+                    #              (self.colliadble_group, self.tears_borders, self.other),
+                    #              self.enemies, self.blowable)
+                    Guts((j, i), self.paths, (self.colliadble_group, self.movement_borders, self.other),
+                         self.enemies, self.blowable)
                     self.is_friendly = False
                 elif chance > 0.6:
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
@@ -424,12 +428,12 @@ class Room(RoomTextures):
         # ЗАТЫЧКА ГГ
 
         for enemy in self.enemies.sprites():
-            enemy: ExampleEnemy
-            enemy.draw_tears(screen)
+            if isinstance(enemy, ShootingEnemy):
+                enemy.draw_tears(screen)
             # enemy.draw_stats(screen)  # СНИЖАЕТ ФПС!!!
         for fire in self.fires.sprites():
-            fire: FirePlace
-            fire.draw_tears(screen)
+            if isinstance(fire, ShootingEnemy):
+                fire.draw_tears(screen)
         # self.debug_render.draw(screen)
 
     def set_bomb(self, event: pg.event.Event):  # Пиксели

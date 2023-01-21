@@ -1,3 +1,5 @@
+import random
+
 import pygame as pg
 
 from src.utils.funcs import cut_sheet
@@ -13,7 +15,7 @@ class Animation:
     :param fps: Скорость анимации.
     :param single_play: Проиграть анимацию один раз.
     :param scale_sizes: К каким размерам scale'ить кадр.
-    :param frame: С какого кадра начинать.
+    :param frame: С какого кадра начинать, -1 - с рандомного.
     """
     def __init__(self,
                  sheet: pg.Surface,
@@ -22,11 +24,12 @@ class Animation:
                  fps: int,
                  single_play: bool = False,
                  scale_sizes: tuple[int, int] = None,
-                 frame: int = 0):
-        self.frames = cut_sheet(sheet, columns, rows, scale_sizes=scale_sizes)
+                 frame: int = 0,
+                 total_frames: int = None):
+        self.frames = cut_sheet(sheet, columns, rows, scale_sizes=scale_sizes, total=total_frames)
         self.rect = pg.Rect(0, 0, *self.frames[0].get_size())
 
-        self.cur_frame = frame
+        self.cur_frame = frame if frame != -1 else random.randint(0, len(self.frames) - 1)
         self.image = self.frames[self.cur_frame]
 
         self.ticks_counter = 0
