@@ -203,6 +203,155 @@ class Body(MoveSprite):
         else:
             MoveSprite.move_back(self, rect)
 
+    def move_back_rabotaet_no_ygi(self, rect: pg.Rect):
+        """
+        Обработка коллизии и изменение скоростей при столкновении.
+
+        :param rect: Rect того, с чем было столкновение.
+        """
+        directions = [get_direction2(self.rect, rect)]
+        print(directions)
+        if not directions:
+            pass
+
+        self.y_collide = any([move in (Moves.UP, Moves.DOWN) for move in directions])
+        self.x_collide = any([move in (Moves.LEFT, Moves.RIGHT) for move in directions])
+
+        # self.y_collide = any(
+        #     [move in (Moves.UP, Moves.DOWN, Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT)
+        #      for move in directions]
+        # )
+        # self.x_collide = any(
+        #     [move in (Moves.LEFT, Moves.RIGHT, Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT)
+        #      for move in directions]
+        # )
+
+        for direction in directions:
+            # if (self.flag_move_up or self.flag_move_down) and (self.flag_move_left or self.flag_move_right):
+                if direction == Moves.RIGHT and self.vx > 0:
+                    self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+                    # self.x_collide = True
+                    self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
+                    self.vx = 0
+
+                elif direction == Moves.LEFT and self.vx < 0:
+                    self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+                    # self.x_collide = True
+                    self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
+                    self.vx = 0
+
+                elif direction == Moves.UP and self.vy < 0:
+                    self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+                    # self.y_collide = True
+                    self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
+                    self.vy = 0
+
+                elif direction == Moves.DOWN and self.vy > 0:
+                    self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+                    # self.y_collide = True
+                    self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
+                    self.vy = 0
+
+        y_move_dir = "UP" if self.vy < 0 else "DOWN"
+        x_move_dir = "LEFT" if self.vx < 0 else "RIGHT"
+        if any([direction in (Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT) for direction in directions]):
+            if y_move_dir in ('DOWN', 'UP'):
+                self.x_collide = True
+                self.vx = 0
+            if x_move_dir in ('LEFT', 'RIGHT'):
+                self.y_collide = True
+                self.vy = 0
+
+        if self.x_collide:
+            self.x_center = self.x_center_last
+            self.rect.centerx = self.x_center
+        if self.y_collide:
+            self.y_center = self.y_center_last
+            self.rect.centery = self.y_center
+
+        if self.vx > self.max_speed:
+            self.vx = self.max_speed
+        elif self.vx < -self.max_speed:
+            self.vx = -self.max_speed
+        if self.vy > self.max_speed:
+            self.vy = self.max_speed
+        elif self.vy < -self.max_speed:
+            self.vy = -self.max_speed
+
+    def move_back_rostik(self, rect: pg.Rect):
+        """
+        Обработка коллизии и изменение скоростей при столкновении.
+
+        :param rect: Rect того, с чем было столкновение.
+        """
+        direction = get_direction2(self.rect, rect)
+        print(direction)
+        if not direction:
+            pass
+
+        self.y_collide = direction in (Moves.UP, Moves.DOWN)
+        self.x_collide = direction in (Moves.LEFT, Moves.RIGHT)
+
+        # self.y_collide = any(
+        #     [move in (Moves.UP, Moves.DOWN, Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT)
+        #      for move in directions]
+        # )
+        # self.x_collide = any(
+        #     [move in (Moves.LEFT, Moves.RIGHT, Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT)
+        #      for move in directions]
+        # )
+
+        # if (self.flag_move_up or self.flag_move_down) and (self.flag_move_left or self.flag_move_right):
+        if direction == Moves.RIGHT and self.vx > 0:
+            self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+            # self.x_collide = True
+            self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
+            self.vx = 0
+
+        elif direction == Moves.LEFT and self.vx < 0:
+            self.move_last_direction = "UP" if self.vy < 0 else "DOWN"
+            # self.x_collide = True
+            self.vy = (-1 if self.vy < 0 else 1) * (abs(self.vy) + abs(self.vx * 0.7))
+            self.vx = 0
+
+        elif direction == Moves.UP and self.vy < 0:
+            self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+            # self.y_collide = True
+            self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
+            self.vy = 0
+
+        elif direction == Moves.DOWN and self.vy > 0:
+            self.move_last_direction = "LEFT" if self.vx < 0 else "RIGHT"
+            # self.y_collide = True
+            self.vx = (-1 if self.vx < 0 else 1) * (abs(self.vx) + abs(self.vy * 0.7))
+            self.vy = 0
+
+        y_move_dir = "UP" if self.vy < 0 else "DOWN"
+        x_move_dir = "LEFT" if self.vx < 0 else "RIGHT"
+        if direction in (Moves.TOPLEFT, Moves.TOPRIGHT, Moves.BOTTOMLEFT, Moves.BOTTOMRIGHT):
+            if y_move_dir in ('DOWN', 'UP'):
+                self.x_collide = True
+                self.vx = 0
+            if x_move_dir in ('LEFT', 'RIGHT'):
+                self.y_collide = True
+                self.vy = 0
+
+        if self.x_collide:
+            self.x_center = self.x_center_last
+            self.rect.centerx = self.x_center
+        if self.y_collide:
+            self.y_center = self.y_center_last
+            self.rect.centery = self.y_center
+
+        if self.vx > self.max_speed:
+            self.vx = self.max_speed
+        elif self.vx < -self.max_speed:
+            self.vx = -self.max_speed
+        if self.vy > self.max_speed:
+            self.vy = self.max_speed
+        elif self.vy < -self.max_speed:
+            self.vy = -self.max_speed
+
     def move_back(self, rect: pg.Rect):
         """
         Обработка коллизии и изменение скоростей при столкновении.
@@ -277,6 +426,7 @@ class Body(MoveSprite):
             self.vy = self.max_speed
         elif self.vy < -self.max_speed:
             self.vy = -self.max_speed
+
 
 
 
