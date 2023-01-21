@@ -7,6 +7,7 @@ import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
 from src.modules.BaseClasses.Enemies.ShootingEnemy import ShootingEnemy
+from src.modules.entities.artifacts.RedSyringe import RedSyringe
 from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
                                         Door, Spikes, Web, BlowBomb, Pedestal, PickHeart)
 from src.modules.entities.artifacts.FreshMeat import FreshMeat
@@ -178,7 +179,7 @@ class Room(RoomTextures):
                 elif chance > 0.4:
                     p = Pedestal((j, i), self.obstacles, self.colliadble_group, self.other)
                     if chance > 0.45:
-                        p.set_artifact(FreshMeat, self.arts)
+                        p.set_artifact(RedSyringe, self.arts)
                 elif chance > 0.3:
                     ShopItem((j, i), random.choice([PickHeart, PickKey, PickMoney, PickBomb, FreshMeat]),
                              self.other)

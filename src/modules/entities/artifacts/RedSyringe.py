@@ -4,20 +4,23 @@ from src.utils.funcs import load_image
 from src.modules.BaseClasses import BaseArtifact
 
 
-class FreshMeat(BaseArtifact):
+class RedSyringe(BaseArtifact):
     """
     Свежее мясо.
 
     :param xy_pixels: Центр
     """
 
-    image = load_image("textures/artifacts/fresh_meat.png")
+    image = load_image("textures/artifacts/red_syringe.png")
 
-    mode = BaseArtifact.modes["add"]  # Метод применения к персонажу (сложение или умножение).
+    modes = {
+        "mul": lambda x, y: x * y,
+        "add": lambda x, y: x + y
+    }
+    mode = modes["add"]
 
     boosts = {
-        "max_hp": 1,
-        "heal_hp": 1,
+        "speed": 0.2
     }
 
     def __init__(self,
