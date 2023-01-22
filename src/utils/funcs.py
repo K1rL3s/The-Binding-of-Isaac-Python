@@ -38,17 +38,18 @@ def load_image(name: str,
 
 
 @cache
-def load_sound(name, name_flag=False) -> pg.mixer.Sound | str:
+def load_sound(name, return_path=False) -> pg.mixer.Sound | str:
     """
     Загрузка звука в pygame.Sound.
 
     :param name: Путь до файла, начиная от src/data, e.g. "sounds/fart.mp3"
-    :return: pygame.Sound
+    :param return_path: Вернуть ли путь до файла вместо самого звука.
+    :return: pygame.Sound или путь до файла
     """
     fullname = os.path.join('src', 'data', name)
     if not os.path.isfile(fullname):
         exit(f"Файл с звуком '{fullname}' не найден")
-    if name_flag:
+    if return_path:
         return fullname
     sound = pg.mixer.Sound(fullname)
     return sound
@@ -108,6 +109,47 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     x = x_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
     y = y_cell * CELL_SIZE + WALL_SIZE + CELL_SIZE // 2
     return int(x), int(y)
+
+
+def cut_sheet(sheet: str | pg.Surface, columns: int, rows: int,
+              total: int = None, scale_sizes: tuple[int, int] = None) -> list[pg.Surface]:
+    """
+    Загрузка шрифта.
+
+    :param sheet: Путь до файла, начиная от src/data, e.g. "font/prices.png" (или сразу Surface).
+    :param columns: Количество столбцов.
+    :param rows: Количество строк.
+    :param total: Сколько всего букв (если есть пустые клетки).
+    :param scale_sizes: До каких размеров scale'ить (ширина, высота)
+    :return: Список с Surface, где все Surface - число/буква шрифта.
+    """
+
+    frames: list[pg.Surface] = []
+    if isinstance(sheet, str):
+        sheet = load_image(sheet)
+
+    rect = pg.Rect(
+        0, 0,
+        sheet.get_width() // columns,
+        sheet.get_height() // rows
+    )
+
+    for y in range(rows):
+        if total is not None and len(frames) == total:
+            break
+        for x in range(columns):
+            frame_location = (rect.w * x, rect.h * y)
+            part = sheet.subsurface(pg.Rect(frame_location, rect.size))
+
+            if scale_sizes:
+                part = pg.transform.scale(part, scale_sizes)
+
+            frames.append(part)
+
+            if total is not None and len(frames) == total:
+                break
+
+    return frames
 
 
 def get_direction2(first_rect: pg.Rect, second_rect: pg.Rect) -> list[Moves]:

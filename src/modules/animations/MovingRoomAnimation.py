@@ -7,7 +7,7 @@ from src.modules.levels.Room import Room
 
 class MovingRoomAnimation:
     # Чтобы время туда-сюда в разные направления было одинаковым, умножаю на отношение длины к высоте
-    vy_speed = consts.CELL_SIZE * 15
+    vy_speed = consts.CELL_SIZE * -15
     vx_speed = vy_speed * consts.ROOM_WIDTH / consts.ROOM_HEIGHT
 
     def __init__(self, from_room: Room, to_room: Room, direction: consts.Moves):
@@ -19,18 +19,15 @@ class MovingRoomAnimation:
         self.from_x, self.from_y = 0, 0
         if direction == consts.Moves.UP:
             self.to_x, self.to_y = 0, -consts.GAME_HEIGHT
-            self.vx, self.vy = 0, MovingRoomAnimation.vy_speed
         elif direction == consts.Moves.DOWN:
             self.to_x, self.to_y = 0, consts.GAME_HEIGHT
-            self.vx, self.vy = 0, -MovingRoomAnimation.vy_speed
         elif direction == consts.Moves.RIGHT:
             self.to_x, self.to_y = consts.GAME_WIDTH, 0
-            self.vx, self.vy = -MovingRoomAnimation.vx_speed, 0
         elif direction == consts.Moves.LEFT:
             self.to_x, self.to_y = -consts.GAME_WIDTH, 0
-            self.vx, self.vy = MovingRoomAnimation.vx_speed, 0
         else:
             raise ValueError("Неправильный директион...")
+        self.vx, self.vy = self.vx_speed * direction.value[0], self.vy_speed * direction.value[1]
 
         self.screen = pg.Surface((consts.WIDTH, consts.HEIGHT))
 

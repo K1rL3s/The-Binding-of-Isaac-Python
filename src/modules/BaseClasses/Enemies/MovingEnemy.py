@@ -24,6 +24,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
     :param enemy_collide_groups: Группы спрайтов, с которыми нужно обрабатывать столкновения этой сущности.
     :param groups: Группы спрайтов.
     """
+
     def __init__(self,
                  xy_pos: tuple[int, int],
                  hp: int,
@@ -45,6 +46,8 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         self.flyable = flyable
         self.path: list[tuple[int, int]] = []
 
+        self.do_update_speed = True
+
     def update(self, delta_t: float):
         """
         Обновление врага, отмер времени для выстрела или движения.
@@ -53,6 +56,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         """
         BaseEnemy.update(self, delta_t)
         MoveSprite.update(self, delta_t)
+
         self.move_ticks += delta_t
 
         if self.move_ticks >= self.move_update_delay:
@@ -87,16 +91,15 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         :param rect: Центр спрайта, с которым было столкновение
         """
         MoveSprite.move_back(self, rect)
-        centerx, centery = rect.center
-        if (self.rect.centerx < centerx and self.vx > 0) or (self.rect.centerx > centerx and self.vx < 0):
-            self.set_speed(0, self.speed if self.vy > 0 else -self.speed)
-        if (self.rect.centery > centery and self.vy < 0) or (self.rect.centery < centery and self.vy > 0):
-            self.set_speed(self.speed if self.vx > 0 else -self.speed, 0)
 
     def update_move_speed(self):
         """
         Обновление вертикальной и горизонатальной скоростей для перемещения к ГГ.
         """
+        if not self.do_update_speed:
+            self.move_ticks = 0
+            return
+
         if self.flyable:  # Летающие летят напрямую ахахаха)
             dx = self.main_hero.body.rect.centerx - self.rect.centerx
             dy = self.main_hero.body.rect.centery - self.rect.centery

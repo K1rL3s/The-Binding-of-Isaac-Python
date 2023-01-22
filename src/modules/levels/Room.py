@@ -6,10 +6,17 @@ import pygame as pg
 import xml.etree.ElementTree as XMLTree
 
 from src.modules.BaseClasses import BaseItem, BaseEnemy
-from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney,
-                                        Rock, Poop, Door, Spikes, Web, BlowBomb)
+from src.modules.BaseClasses.Enemies.ShootingEnemy import ShootingEnemy
+from src.modules.entities.artifacts.RedSyringe import RedSyringe
+from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
+                                        Door, Spikes, Web, BlowBomb, Pedestal, PickHeart)
+from src.modules.entities.artifacts.FreshMeat import FreshMeat
+from src.modules.entities.items.Trapdoor import Trapdoor
+from src.modules.entities.items.ShopItem import ShopItem
 from src.modules.levels.Border import Border
-from src.modules.enemies import ExampleEnemy
+from src.modules.enemies.Maw import Maw
+from src.modules.enemies.Guts import Guts
+from src.modules.enemies.Host import Host
 from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
 from src import consts
@@ -100,6 +107,7 @@ class Room(RoomTextures):
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
+        self.arts = pg.sprite.Group()  # Артефакты
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
 
@@ -155,21 +163,39 @@ class Room(RoomTextures):
                          self.obstacles, self.blowable)
                 elif chance > 0.8:
                     Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
-                # elif chance > 0.7:
-                #     ExampleEnemy((j, i), self.paths, self.main_hero,
-                #                  (self.colliadble_group, self.movement_borders, self.other),
-                #                  (self.colliadble_group, self.tears_borders, self.other, self.main_hero_group),
-                #                  self.enemies, self.blowable)
+                elif chance > 0.7:
+                    Guts((j, i), self.paths, (self.colliadble_group, self.movement_borders, self.other),
+                         self.enemies, self.blowable)
                     self.is_friendly = False
                 elif chance > 0.6:
                     Web((j, i), self.colliadble_group, self.webs, self.blowable)
                 elif chance > 0.5:
-                    FirePlace((j, i), self.colliadble_group, self.fires, self.blowable,
-                              fire_type=consts.FirePlacesTypes.DEFAULT,
+                    FirePlace((j, i), self.colliadble_group, self.fires, self.blowable, self.obstacles,
+                              fire_type=consts.FirePlacesTypes.RED,
                               tear_collide_groups=(self.colliadble_group, self.tears_borders, self.other, self.enemies),
                               main_hero=self.main_hero.body)  # Передавать как-то хитрее?
                 elif chance > 0.49:
-                    Spikes((j, i), self.colliadble_group, self.spikes, hiding_delay=1, hiding_time=1)
+                    Spikes((j, i), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
+                elif chance > 0.4:
+                    p = Pedestal((j, i), self.obstacles, self.colliadble_group, self.other)
+                    if chance > 0.45:
+                        p.set_artifact(RedSyringe, self.arts)
+                elif chance > 0.3:
+                    ShopItem((j, i), random.choice([PickHeart, PickKey, PickMoney, PickBomb, FreshMeat]),
+                             self.other)
+                elif chance > 0.2:
+                    self.set_pickable((j, i))
+                elif chance > 0.15:
+                    Maw((j, i), self.main_hero, (self.movement_borders, self.doors),
+                        (self.colliadble_group, self.tears_borders, self.main_hero_group),
+                        self.enemies, self.blowable)
+                elif chance > 0.1:
+                    Host((j, i), self.main_hero, (self.colliadble_group, self.movement_borders, self.doors),
+                         (self.colliadble_group, self.tears_borders, self.main_hero_group),
+                         self.enemies, self.blowable)
+
+        if self.room_type == consts.RoomsTypes.BOSS:
+            Trapdoor(self.colliadble_group, self.doors)
 
     def setup_graph(self):
         """
@@ -182,7 +208,7 @@ class Room(RoomTextures):
 
         for obj in self.obstacles.sprites():
             obj: BaseItem
-            if obj.collidable:
+            if obj.collidable or obj.hurtable:
                 cells[obj.y][obj.x] = consts.RoomsTypes.EMPTY
         self.paths = make_neighbors_graph(cells)
 
@@ -353,9 +379,6 @@ class Room(RoomTextures):
             self.minimap_cell.blit(icon, ((consts.MINIMAP_CELL_WIDTH - icon.get_width()) // 2,
                                           (consts.MINIMAP_CELL_HEIGHT - icon.get_height()) // 2))
 
-    def add_other(self, xy_pos: tuple[int, int], *args):
-        pass
-
     def update(self, delta_t: float):
         """
         Обновление комнаты (перемещение врагов, просчёт коллизий)
@@ -413,15 +436,20 @@ class Room(RoomTextures):
         self.fires.draw(screen)
         self.other.draw(screen)
         self.enemies.draw(screen)
+        self.arts.draw(screen)
+
+        # ЗАТЫЧКА ГГ
+        screen.blit(self.main_hero.image, (self.main_hero.rect.x, self.main_hero.rect.y))
+        # ЗАТЫЧКА ГГ
 
         for enemy in self.enemies.sprites():
-            enemy: ExampleEnemy
-            enemy.draw_tears(screen)
+            if isinstance(enemy, ShootingEnemy):
+                enemy.draw_tears(screen)
             # enemy.draw_stats(screen)  # СНИЖАЕТ ФПС!!!
         for fire in self.fires.sprites():
-            fire: FirePlace
-            fire.draw_tears(screen)
-        self.debug_render.draw(screen)
+            if isinstance(fire, ShootingEnemy):
+                fire.draw_tears(screen)
+        # self.debug_render.draw(screen)
 
         self.main_hero.render(screen)
 
@@ -432,16 +460,13 @@ class Room(RoomTextures):
                 BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other),
                          (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
 
-    def test_func_set_pickable(self, xy_pos: tuple[int, int]):
-        xy_pos = (xy_pos[0], xy_pos[1] - consts.STATS_HEIGHT)
-        if room_pos := pixels_to_cell(xy_pos):
-            chance = random.random()
-            if chance > 0.66:
-                PickMoney(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
-                          xy_pixels=xy_pos)
-            elif chance > 0.33:
-                PickBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
-                         xy_pixels=xy_pos)
-            else:
-                PickKey(room_pos, (self.colliadble_group, self.movement_borders, self.other), self.other,
-                        xy_pixels=xy_pos)
+    def set_pickable(self, xy_pos: tuple[int, int]):  # Клетка
+        chance = random.random()
+        if chance > 0.75:
+            PickMoney(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
+        elif chance > 0.50:
+            PickBomb(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
+        elif chance > 0.25:
+            PickHeart(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
+        else:
+            PickKey(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)

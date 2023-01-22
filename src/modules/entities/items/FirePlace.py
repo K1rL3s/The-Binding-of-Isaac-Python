@@ -166,7 +166,7 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
     def update_stage_sheet(self, stage_sheet: pg.Surface):
         self.stage_sheet = stage_sheet
         self.animation = Animation(self.stage_sheet, 6, 1, self.fps,
-                                   frame=self.animation.cur_frame if self.animation else 0)
+                                   frame=self.animation.cur_frame if self.animation else -1)
 
     def destroy(self):
         """

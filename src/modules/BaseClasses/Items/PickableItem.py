@@ -1,41 +1,37 @@
 import pygame as pg
 
 from src.consts import PICKUP_LOOT
+from src.modules.BaseClasses.Items.BaseItem import BaseItem
+from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Enemies.MovingEnemy import MovingEnemy
-from src.modules.BaseClasses.Items.MovableItem import MovableItem
 
 
-class PickableItem(MovableItem):
+class PickableItem(BaseItem):
     """
-    Подбираемый-передвигаемый предмет.
+    Подбираемый предмет.
 
     :param xy_pos: Позиция в комнате.
-    :param collide_groups: Группы спрайтов, через спрайты которых нельзя пройти.
     :param groups: Группы спрайтов.
-    :param acceleration: Ускорение торможения в клетках/секунду.
-    :param xy_pixels: Позиция в пикселях.
+    :param collidable: Отталкивает ли от себя при столкновении.
     """
 
     def __init__(self,
                  xy_pos: tuple[int, int],
-                 collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
-                 acceleration: int | float = 1,
-                 xy_pixels: tuple[int, int] = None):
-        MovableItem.__init__(self, xy_pos, collide_groups, *groups,
-                             acceleration=acceleration, xy_pixels=xy_pixels)
+                 collidable: bool = False):
+        BaseItem.__init__(self, xy_pos, *groups, collidable=collidable)
 
         self.pick_sound: pg.mixer.Sound | None = None
         self.count: int = 0
 
-    def collide(self, other: MovableItem) -> bool:
+    def collide(self, other: MoveSprite) -> bool:
         """
         Обработка столкновений.
 
         :param other: С кем было столкновение.
         :return: Было ли столкновение.
         """
-        if not MovableItem.collide(self, other):
+        if not BaseItem.collide(self, other):
             return False
 
         # Заменить MovingEnemy на MainCharacter
@@ -52,9 +48,11 @@ class PickableItem(MovableItem):
         if isinstance(self.pick_sound, pg.mixer.Sound):
             self.pick_sound.play()
         pg.event.post(pg.event.Event(PICKUP_LOOT, {
-                                                  'item': self.__class__,
+                                                  'item': self,
                                                   'count': self.count,
-                                                   }
+                                                  'self': self
+                                                  }
                                      )
                       )
+        # Убрать kill() отсюда и перенести в обработку подбора MainHero
         self.kill()

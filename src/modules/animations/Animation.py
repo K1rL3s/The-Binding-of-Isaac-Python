@@ -1,4 +1,8 @@
+import random
+
 import pygame as pg
+
+from src.utils.funcs import cut_sheet
 
 
 class Animation:
@@ -11,7 +15,7 @@ class Animation:
     :param fps: Скорость анимации.
     :param single_play: Проиграть анимацию один раз.
     :param scale_sizes: К каким размерам scale'ить кадр.
-    :param frame: С какого кадра начинать.
+    :param frame: С какого кадра начинать, -1 - с рандомного.
     """
     def __init__(self,
                  sheet: pg.Surface,
@@ -20,35 +24,17 @@ class Animation:
                  fps: int,
                  single_play: bool = False,
                  scale_sizes: tuple[int, int] = None,
-                 frame: int = 0):
-        self.frames: list[pg.Surface] = []
-        self.rect = pg.Rect(0, 0, 0, 0)
-        self.cut_sheet(sheet, columns, rows, scale_sizes=scale_sizes)
+                 frame: int = 0,
+                 total_frames: int = None):
+        self.frames = cut_sheet(sheet, columns, rows, scale_sizes=scale_sizes, total=total_frames)
+        self.rect = pg.Rect(0, 0, *self.frames[0].get_size())
 
-        self.cur_frame = frame
+        self.cur_frame = frame if frame != -1 else random.randint(0, len(self.frames) - 1)
         self.image = self.frames[self.cur_frame]
 
         self.ticks_counter = 0
         self.frame_delimiter = 1 / fps
         self.single_play = single_play
-
-    def cut_sheet(self, sheet: pg.Surface, columns: int, rows: int, scale_sizes: tuple[int, int] = None):
-        self.rect = pg.Rect(
-            0, 0,
-            sheet.get_width() // columns,
-            sheet.get_height() // rows
-        )
-        for j in range(rows):
-            for i in range(columns):
-                frame_location = (self.rect.w * i, self.rect.h * j)
-
-                part = sheet.subsurface(pg.Rect(frame_location, self.rect.size))
-                if scale_sizes:
-                    part = pg.transform.scale(part, scale_sizes)
-                self.frames.append(part)
-
-        real_size = self.frames[0].get_size()
-        self.rect = pg.Rect(0, 0, *real_size)
 
     def reset(self):
         self.ticks_counter = 0

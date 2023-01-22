@@ -1,6 +1,6 @@
 import math
-from typing import Type
 import random
+from typing import Type
 
 import pygame as pg
 
@@ -53,7 +53,8 @@ class ShootingEnemy(BaseEnemy):
         self.shot_delay = shot_delay
         self.tear_class = tear_class
         self.tear_collide_groups = tear_collide_groups
-        self.shot_ticks = random.random()
+
+        self.shot_ticks = random.uniform(0, self.shot_delay / 2)
         self.tears = pg.sprite.Group()
 
     def update(self, delta_t: float):
@@ -81,8 +82,8 @@ class ShootingEnemy(BaseEnemy):
 
         :return: Выстрелил ли.
         """
-
-        x, y = self.main_hero.body.rect.center
+        # body
+        x, y = self.main_hero.rect.center
         dx = x - self.rect.centerx
         dy = y - self.rect.centery
         distance = math.hypot(dx, dy)

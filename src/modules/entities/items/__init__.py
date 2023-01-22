@@ -8,3 +8,5 @@ from src.modules.entities.items.Poop import Poop
 from src.modules.entities.items.Rock import Rock
 from src.modules.entities.items.Spikes import Spikes
 from src.modules.entities.items.Web import Web
+from src.modules.entities.items.Pedestal import Pedestal
+from src.modules.entities.items.PickHeart import PickHeart
