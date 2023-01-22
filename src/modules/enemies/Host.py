@@ -10,7 +10,7 @@ from src.modules.entities import ExampleTear
 from src.utils.funcs import load_image, crop
 
 
-host_width, host_height = 70, 96
+host_width, host_height = 70, 106
 
 
 class Host(ShootingEnemy):
@@ -23,8 +23,8 @@ class Host(ShootingEnemy):
     :param groups: Группы спрайтов.
     """
 
-    waiting_image = crop(load_image("textures/enemies/host.png").subsurface(0, 0, host_width, host_height))
-    shooting_image = crop(load_image("textures/enemies/host.png").subsurface(host_width, 0, host_width, host_height))
+    waiting_image = crop(load_image("textures/enemies/host2.png").subsurface(0, 0, host_width, host_height))
+    shooting_image = crop(load_image("textures/enemies/host2.png").subsurface(host_width, 0, host_width, host_height))
 
     def __init__(self,
                  xy_pos: tuple[int, int],
