@@ -22,7 +22,7 @@ class ExampleTear(BaseTear):
         BaseTear.__init__(self, xy_pos, xy_pixels, damage, max_distance, vx, vy, collide_groups, *groups,
                           is_friendly=is_friendly)
 
-        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True, None, 1)
+        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True)
         self.set_image()
         self.set_rect()
 
@@ -46,7 +46,7 @@ class HeroTear(BaseTear):
         BaseTear.__init__(self, xy_pos, xy_pixels, damage, max_distance, vx, vy, collide_groups, *groups,
                           is_friendly=True)
 
-        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True, (None), 0)
+        self.animation = Animation(ExampleTear.pop_animation, 16, 1, self.fps_animation, True)
         self.set_image()
         self.set_rect()
 

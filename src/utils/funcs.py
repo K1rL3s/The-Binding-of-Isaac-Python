@@ -110,7 +110,7 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     return int(x), int(y)
 
 
-def get_direction(first_rect: pg.Rect, second_rect: pg.Rect) -> list[Moves]:
+def get_direction2(first_rect: pg.Rect, second_rect: pg.Rect) -> list[Moves]:
     """
     Возвращает, с какой стороны второй rect
 
@@ -151,36 +151,67 @@ def get_direction(first_rect: pg.Rect, second_rect: pg.Rect) -> list[Moves]:
     return dirs
 
 
-def get_direction2(second_rect: pg.Rect, first_rect: pg.Rect):
-    if (first_rect.collidepoint(second_rect.midright) and
-            (first_rect.collidepoint(second_rect.topright) or first_rect.collidepoint(second_rect.bottomright)) and
-            not first_rect.collidepoint(second_rect.midleft) and (
-                    not first_rect.collidepoint(second_rect.topleft) or not first_rect.collidepoint(
-                second_rect.bottomleft))):
+def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
+    """
+    Возвращает, с какой стороны второй rect
+
+    :param first_rect: тело, которое врезалось
+    :param second_rect: тело, с которым произошло столкновение
+    """
+    if (
+            first_rect.collidepoint(second_rect.midright) and
+            (
+                    first_rect.collidepoint(second_rect.topright) or
+                    first_rect.collidepoint(second_rect.bottomright)
+            ) and
+            not first_rect.collidepoint(second_rect.midleft) and
+            (
+                    not first_rect.collidepoint(second_rect.topleft) or
+                    not first_rect.collidepoint(second_rect.bottomleft)
+            )
+    ):
         return Moves.RIGHT
 
-    if first_rect.collidepoint(second_rect.midleft) == True and (
-            first_rect.collidepoint(second_rect.topleft) == True or
-            first_rect.collidepoint(second_rect.bottomleft) == True) and \
-            first_rect.collidepoint(second_rect.midright) == False and (
-            first_rect.collidepoint(second_rect.topright) == False or
-            first_rect.collidepoint(second_rect.bottomright) == False):
+    if (
+            first_rect.collidepoint(second_rect.midleft) and
+            (
+                    first_rect.collidepoint(second_rect.topleft) or
+                    first_rect.collidepoint(second_rect.bottomleft)
+            ) and
+            not first_rect.collidepoint(second_rect.midright) and
+            (
+                    not first_rect.collidepoint(second_rect.topright) or
+                    not first_rect.collidepoint(second_rect.bottomright)
+            )
+    ):
         return Moves.LEFT
 
-    if first_rect.collidepoint(second_rect.midbottom) == True and (
-                    first_rect.collidepoint(second_rect.bottomleft) == True or
-                    first_rect.collidepoint(second_rect.bottomright) == True) and \
-            first_rect.collidepoint(second_rect.midtop) == False and (
-                    first_rect.collidepoint(second_rect.topleft) == False or
-                    first_rect.collidepoint(second_rect.topright) == False):
+    if (
+            first_rect.collidepoint(second_rect.midbottom) and
+            (
+                    first_rect.collidepoint(second_rect.bottomleft) or
+                    first_rect.collidepoint(second_rect.bottomright)
+            ) and
+            not first_rect.collidepoint(second_rect.midtop) and
+            (
+            not first_rect.collidepoint(second_rect.topleft) or
+            not first_rect.collidepoint(second_rect.topright)
+            )
+    ):
         return Moves.DOWN
 
-    if first_rect.collidepoint(second_rect.midtop) == True and (
-                    first_rect.collidepoint(second_rect.topleft) == True or
-                    first_rect.collidepoint(second_rect.topright) == True) and \
-            first_rect.collidepoint(second_rect.midbottom) == False and (
-                    first_rect.collidepoint(second_rect.bottomleft) == False or
-                    first_rect.collidepoint(second_rect.bottomright) == False):
+    if (
+            first_rect.collidepoint(second_rect.midtop) and
+            (
+            first_rect.collidepoint(second_rect.topleft) or
+            first_rect.collidepoint(second_rect.topright)
+            ) and
+            not first_rect.collidepoint(second_rect.midbottom) and
+            (
+            not first_rect.collidepoint(second_rect.bottomleft) or
+            not first_rect.collidepoint(second_rect.bottomright)
+            )
+    ):
         return Moves.UP
 
     first_rect, second_rect = second_rect, first_rect
@@ -196,4 +227,3 @@ def get_direction2(second_rect: pg.Rect, first_rect: pg.Rect):
 
     if second_rect.collidepoint(first_rect.bottomright):
         return Moves.BOTTOMRIGHT
-
