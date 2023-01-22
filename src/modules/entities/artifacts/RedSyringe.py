@@ -6,18 +6,14 @@ from src.modules.BaseClasses import BaseArtifact
 
 class RedSyringe(BaseArtifact):
     """
-    Свежее мясо.
+    Красный шприц.
 
     :param xy_pixels: Центр
     """
 
     image = load_image("textures/artifacts/red_syringe.png")
 
-    modes = {
-        "mul": lambda x, y: x * y,
-        "add": lambda x, y: x + y
-    }
-    mode = modes["add"]
+    mode = BaseArtifact.modes["add"]
 
     boosts = {
         "speed": 0.2
