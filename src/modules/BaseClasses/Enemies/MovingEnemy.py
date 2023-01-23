@@ -64,7 +64,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
 
         self.move(delta_t)
 
-    def move(self, delta_t: float):
+    def move(self, delta_t: float, change_speeds: bool = True):
         """
         Перемещение сущности.
 
@@ -82,7 +82,8 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         xy_cell = pixels_to_cell((self.x_center, self.y_center))
         if xy_cell and (self.x, self.y) != xy_cell:
             self.x, self.y = xy_cell
-            self.update_move_speed()
+            if change_speeds:
+                self.update_move_speed()
 
     def move_back(self, rect: pg.Rect):
         """

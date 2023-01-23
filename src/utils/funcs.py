@@ -38,7 +38,7 @@ def load_image(name: str,
 
 
 @cache
-def load_sound(name, return_path=False) -> pg.mixer.Sound | str:
+def load_sound(name, return_path: bool = False) -> pg.mixer.Sound | str:
     """
     Загрузка звука в pygame.Sound.
 
@@ -133,6 +133,10 @@ def cut_sheet(sheet: str | pg.Surface, columns: int, rows: int,
         sheet.get_width() // columns,
         sheet.get_height() // rows
     )
+
+    if scale_sizes:
+        scale_sizes = (scale_sizes[0] if scale_sizes[0] != -1 else rect.width,
+                       scale_sizes[1] if scale_sizes[0] != -1 else rect.height)
 
     for y in range(rows):
         if total is not None and len(frames) == total:

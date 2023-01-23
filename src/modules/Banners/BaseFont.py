@@ -48,19 +48,24 @@ class BaseFont:
 
         return surface
 
-    def place_text(self, screen: pg.Surface, text: str | pg.Surface, xy_center: tuple[int, int]):
+    def place_text(self, screen: pg.Surface, text: str | pg.Surface,
+                   xy_center: tuple[int, int], xy_leftup: tuple[int, int] = None):
         """
         Нанести текст на экран.
 
         :param screen: На что наносить.
         :param text: Что наносить.
         :param xy_center: Центр куда наносить.
+        :param xy_leftup: Левый верхний угол.
         """
 
         if isinstance(text, str):
             text = self.write_text(text)
 
-        x, y = xy_center
-        x -= text.get_width() // 2
-        y -= text.get_height() // 2
+        if not xy_leftup:
+            x, y = xy_center
+            x -= text.get_width() // 2
+            y -= text.get_height() // 2
+        else:
+            x, y = xy_leftup
         screen.blit(text, (x, y))

@@ -14,7 +14,6 @@ class BaseSprite(pg.sprite.Sprite):
                  xy_pos: tuple[int, int],
                  *groups):
         pg.sprite.Sprite.__init__(self, *groups)
-
         self.x, self.y = xy_pos
 
     def update(self, delta_t: float):

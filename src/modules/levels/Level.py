@@ -48,6 +48,8 @@ class Level:
                 if room_type == consts.RoomsTypes.SPAWN:
                     self.current_room = room
 
+                    # self.main_hero.update_room_groups(self.current_room.get_room_groups())
+
                 # room.update_doors('blow')
                 # room.update_doors('open')
                 # room.update_doors('close')
@@ -122,7 +124,9 @@ class Level:
             from_room = self.current_room
             to_room = self.rooms[y][x]
             self.moving_room_animation(from_room, to_room, direction)
-
+########################
+            # self.main_hero.update_room_groups(self.current_room.get_room_groups())
+########################
             self.current_room = self.rooms[y][x]
             self.current_room.update_detection_state(is_active=True)
 

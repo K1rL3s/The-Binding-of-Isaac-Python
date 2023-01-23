@@ -96,5 +96,3 @@ class ShootingEnemy(BaseEnemy):
         self.tear_class((self.x, self.y), self.rect.center, self.shot_damage, self.shot_max_distance, vx, vy,
                         self.tear_collide_groups, self.tears)
         return True
-
-

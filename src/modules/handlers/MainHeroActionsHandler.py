@@ -1,5 +1,8 @@
+import random
+
 import pygame as pg
 
+from src.consts import USE_BOMB, MOVE_TO_NEXT_ROOM, Moves
 from src.consts import USE_BOMB, HeartsTypes
 from src.modules.characters.parents import Player
 from src.modules.entities.items import PickMoney, PickHeart, PickBomb,PickKey, ShopItem
