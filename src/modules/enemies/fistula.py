@@ -2,6 +2,7 @@ import pygame as pg
 import pygame
 
 from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
+from src.modules.Baners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.characters.parents import Player
 from src.utils.funcs import load_sound, load_image, crop
@@ -28,14 +29,19 @@ class Fistula(MovingEnemy):
         self.room_graph = room_graph
         self.main_hero = main_hero
         self.enemy_collide_groups = enemy_collide_groups
-        self.image = Fistula.images[stage - 1]
-        self.image = pygame.transform.scale2x(self.image)
+        try:
+            self.image = Fistula.images[stage - 1]
+            self.image = pygame.transform.scale2x(self.image)
+        except:
+            self.image = Fistula.images[stage - 2]
         self.vx = speed
         self.vy = speed
         self.stage = stage
         self.groups = groups
         self.rect = self.image.get_rect(
             center=(251, 251))
+        self.hp_bar_ram = HpBossBarRam(groups[0])
+        self.hp_bar = HpBossBar(self.hp, groups[0])
 
     def update(self, delta_t: float):
         MovingEnemy.move(self, delta_t, change_speeds=False)
@@ -43,7 +49,6 @@ class Fistula(MovingEnemy):
             MovingEnemy.check_fly_collides(self)
         else:
             MovingEnemy.check_collides(self)
-
 
     def move_back(self, rect: pg.Rect):
         """
@@ -63,6 +68,12 @@ class Fistula(MovingEnemy):
             self.vy = -self.vy
         if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
             self.vy = -self.vy
+
+    def hurt(self, damage: int):
+        self.hp -= damage
+        if self.hp <= 0:
+            self.death()
+        self.hp_bar.hurt(damage)
 
     def death(self):
         MovingEnemy.death(self)

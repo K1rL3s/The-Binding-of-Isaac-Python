@@ -3,6 +3,7 @@ import random
 import pygame as pg
 
 from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
+from src.modules.Baners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.animations.Animation import Animation
 from src.modules.characters.parents import Player
@@ -43,8 +44,10 @@ class Duke(MovingEnemy):
             center=(251, 251))
         self.time = 0
         self.rand = random.randint(0, 1)
-        print(self.rand)
         self.flag = True
+
+        self.hp_bar_ram = HpBossBarRam(groups[0])
+        self.hp_bar = HpBossBar(self.hp, groups[0])
 
     def update(self, delta_t: float):
         MovingEnemy.move(self, delta_t, change_speeds=False)
@@ -102,3 +105,9 @@ class Duke(MovingEnemy):
             self.enemy_collide_groups,
             self.tear_collide_groups,
             *self.groups)
+
+    def hurt(self, damage: int):
+        self.hp -= damage
+        if self.hp <= 0:
+            self.death()
+        self.hp_bar.hurt(damage)

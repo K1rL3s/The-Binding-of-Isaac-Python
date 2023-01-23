@@ -5,8 +5,10 @@ import pygame as pg
 
 import xml.etree.ElementTree as XMLTree
 
+from src.modules.Baners.hpboss_bar import HpBossBarRam
 from src.modules.BaseClasses import BaseItem, BaseEnemy
 from src.modules.enemies.Envy import Envy
+from src.modules.enemies.Pudge import Pudge
 from src.modules.enemies.Teratoma import Teratoma
 from src.modules.enemies.Fly import Fly
 from src.modules.enemies.duke import Duke
@@ -175,7 +177,7 @@ class Room(RoomTextures):
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
             Teratoma((6, 3), 40, self.paths, self.main_hero,
                      (self.movement_borders,), 1, 2,
-                     self.bosses, self.blowable, flyable=True)
+                     self.bosses, self.blowable, self.other, flyable=True)
             self.is_friendly = False
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
@@ -192,6 +194,11 @@ class Room(RoomTextures):
             Envy((6, 3), 40, self.paths, self.main_hero,
                  (self.movement_borders,), 1, 2,
                  self.bosses, self.blowable, flyable=True)
+
+        if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.WOMB:
+            Pudge((6, 3), 40, self.paths, self.main_hero,
+                     (self.movement_borders,), 1, 2,
+                     self.bosses, self.blowable, self.other, flyable=True)
 
     def setup_graph(self):
         """
