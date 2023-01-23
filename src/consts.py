@@ -86,4 +86,4 @@ PICKUP_LOOT = pg.USEREVENT + 3                    # Подбор лута (бо�
 PICKUP_ART = pg.USEREVENT + 4                     # Подбор артефакта
 BUY_ITEM = pg.USEREVENT + 5                       # Покупка в магазине
 USE_BOMB = pg.USEREVENT + 6                       # Установка бомбы под персонажем
-GAME_OVER = pg.USEREVENT + 7
+GAME_OVER = pg.USEREVENT + 7                      # Конец игры
