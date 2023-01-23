@@ -1,6 +1,10 @@
 import pygame as pg
 
-from src.consts import USE_BOMB
+from src.consts import USE_BOMB, HeartsTypes
+from src.modules.characters.parents import Player
+from src.modules.entities.items import PickMoney, PickHeart, PickBomb,PickKey, ShopItem
+from src.modules.entities.artifacts import Dinner, FreshMeat, GreySyringe, GreenSyringe, MomsHeels, PurpleSyringe, RedSyringe, WhiteSyringe
+
 
 
 class MainHeroActionsHandler:
@@ -9,7 +13,7 @@ class MainHeroActionsHandler:
     В данный момент - временный. Ростик, переделай под себя.
     """
 
-    def __init__(self, main_hero: pg.sprite.Sprite):
+    def __init__(self, main_hero: Player):
         self.main_hero = main_hero
 
     def keyboard_handler(self, event: pg.event.Event):
@@ -18,18 +22,17 @@ class MainHeroActionsHandler:
 
         :param event: Ивент нажатия или отпуская кнопки.
         """
-        if event.key == pg.K_w:
-            self.main_hero.rect.move_ip(0, -10)
-        elif event.key == pg.K_a:
-            self.main_hero.rect.move_ip(-10, 0)
-        elif event.key == pg.K_s:
-            self.main_hero.rect.move_ip(0, 10)
-        elif event.key == pg.K_d:
-            self.main_hero.rect.move_ip(10, 0)
+        is_down = event.type == pg.KEYDOWN
+        # if is_valid is True:
+        #     return True
+        # else:
+        #     return False
+        self.main_hero.set_flags_move(event, is_down)
 
         # Сделать обработку кол-ва бомб!
-        elif event.key == pg.K_e:
-            pg.event.post(pg.event.Event(USE_BOMB, {"pos": self.main_hero.rect.center}))
+        if event.key == pg.K_e:
+            if self.main_hero.get_count_bombs():
+                pg.event.post(pg.event.Event(USE_BOMB, {"pos": self.main_hero.rect.center}))
 
         # Временно!!! (хотел сюда спавн пик-лута поставить, но ладно уже)
         elif event.key == pg.K_r:
@@ -42,7 +45,19 @@ class MainHeroActionsHandler:
 
         :param event: Ивент, который содержит item (PickableItem), count (int) и self (вызывается PickableItem).
         """
-        print(f"loot {event.item.__class__.__name__}")
+        name_loot = event.item.__class__
+        if name_loot == PickMoney:
+            self.main_hero.count_money += event.item.count
+            event.item.kill()
+        elif name_loot == PickHeart:
+            if self.main_hero.pickup_heart(event.count, event.heart_type):
+                event.item.kill()
+        elif name_loot == PickBomb:
+            self.main_hero.count_bombs += event.item.count
+            event.item.kill()
+        elif name_loot == PickKey:
+            self.main_hero.count_key += event.item.count
+            event.item.kill()
 
     def artifact_pickup_handler(self, event: pg.event.Event):
         """
@@ -50,7 +65,22 @@ class MainHeroActionsHandler:
 
         :param event: Ивент, который содержит item (BaseArtifact) и self (Pedestal) (вызывается Pedestal).
         """
-        print(f"art {event.item.__class__.__name__}")
+        boosts: dict[str, int] = event.item.__class__.boosts
+        if "max_hp" in boosts.keys():
+            self.main_hero.body.max_red_hp += boosts["max_hp"] * 2
+        if "heal_hp" in boosts.keys():
+            self.main_hero.pickup_heart(boosts['heal_hp'] * 2, HeartsTypes.RED)
+        if "damage" in boosts.keys():
+            self.main_hero.head.shot_damage += boosts['damage']
+        if "speed" in boosts.keys():
+            self.main_hero.body.max_speed += boosts['speed']
+        if "shot_speed" in boosts.keys():
+            self.main_hero.head.shot_speed += boosts['shot_speed']
+        if "shot_distance" in boosts.keys():
+            self.main_hero.head.shot_max_distance += boosts["shot_distance"]
+        if "shot_delay" in boosts.keys():
+            self.main_hero.head.shot_delay += boosts["shot_delay"]
+        event.item.kill()
 
     def buy_handler(self, event: pg.event.Event):
         """
@@ -59,5 +89,6 @@ class MainHeroActionsHandler:
         :param event: Ивент, который содержит item (PickableItem), count (int), price (int), self (ShopItem)
                       и иногда heart_type (HeartsTypes).
         """
-        print(f"buy {event.item.__class__.__name__}")
-
+        if self.main_hero.is_buy(event.count, event.price, event.heart_type):
+            event.item.kill()
+            event.self.kill()

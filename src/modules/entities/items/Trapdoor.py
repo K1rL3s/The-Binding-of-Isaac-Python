@@ -3,15 +3,9 @@ import pygame as pg
 from src.modules.BaseClasses import BaseItem, MoveSprite
 from src.consts import CELL_SIZE, ROOM_WIDTH, ROOM_HEIGHT, MOVE_TO_NEXT_LEVEL
 from src.utils.funcs import load_image, crop, load_sound
+from src.modules.characters.parents import Body
 
 DOOR_CELL_SIZE = int(CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
-
-
-class Body(MoveSprite):
-    """
-    Тело персонажа. Ростик, замени это в Trapdoor.collide
-    """
-    pass
 
 
 class Trapdoor(BaseItem):
@@ -51,8 +45,8 @@ class Trapdoor(BaseItem):
 
     def collide(self, other: MoveSprite):
         # Ростик, убери комментарии это после того, как импортируешь сюда Body
-        # if not isinstance(other, Body):
-        #     return
+        if not isinstance(other, Body):
+            return
 
         if self.collidable:
             pg.event.post(pg.event.Event(MOVE_TO_NEXT_LEVEL))

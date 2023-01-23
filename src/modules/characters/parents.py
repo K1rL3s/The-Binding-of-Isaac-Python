@@ -5,41 +5,61 @@ from src.modules.animations.Animation import Animation
 from typing import Type
 from src.utils.funcs import load_image, crop, load_sound
 from src.consts import CELL_SIZE, ROOM_WIDTH, ROOM_HEIGHT, GAME_OVER
-from src.consts import Moves
+from src.consts import Moves, HeartsTypes
+
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
 
 # from src.modules.entities.tears.ExampleTear import ExampleTear
 
-# фишка в том, что когда сделаем меню, можно будет позволить игроку менять настройки управления, а в коде поменяются:
-settings_body = (pg.K_a, pg.K_d, pg.K_w, pg.K_s)  # это
-settings_head = (pg.K_KP_4, pg.K_KP_6, pg.K_KP_8, pg.K_KP_5)  # и это
-directions_head = {settings_head[0]: "LEFT",
-                   settings_head[1]: "RIGHT",
-                   settings_head[2]: "UP",
-                   settings_head[3]: "DOWN"}
-###
-# специально разбил, чтобы можно было создавать множество персонажей(понятно будет в следующих коммитах)
-body_images_dict: dict = {"DOWN": [crop(load_image(f'textures/heroes/body/forward/{i}.png')) for i in range(10)],
-                          "LEFT": [crop(load_image(f'textures/heroes/body/left/{i}.png')) for i in range(10)],
-                          "RIGHT": [crop(load_image(f'textures/heroes/body/right/{i}.png')) for i in range(10)],
-                          "UP": [crop(load_image(f'textures/heroes/body/up/{i}.png')) for i in range(10)]}
 
-head_images_dict: dict = {"DOWN": crop(load_image('textures/heroes/head/forward.png')),
-                          "LEFT": crop(load_image('textures/heroes/head/left.png')),
-                          "RIGHT": crop(load_image('textures/heroes/head/right.png')),
-                          "UP": crop(load_image('textures/heroes/head/up.png'))}
+class ParamsHeroes:
+
+    def __init__(self):
+        self.body_images_dict: dict | None = None
+        self.head_images_dict: dict | None = None
+        self.settings_body: dict | None = None
+        self.settings_head: dict | None = None
+        self.directions_head: dict | None = None
+
+    def set_images(self, name: str):
+        self.body_images_dict = \
+            {"DOWN": [crop(load_image(f'textures/heroes/body/forward/{name}_{i}.png')) for i in range(10)],
+             "LEFT": [crop(load_image(f'textures/heroes/body/left/{name}_{i}.png')) for i in range(10)],
+             "RIGHT": [crop(load_image(f'textures/heroes/body/right/{name}_{i}.png')) for i in range(10)],
+             "UP": [crop(load_image(f'textures/heroes/body/up/{name}_{i}.png')) for i in range(10)]}
+
+        self.head_images_dict = \
+            {"DOWN": crop(load_image(f'textures/heroes/head/{name}_forward.png')),
+             "LEFT": crop(load_image(f'textures/heroes/head/{name}_left.png')),
+             "RIGHT": crop(load_image(f'textures/heroes/head/{name}_right.png')),
+             "UP": crop(load_image(f'textures/heroes/head/{name}_up.png'))}
+
+    def set_params(self, body: tuple[pg.event, pg.event, pg.event, pg.event],
+                 head: tuple[pg.event, pg.event, pg.event, pg.event]):
+        self.settings_body = body
+        self.settings_head = head
+        self.directions_head = {head[0]: "LEFT",
+                                head[1]: "RIGHT",
+                                head[2]: "UP",
+                                head[3]: "DOWN"}
 
 
-class Body(MoveSprite):
-    def __init__(self, hp, max_speed, a, tears: pg.sprite.AbstractGroup):
+class Body(MoveSprite, ParamsHeroes):
+    def __init__(self, name: str, hp, max_speed, a, tears: pg.sprite.AbstractGroup):
         center_room = ROOM_WIDTH // 2, ROOM_HEIGHT // 2
         super().__init__(center_room, (), acceleration=a)
-        self.hp = hp
+        ParamsHeroes.set_images(self, name)
+        ParamsHeroes.set_params(self, (pg.K_a, pg.K_d, pg.K_w, pg.K_s), (pg.K_KP_4, pg.K_KP_6, pg.K_KP_8, pg.K_KP_5))
+        self.red_hp = hp
+        self.max_red_hp = hp
+        self.blue_hp = 0
+        self.black_hp = 0
+
         self.max_speed = max_speed
         self.tears = tears
         self.damage_from_blow: int = 10
-        self.image = body_images_dict["DOWN"][0]
+        self.image = self.body_images_dict["DOWN"][0]
         self.image = crop(self.image)
         self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0}
         self.timer_hurt: float = 2
@@ -63,8 +83,12 @@ class Body(MoveSprite):
 
     def hurt(self, damage):
         if self.timer_hurt > 2:
-            self.hp -= damage
-            print(self.hp)
+            if self.blue_hp:
+                self.blue_hp -= damage
+            elif self.black_hp:
+                self.black_hp -= damage
+            else:
+                self.red_hp -= damage
             self.timer_hurt = 0
 
     def update_timer_hurt(self, delta_t):
@@ -77,22 +101,21 @@ class Body(MoveSprite):
         self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0}
 
     def setting_flags(self, key, is_down: bool):
-        if key == settings_body[0]:
+        if key == self.settings_body[0]:
             self.flag_move_left = is_down
-        elif key == settings_body[1]:
+        elif key == self.settings_body[1]:
             self.flag_move_right = is_down
-        elif key == settings_body[2]:
+        elif key == self.settings_body[2]:
             self.flag_move_up = is_down
-        elif key == settings_body[3]:
+        elif key == self.settings_body[3]:
             self.flag_move_down = is_down
 
-    #
     def animating(self):
         name = self.last_name_direction
         peremennaya = self.indexes[name] + 1
         self.settings()
-        self.indexes[name] = peremennaya % len(body_images_dict["DOWN"])
-        self.image = body_images_dict[name][self.indexes[name]] if self.is_move else body_images_dict["DOWN"][0]
+        self.indexes[name] = peremennaya % len(self.body_images_dict["DOWN"])
+        self.image = self.body_images_dict[name][self.indexes[name]] if self.is_move else self.body_images_dict["DOWN"][0]
 
     def settings_move_speed(self, delta_t):
         max_speed, a = self.max_speed, self.a * CELL_SIZE
@@ -209,8 +232,9 @@ class Body(MoveSprite):
             self.vy = -self.max_speed
 
 
-class Head(pg.sprite.Sprite):
+class Head(pg.sprite.Sprite, ParamsHeroes):
     def __init__(self,
+                 name: str,
                  tears: pg.sprite.AbstractGroup,
                  shot_damage: int | float,
                  shot_max_distance: int | float,
@@ -218,8 +242,10 @@ class Head(pg.sprite.Sprite):
                  shot_delay: int | float,
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...], ):
         super().__init__()
+        ParamsHeroes.set_images(self, name)
+        ParamsHeroes.set_params(self, (pg.K_a, pg.K_d, pg.K_w, pg.K_s), (pg.K_KP_4, pg.K_KP_6, pg.K_KP_8, pg.K_KP_5))
         tear_class: Type[BaseTear] = HeroTear
-        self.image = head_images_dict["DOWN"]
+        self.image = self.head_images_dict["DOWN"]
         self.is_shot = False
         self.shot_ticks = 0
         self.shot_damage = shot_damage
@@ -250,12 +276,11 @@ class Head(pg.sprite.Sprite):
             elif self.last_name_direction in ["UP", "DOWN"]:
                 self.vy_tear = self.shot_speed if self.last_name_direction == "DOWN" else -self.shot_speed
                 # if self.player_speed[0] != 0:
-                self.vx_tear += self.player_speed[0] * 0.3  # константа выведена практически
+                self.vx_tear += self.player_speed[0] * 0.3 # константа выведена практически
 
     def set_player_speed(self, vx: int | float, vy: int | float):
         self.vy_tear, self.vx_tear = 0, 0
         self.player_speed = vx, vy
-        self.settings_vx_vy_tear()
 
     def update(self, delta_t) -> None:
         self.shot_ticks += delta_t
@@ -269,6 +294,7 @@ class Head(pg.sprite.Sprite):
 
     def shot(self) -> None:
         self.shot_ticks = 0
+        self.settings_vx_vy_tear()
         self.tear_class((0, 0), self.rect.center, self.shot_damage, self.shot_max_distance,
                         self.vx_tear, self.vy_tear, self.tear_collide_groups, self.tears)
 
@@ -282,17 +308,18 @@ class Head(pg.sprite.Sprite):
 
     # поворот головы
     def animating(self):
-        self.image = head_images_dict[self.last_name_direction]
+        self.image = self.head_images_dict[self.last_name_direction]
 
     def draw_tears(self, screen: pg.Surface):
         self.tears.draw(screen)
 
 
 # по факту - это родительский класс для песронажей( ГГ )
-class Player:
+class Player(ParamsHeroes):
     death = load_image("death_isaac (2) (1).png")
 
     def __init__(self,
+                 name: str,
                  hp: int,
                  speed_body,
                  damage_from_blow: int,
@@ -302,14 +329,20 @@ class Player:
                  shot_delay: int | float,
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = (),
                  ):
+        super().__init__()
+        self.set_images(name)
+        self.set_params((pg.K_a, pg.K_d, pg.K_w, pg.K_s), (pg.K_KP_4, pg.K_KP_6, pg.K_KP_8, pg.K_KP_5))
         self.damage_from_blow = damage_from_blow
         self.a = 0.35
-        self.count_bombs = 3
+        self.count_bombs = 30
+        self.count_key = 0
         ################################################################################################
         self.speed = 5
+        self.count_money: int = 1000
+
         self.tears = pg.sprite.Group()
-        self.body = Body(hp, speed_body, self.a, self.tears)
-        self.head = Head(self.tears, shot_damage, shot_max_distance, shot_speed, shot_delay, tear_collide_groups)
+        self.body = Body(name, hp, speed_body, self.a, self.tears)
+        self.head = Head(name, self.tears, shot_damage, shot_max_distance, shot_speed, shot_delay, tear_collide_groups)
         self.count_cadrs = 0
         self.rect = self.body.rect
         self.soul: Soul = Soul()
@@ -319,11 +352,33 @@ class Player:
         self.player_sprites.add(self.body, layer=1)
         self.player_sprites.add(self.head, layer=2)
 
-        self.vx, self.vy = 0, 0
+        # self.vx, self.vy = 0, 0
 
     def update_room_groups(self, hero_collide_groups, tear_collide_groups) -> None:
         self.head.set_tear_collide_groups(tear_collide_groups)
         self.body.collide_groups = hero_collide_groups
+
+    def pickup_heart(self, count: int, heart_type) -> bool:
+        if heart_type == HeartsTypes.RED:
+            if self.body.red_hp >= self.body.max_red_hp:
+                return False
+            self.body.red_hp += count
+            self.body.red_hp = min(self.body.red_hp, self.body.max_red_hp)
+        elif heart_type == HeartsTypes.BLUE:
+            self.body.blue_hp += count
+        elif heart_type == HeartsTypes.BLACK:
+            self.body.black_hp += count
+        return True
+
+    def is_buy(self, count: int, price: int,  heart_type: HeartsTypes | None) -> bool:
+        if self.count_money >= price:
+            if heart_type:
+                if not self.pickup_heart(count * 2, heart_type):
+                    return False
+            self.count_money -= price
+            print(self.count_money)
+            return True
+        return False
 
     def move_to_cell(self, xy_pos):
         x, y = cell_to_pixels(xy_pos)
@@ -335,18 +390,17 @@ class Player:
 
     def set_flags_move(self, event: pg.event.Event, is_keydown: bool):
         key = event.key
-        if key in settings_body:
+        if key in self.settings_body:
             self.body.setting_flags(key, is_keydown)
 
-        elif key in settings_head:
-            self.head.set_directions(directions_head[key], is_keydown)
-            self.head.set_player_speed(*self.get_speed())
+        elif key in self.settings_head:
+            self.head.set_directions(self.directions_head[key], is_keydown)
 
     def set_damage(self):
         self.head.set_damage()
 
     def update(self, delta_t):
-        if self.body.hp > 0:
+        if self.body.red_hp > 0:
             self.count_cadrs += 1
             self.count_cadrs %= 3
 
@@ -358,8 +412,9 @@ class Player:
             self.body.settings_move_speed(delta_t)
             self.body.check_collides()
 
+            self.head.set_player_speed(*self.get_speed())
             coords = self.body.rect.midtop
-            self.head.rect.center = coords[0], coords[1] - 8 # выведена на практике(чтобы голова выглядела нормально)
+            self.head.rect.center = coords[0], coords[1] - 8  # выведена на практике(чтобы голова выглядела нормально)
         else:
             if self.is_alive:
                 self.body.image = self.death
@@ -370,14 +425,17 @@ class Player:
             if self.soul.is_end_animation():
                 pg.event.post(pg.event.Event(GAME_OVER))
 
-    def get_count_bombs(self) -> tuple[int, int] | None:
+    def get_count_bombs(self) -> bool:
         if self.count_bombs > 0:
             self.count_bombs -= 1
-            return self.body.rect.midright
-        return None
+            return True
+        return False
+
+    def get_coords(self):
+        return self.body.rect.center
 
     def get_speed(self) -> tuple[int, int]:
-        return self.vx, self.vy
+        return self.body.vx, self.body.vy
 
     # анимация
     def animating(self):

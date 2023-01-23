@@ -4,6 +4,7 @@ from src.consts import PICKUP_LOOT
 from src.modules.BaseClasses.Items.BaseItem import BaseItem
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Enemies.MovingEnemy import MovingEnemy
+from src.modules.characters.parents import Body
 
 
 class PickableItem(BaseItem):
@@ -22,7 +23,7 @@ class PickableItem(BaseItem):
         BaseItem.__init__(self, xy_pos, *groups, collidable=collidable)
 
         self.pick_sound: pg.mixer.Sound | None = None
-        self.count: int = 0
+        self.count: int = 1
 
     def collide(self, other: MoveSprite) -> bool:
         """
@@ -35,18 +36,21 @@ class PickableItem(BaseItem):
             return False
 
         # Заменить MovingEnemy на MainCharacter
-        if isinstance(other, MovingEnemy):
+        if isinstance(other, Body):
             self.pickup()
 
         return True
+
+    def kill(self):
+        if isinstance(self.pick_sound, pg.mixer.Sound):
+            self.pick_sound.play()
+        MoveSprite.kill(self)
 
     def pickup(self):
         """
         Подбор предмета.
         В наследователе надо делать pg.event.post(PICKUP_LOOT).
         """
-        if isinstance(self.pick_sound, pg.mixer.Sound):
-            self.pick_sound.play()
         pg.event.post(pg.event.Event(PICKUP_LOOT, {
                                                   'item': self,
                                                   'count': self.count,
@@ -54,5 +58,3 @@ class PickableItem(BaseItem):
                                                   }
                                      )
                       )
-        # Убрать kill() отсюда и перенести в обработку подбора MainHero
-        self.kill()

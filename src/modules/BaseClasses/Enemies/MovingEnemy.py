@@ -101,8 +101,8 @@ class MovingEnemy(BaseEnemy, MoveSprite):
             return
 
         if self.flyable:  # Летающие летят напрямую ахахаха)
-            dx = self.main_hero.body.rect.centerx - self.rect.centerx
-            dy = self.main_hero.body.rect.centery - self.rect.centery
+            dx = self.main_hero.rect.centerx - self.rect.centerx
+            dy = self.main_hero.rect.centery - self.rect.centery
             distance = math.hypot(dx, dy)
             if distance:
                 self.set_speed(self.speed * dx / distance, self.speed * dy / distance)

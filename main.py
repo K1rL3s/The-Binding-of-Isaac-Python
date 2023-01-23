@@ -5,7 +5,7 @@ from src import consts
 pg.init()
 pg.font.init()
 pg.mixer.init()
-pg.key.set_repeat(50, 50)
+# pg.key.set_repeat(50, 50)
 screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 
 from src.modules.Game import Game

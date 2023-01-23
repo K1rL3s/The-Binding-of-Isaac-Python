@@ -186,11 +186,11 @@ class Room(RoomTextures):
                 elif chance > 0.2:
                     self.set_pickable((j, i))
                 elif chance > 0.15:
-                    Maw((j, i), self.main_hero, (self.movement_borders, self.doors),
+                    Maw((j, i), self.main_hero.body, (self.movement_borders, self.doors),
                         (self.colliadble_group, self.tears_borders, self.main_hero_group),
                         self.enemies, self.blowable)
                 elif chance > 0.1:
-                    Host((j, i), self.main_hero, (self.colliadble_group, self.movement_borders, self.doors),
+                    Host((j, i), self.main_hero.body, (self.colliadble_group, self.movement_borders, self.doors),
                          (self.colliadble_group, self.tears_borders, self.main_hero_group),
                          self.enemies, self.blowable)
 
@@ -439,7 +439,7 @@ class Room(RoomTextures):
         self.arts.draw(screen)
 
         # ЗАТЫЧКА ГГ
-        screen.blit(self.main_hero.image, (self.main_hero.rect.x, self.main_hero.rect.y))
+        self.main_hero_group.draw(screen)
         # ЗАТЫЧКА ГГ
 
         for enemy in self.enemies.sprites():
@@ -453,12 +453,11 @@ class Room(RoomTextures):
 
         self.main_hero.render(screen)
 
-    def test_func_set_bomb(self):
-        xy_pos: tuple[int, int] | None = self.main_hero.get_count_bombs()
-        if xy_pos:
-            if room_pos := pixels_to_cell(xy_pos):
-                BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other),
-                         (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
+    def set_bomb(self, event: pg.event.Event):
+        xy_pos = event.__getattribute__('pos')
+        if room_pos := pixels_to_cell(xy_pos):
+            BlowBomb(room_pos, (self.colliadble_group, self.movement_borders, self.other),
+                     (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
 
     def set_pickable(self, xy_pos: tuple[int, int]):  # Клетка
         chance = random.random()

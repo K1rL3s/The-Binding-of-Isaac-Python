@@ -17,7 +17,7 @@ class PickHeart(PickMovableItem):
     :param collide_groups: Группы спрайтов, через спрайты которых нельзя пройти.
     :param groups: Группы спрайтов.
     :param xy_pixels: Позиция в пикселях.
-    :param count: Количество сердец при подборе (одна половика = 1, целое - 2).
+    :param count: Количество сердец при подборе (одна половинка = 1, целое - 2).
     :param heart_type: Тип сердца.
     """
 
@@ -35,7 +35,7 @@ class PickHeart(PickMovableItem):
     black_hearts = heart_images[2]
 
     pickup_sound = load_sound("sounds/heart_pickup.wav")
-    hearts: dict[dict[HeartsTypes, dict[int, tuple[pg.Surface, pg.mixer.Sound]]]] = {
+    hearts: dict[HeartsTypes, [HeartsTypes, dict[int, tuple[pg.Surface, pg.mixer.Sound]]]] = {
         HeartsTypes.RED: {
             1: (red_hearts[0], pickup_sound),
             2: (red_hearts[1], pickup_sound),
@@ -85,8 +85,6 @@ class PickHeart(PickMovableItem):
         """
         Подбор предмета.
         """
-        if isinstance(self.pick_sound, pg.mixer.Sound):
-            self.pick_sound.play()
         pg.event.post(pg.event.Event(PICKUP_LOOT, {
                                                   'item': self,
                                                   'count': self.count,
@@ -95,5 +93,3 @@ class PickHeart(PickMovableItem):
                                                   }
                                      )
                       )
-        # Убрать kill() отсюда и перенести в обработку подбора MainHero
-        self.kill()

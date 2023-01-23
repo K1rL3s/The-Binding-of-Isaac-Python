@@ -16,7 +16,7 @@ from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 class Game(BaseGame):
     def __init__(self, main_screen: pg.Surface, fps: int = 60):
 
-        self.main_hero = Player(100, 4, 10, 2, 5, 5, 0.5)
+        self.main_hero = Player('isaac', 100, 4, 10, 2, 5, 5, 0.5)
 
         BaseGame.__init__(self, main_screen, fps)
         self.level_screen = pg.Surface((GAME_WIDTH, GAME_HEIGHT))
@@ -30,6 +30,7 @@ class Game(BaseGame):
 
     def setup(self):
         self.register_event(pg.KEYDOWN, self.main_hero_handler.keyboard_handler)
+        self.register_event(pg.KEYUP, self.main_hero_handler.keyboard_handler)
         self.register_event(MOVE_TO_NEXT_LEVEL, self.move_to_next_level)
         self.register_event(MOVE_TO_NEXT_ROOM, self.move_to_next_room)
         self.register_event(PICKUP_LOOT, self.main_hero_handler.loot_pickup_handler)

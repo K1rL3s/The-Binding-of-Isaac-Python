@@ -55,12 +55,6 @@ class Pedestal(PickableItem):
         if self.artifact:
             self.artifact.update(delta_t)
 
-    def blow(self):
-        """
-        ВРЕМЕННЫЙ МЕТОД ДЛЯ ТЕСТА!!! УДАЛИТЬ!!!
-        """
-        self.pickup()
-
     def pickup(self):
         """
         Подбор предмета.

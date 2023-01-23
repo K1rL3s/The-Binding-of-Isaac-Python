@@ -71,6 +71,10 @@ class ShopItem(PickableItem):
             return
         PickableItem.collide(self, other)
 
+    def kill(self):
+        PickableItem.kill(self)
+        self.item.kill()
+
     def pickup(self):
         """
         Подбор (покупка) предмета.
@@ -84,5 +88,4 @@ class ShopItem(PickableItem):
                                                  }
                                      )
                       )
-        # Убрать kill() отсюда и перенести в обработку подбора MainHero
-        self.kill()
+
