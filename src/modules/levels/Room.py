@@ -184,6 +184,9 @@ class Room(RoomTextures):
                   (self.movement_borders,), 1, 2,
                   self.bosses, self.blowable, self.other, flyable=True)
 
+        if self.room_type == consts.RoomsTypes.BOSS:
+            return
+
         if self.room_type == consts.RoomsTypes.TREASURE:
             pedestal = Pedestal((centerx, centery),
                                 self.obstacles, self.colliadble_group, self.other)
@@ -456,8 +459,8 @@ class Room(RoomTextures):
             enemy: BaseEnemy
             enemy.update_room_graph(self.paths)
         for boss in self.bosses:
-            boss: BaseEnemy
-            boss.update_room_graph(self.paths)
+            if isinstance(boss, BaseEnemy):
+                boss.update_room_graph(self.paths)
 
     def win_room(self):
         """

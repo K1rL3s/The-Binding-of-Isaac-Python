@@ -50,7 +50,7 @@ class Trapdoor(BaseItem):
             Trapdoor.open_sound.play()
 
     def collide(self, other: MoveSprite):
-        # Ростик, убери комментарии это после того, как импортируешь сюда Body
+        # Ростик, убери комментарии это после того, как импортируешь сюда Body !!!
         # if not isinstance(other, Body):
         #     return
 
