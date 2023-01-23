@@ -4,7 +4,7 @@ from src.modules.BaseClasses.Based.BaseGame import BaseGame
 from src.modules.handlers.MainHeroActionsHandler import MainHeroActionsHandler
 from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
-from src.modules.menus.Stats import Stats
+from src.modules.menus.StatsLine import Stats
 from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE,
                         MOVE_TO_NEXT_ROOM, MOVE_TO_NEXT_LEVEL, PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB)
 from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
@@ -62,7 +62,7 @@ class Game(BaseGame):
         :param event: Ивент, который имеет direction (вызывается дверью).
         """
         self.current_level.move_to_next_room(event.direction)
-        self.stats.update_minimap()
+        self.update_stats()
 
     def move_main_hero(self, xy_pos: tuple[int, int]):
         """
@@ -73,6 +73,10 @@ class Game(BaseGame):
         x, y = xy_pos
         y -= STATS_HEIGHT  # Обработка для нажатия мышкой!!!
         self.main_hero.rect.center = (x, y)
+
+    def update_stats(self):
+        self.stats.update_minimap()
+        self.stats.update_hero_stats()
 
     def update(self, delta_t: float):
         self.current_level.update(delta_t)
