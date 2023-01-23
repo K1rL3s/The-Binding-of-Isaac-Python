@@ -3,20 +3,13 @@ import math
 
 import pygame as pg
 
-import xml.etree.ElementTree as XMLTree
-
-from src.modules.BaseClasses import BaseItem, BaseEnemy
-from src.modules.BaseClasses.Enemies.ShootingEnemy import ShootingEnemy
-from src.modules.entities.artifacts.RedSyringe import RedSyringe
-from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop,
-                                        Door, Spikes, Web, BlowBomb, Pedestal, PickHeart)
-from src.modules.entities.artifacts.FreshMeat import FreshMeat
-from src.modules.entities.items.Trapdoor import Trapdoor
-from src.modules.entities.items.ShopItem import ShopItem
+from src.modules.BaseClasses import BaseItem, BaseEnemy, ShootingEnemy
+from src.modules.entities.items import (FirePlace, PickBomb, PickKey, PickMoney, Rock, Poop, ShopItem,
+                                        Door, Spikes, Web, BlowBomb, Pedestal, PickHeart, Trapdoor)
+from src.modules.entities.artifacts import (Dinner, FreshMeat, GreenSyringe, GreySyringe, MomsHeels,
+                                            PurpleSyringe, RedSyringe, WhiteSyringe)
 from src.modules.levels.Border import Border
-from src.modules.enemies.Maw import Maw
-from src.modules.enemies.Guts import Guts
-from src.modules.enemies.Host import Host
+from src.modules.enemies import Maw, Guts, Host
 from src.utils.funcs import pixels_to_cell, load_image
 from src.utils.graph import make_neighbors_graph
 from src import consts
@@ -59,16 +52,16 @@ class Room(RoomTextures):
     :param texture_variant: Вариант текстуры (1-4, один из вариантов из изображения).
     :param xy_pos: Расположение на этаже (x, y).
     :param main_hero: Главный герой.
-    :param xml_description: XML разметка объектов в комнате.
     """
     paths_update_delay: int | float = 1
+    artifacts = [Dinner, FreshMeat, GreenSyringe, GreySyringe, MomsHeels, PurpleSyringe, RedSyringe, WhiteSyringe]
+    loot = [PickHeart, PickKey, PickMoney, PickBomb]
 
     def __init__(self,
                  floor_type: consts.FloorsTypes,
                  room_type: consts.RoomsTypes,
                  xy_pos: tuple[int, int],
                  main_hero,
-                 xml_description: XMLTree,
                  texture_variant: int = None):
 
         assert room_type != consts.RoomsTypes.EMPTY, f"Тип комнаты не можеть быть {consts.RoomsTypes.EMPTY}."
@@ -105,13 +98,13 @@ class Room(RoomTextures):
         self.fires = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.other = pg.sprite.Group()  # Бомбы, ключи, монеты итд итп
-        self.arts = pg.sprite.Group()  # Артефакты
+        self.artifacts_group = pg.sprite.Group()  # Артефакты
         self.paths = dict()  # Пути для наземных
         self.fly_paths = dict()  # Пути для летающих врагов
 
         self.main_hero = main_hero
         self.setup_background()
-        self.setup_entities(xml_description)
+        self.setup_entities()
         self.setup_graph()
         self.setup_borders()
 
@@ -147,52 +140,76 @@ class Room(RoomTextures):
             background.blit(Room.controls_hint, (consts.WALL_SIZE, consts.WALL_SIZE))
         self.background = background
 
-    def setup_entities(self, xml: XMLTree):
+    def setup_entities(self,):
         """
-        Загрузка комнаты из json/xml, пока не выбрали.
-        Сейчас - заглушка.
+        Рандомная генерация вещей в комнате без какой-либо особой логики :)
         """
-        for i in range(consts.ROOM_HEIGHT):
-            for j in range(consts.ROOM_WIDTH):
-                chance = random.random()
-                if chance > 0.9:
-                    Rock((j, i), self.floor_type, self.room_type, self.colliadble_group, self.rocks,
-                         self.obstacles, self.blowable)
-                elif chance > 0.8:
-                    Poop((j, i), self.colliadble_group, self.poops, self.obstacles, self.blowable)
-                elif chance > 0.7:
-                    Guts((j, i), self.paths, (self.colliadble_group, self.movement_borders, self.other),
-                         self.enemies, self.blowable)
-                    self.is_friendly = False
-                elif chance > 0.6:
-                    Web((j, i), self.colliadble_group, self.webs, self.blowable)
-                elif chance > 0.5:
-                    FirePlace((j, i), self.colliadble_group, self.fires, self.blowable, self.obstacles,
-                              fire_type=consts.FirePlacesTypes.RED,
-                              tear_collide_groups=(self.colliadble_group, self.tears_borders, self.other, self.enemies),
-                              main_hero=self.main_hero)
-                elif chance > 0.49:
-                    Spikes((j, i), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
-                elif chance > 0.4:
-                    p = Pedestal((j, i), self.obstacles, self.colliadble_group, self.other)
-                    if chance > 0.45:
-                        p.set_artifact(RedSyringe, self.arts)
-                elif chance > 0.3:
-                    ShopItem((j, i), random.choice([PickHeart, PickKey, PickMoney, PickBomb, FreshMeat]),
-                             self.other)
-                elif chance > 0.2:
-                    self.set_pickable((j, i))
-                elif chance > 0.15:
-                    Maw((j, i), self.main_hero, (self.movement_borders, self.doors),
-                        (self.colliadble_group, self.tears_borders, self.main_hero_group),
-                        self.enemies, self.blowable)
-                elif chance > 0.1:
-                    Host((j, i), self.main_hero, (self.colliadble_group, self.movement_borders, self.doors),
-                         (self.colliadble_group, self.tears_borders, self.main_hero_group),
-                         self.enemies, self.blowable)
+        centerx, centery = consts.ROOM_WIDTH // 2, consts.ROOM_HEIGHT // 2
+
+        if self.room_type == consts.RoomsTypes.SPAWN:
+            return
 
         if self.room_type == consts.RoomsTypes.BOSS:
             Trapdoor(self.colliadble_group, self.doors)
+            return
+
+        if self.room_type == consts.RoomsTypes.TREASURE:
+            pedestal = Pedestal((centerx, centery),
+                                self.obstacles, self.colliadble_group, self.other)
+            pedestal.set_artifact(random.choice(Room.artifacts), self.artifacts_group)
+            return
+
+        if self.room_type == consts.RoomsTypes.SHOP:
+            for i, items in zip(range(-2, 2 + 1, 2), (Room.artifacts, Room.loot, Room.loot)):
+                ShopItem((centerx + i, centery), random.choice(items), self.other)
+            return
+
+        if self.room_type == consts.RoomsTypes.SECRET:
+            for i in range(-2, 2 + 1, 2):
+                self.set_pickable((centerx + i, centery))
+            return
+
+        enemies = 0
+        max_enemies = 10
+        for y in range(consts.ROOM_HEIGHT):
+            for x in range(consts.ROOM_WIDTH):
+                if y == centery or x == centerx:
+                    continue
+                chance = random.random()
+                if chance > 0.9:
+                    Rock((x, y), self.floor_type, self.room_type, self.colliadble_group, self.rocks,
+                         self.obstacles, self.blowable)
+                elif chance > 0.8:
+                    Poop((x, y), self.colliadble_group, self.poops, self.obstacles, self.blowable)
+                elif chance > 0.7:
+                    Web((x, y), self.colliadble_group, self.webs, self.blowable)
+                elif chance > 0.6:
+                    fire_type = random.choices([consts.FirePlacesTypes.DEFAULT, consts.FirePlacesTypes.RED],
+                                               [0.9, 0.1])[0]
+                    FirePlace((x, y), self.colliadble_group, self.fires, self.blowable, self.obstacles,
+                              fire_type=fire_type,
+                              tear_collide_groups=(self.colliadble_group, self.tears_borders, self.main_hero_group),
+                              main_hero=self.main_hero)
+                elif chance > 0.5:
+                    self.set_pickable((x, y))
+                elif chance > 0.4 and enemies < max_enemies:
+                    Maw((x, y), self.main_hero, (self.movement_borders, self.doors),
+                        (self.colliadble_group, self.tears_borders, self.main_hero_group),
+                        self.enemies, self.blowable)
+                    enemies += 1
+                elif chance > 0.35:
+                    Host((x, y), self.main_hero, (self.colliadble_group, self.movement_borders, self.doors),
+                         (self.colliadble_group, self.tears_borders, self.main_hero_group),
+                         self.enemies, self.blowable)
+                    enemies += 1
+                elif chance > 0.3:
+                    Guts((x, y), self.paths, (self.colliadble_group, self.movement_borders, self.other),
+                         self.enemies, self.blowable)
+                    enemies += 1
+                elif chance > 0.28:
+                    Spikes((x, y), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
+
+        self.is_friendly = bool(self.enemies)
 
     def setup_graph(self):
         """
@@ -427,7 +444,7 @@ class Room(RoomTextures):
         self.fires.draw(screen)
         self.other.draw(screen)
         self.enemies.draw(screen)
-        self.arts.draw(screen)
+        self.artifacts_group.draw(screen)
 
         # ЗАТЫЧКА ГГ
         screen.blit(self.main_hero.image, (self.main_hero.rect.x, self.main_hero.rect.y))

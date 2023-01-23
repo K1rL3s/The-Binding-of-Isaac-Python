@@ -1,6 +1,8 @@
+import random
+
 import pygame as pg
 
-from src.consts import USE_BOMB
+from src.consts import USE_BOMB, MOVE_TO_NEXT_ROOM, Moves
 
 
 class MainHeroActionsHandler:
@@ -18,6 +20,8 @@ class MainHeroActionsHandler:
 
         :param event: Ивент нажатия или отпуская кнопки.
         """
+        if event.key == pg.K_SPACE:
+            pg.event.post(pg.event.Event(MOVE_TO_NEXT_ROOM, {'direction': random.choice(list(Moves))}))
         if event.key == pg.K_w:
             self.main_hero.rect.move_ip(0, -10)
         elif event.key == pg.K_a:
