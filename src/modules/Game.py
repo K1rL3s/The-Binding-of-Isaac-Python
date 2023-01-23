@@ -4,8 +4,8 @@ from src.modules.BaseClasses.Based.BaseGame import BaseGame
 from src.modules.handlers.MainHeroActionsHandler import MainHeroActionsHandler
 from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
-from src.modules.menus.StatsLine import StatsLine
-from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE,
+from src.modules.menus.StatsLine import Stats
+from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE)
 from src.utils.funcs import cell_to_pixels
 from src.modules.characters.parents import Player
 from src.consts import (FloorsTypes, Moves, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE,
@@ -25,7 +25,7 @@ class Game(BaseGame):
         self.levels = [Level(floor_type, self.main_hero) for floor_type in FloorsTypes]
         self.current_level = self.levels[0]
         self.current_level.update_main_hero_collide_groups()
-        self.stats = StatsLine(None, self.current_level)
+        self.stats = Stats(None, self.current_level)
 
         self.main_hero_handler = MainHeroActionsHandler(self.main_hero)
 

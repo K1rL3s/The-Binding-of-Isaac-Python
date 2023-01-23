@@ -68,7 +68,7 @@ class Room(RoomTextures):
                  floor_type: consts.FloorsTypes,
                  room_type: consts.RoomsTypes,
                  xy_pos: tuple[int, int],
-                 main_hero: Player,                 main_hero,
+                 main_hero: Player,
                  texture_variant: int = None):
 
         assert room_type != consts.RoomsTypes.EMPTY, f"Тип комнаты не можеть быть {consts.RoomsTypes.EMPTY}."
