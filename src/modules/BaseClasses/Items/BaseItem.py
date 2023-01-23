@@ -22,8 +22,8 @@ class BaseItem(BaseSprite):
                  collidable: bool = False,
                  hurtable: bool = False):
         BaseSprite.__init__(self, xy_pos, *groups)
-        self.groups = groups
 
+        self.groups = groups
         self.x, self.y = xy_pos
         self.collidable = collidable
         self.hurtable = hurtable

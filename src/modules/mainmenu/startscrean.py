@@ -2,7 +2,6 @@ import sys
 import pygame
 import src.consts
 import pygame as pg
-
 from src.utils.funcs import load_image
 
 WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
@@ -45,7 +44,7 @@ def start_screen(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key != pygame.K_ESCAPE:
                     return choise_menu(screen)
                 else:
@@ -133,6 +132,7 @@ def choise_menu(screen):
     MenuSprite(load_image("images/menu/isaac_info.png", -1), 480, 630, 350, 70, isaac)
     MenuSprite(load_image("images/menu/lost_info.png", -1), 480, 630, 350, 70, lost)
     MenuSprite(load_image("images/menu/cain_info.png", -1), 480, 630, 350, 70, cain)
+
     screen.blit(fon, (0, 0))
     hero_choise_sprites = pygame.sprite.Group()
     MenuSprite(load_image(list_hero[0], -1), 610, 450, 80, 90, hero_choise_sprites)
@@ -176,6 +176,7 @@ def choise_menu(screen):
                     return 0
                 elif event.key == pygame.K_ESCAPE:
                     return start_screen(screen)
+
             whoam.draw(screen)
             hero_choise_sprites.draw(screen)
             eval(f)

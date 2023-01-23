@@ -47,6 +47,14 @@ class ExampleEnemy(MovingEnemy, ShootingEnemy):
         self.image = pg.Surface((50, 50), pg.SRCALPHA, 32)
         pg.draw.rect(self.image, 'white', (0, 0, 50, 50))
 
+    def move_back(self, rect: pg.Rect):
+        MovingEnemy.move_back(self, rect)
+        centerx, centery = rect.center
+        if (self.rect.centerx < centerx and self.vx > 0) or (self.rect.centerx > centerx and self.vx < 0):
+            self.set_speed(0, self.speed if self.vy > 0 else -self.speed)
+        if (self.rect.centery > centery and self.vy < 0) or (self.rect.centery < centery and self.vy > 0):
+            self.set_speed(self.speed if self.vx > 0 else -self.speed, 0)
+
     def draw_stats(self, screen: pg.Surface):
         """
         СНИЖАЕТ ФПС!!!

@@ -1,4 +1,5 @@
 import math
+import random
 from typing import Type
 
 import pygame as pg
@@ -52,7 +53,7 @@ class ShootingEnemy(BaseEnemy):
         self.tear_class = tear_class
         self.tear_collide_groups = tear_collide_groups
 
-        self.shot_ticks = 0
+        self.shot_ticks = random.uniform(0, self.shot_delay / 2)
         self.tears = pg.sprite.Group()
 
     def update(self, delta_t: float):
