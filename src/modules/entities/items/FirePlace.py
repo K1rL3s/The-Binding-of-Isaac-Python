@@ -5,7 +5,7 @@ import pygame as pg
 from src.consts import CELL_SIZE, FirePlacesTypes
 from src.modules.animations.Animation import Animation
 from src.modules.BaseClasses import MoveSprite, DestroyableItem, ShootingEnemy
-from src.modules.characters.parents import Player
+from src.modules.characters.parents import Body
 from src.utils.funcs import load_image, load_sound
 from src.modules.entities.tears.ExampleTear import ExampleTear
 
@@ -72,7 +72,7 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
                  *groups: pg.sprite.Group,
                  fire_type: FirePlacesTypes = FirePlacesTypes.DEFAULT,
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = None,
-                 main_hero: Player = None,
+                 main_hero: Body = None,
                  hurtable: bool = True):
         tear_damage = 1
         tear_distance = 4

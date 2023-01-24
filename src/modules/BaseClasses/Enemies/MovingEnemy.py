@@ -4,7 +4,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
-from src.modules.characters.parents import Player
+from src.modules.characters.parents import Body
 from src.modules.levels.Border import Border
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
@@ -32,7 +32,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
                  damage_from_blow: int,
                  move_update_delay: int | float,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Player,
+                 main_hero: Body | pg.sprite.Sprite,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  flyable: bool = False):
@@ -69,6 +69,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
         Перемещение сущности.
 
         :param delta_t: Время с прошлого кадра.
+        :param change_speeds: Вызывать ли update_move_speed().
         """
         MoveSprite.move(self, delta_t)
 
@@ -112,7 +113,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
             return
 
         self.move_ticks = 0
-        xy_end = self.main_hero.body.rect.center
+        xy_end = self.main_hero.rect.center
         xy_end = pixels_to_cell(xy_end)
         path_list = make_path_to_cell(self.room_graph, (self.x, self.y), xy_end)
         if not path_list or len(path_list) < 2:

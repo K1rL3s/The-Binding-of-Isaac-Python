@@ -34,10 +34,7 @@ class BaseSprite(pg.sprite.Sprite):
         """
         Установка объекта в центре своей клетки.
         """
-        try:  # ЗАТЫЧКА ДЛЯ ВРЕМЕННОГО ГГ!!! УБРАТЬ!!!
-            self.rect = self.image.get_rect()
-        except AttributeError:  # ЗАТЫЧКА ДЛЯ ВРЕМЕННОГО ГГ!!! УБРАТЬ!!!
-            return  # ЗАТЫЧКА ДЛЯ ВРЕМЕННОГО ГГ!!! УБРАТЬ!!!
+        self.rect = self.image.get_rect()
         if width:
             self.rect.width = width
         if height:

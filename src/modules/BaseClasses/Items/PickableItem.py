@@ -3,7 +3,6 @@ import pygame as pg
 from src.consts import PICKUP_LOOT
 from src.modules.BaseClasses.Items.BaseItem import BaseItem
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
-from src.modules.BaseClasses.Enemies.MovingEnemy import MovingEnemy
 from src.modules.characters.parents import Body
 
 

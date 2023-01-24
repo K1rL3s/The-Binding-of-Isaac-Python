@@ -37,13 +37,14 @@ class MovableItem(BaseItem, MoveSprite):
             self.clear_collide_ticks = 0
             self.collide_sprites.clear()
 
-    def move(self, delta_t: float):
+    def move(self, delta_t: float, use_a: bool = True):
         """
         Перемещение объекта и изменение его скоростей.
 
         :param delta_t: Время с прошлого кадра.
+        :param use_a: Замедлять ускорением.
         """
-        MoveSprite.move(self, delta_t)
+        MoveSprite.move(self, delta_t, use_a=use_a)
         MoveSprite.check_collides(self)
 
     def move_back(self, rect: pg.Rect):
