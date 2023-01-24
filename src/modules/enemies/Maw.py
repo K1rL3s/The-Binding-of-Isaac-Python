@@ -4,6 +4,7 @@ from typing import Type
 import pygame as pg
 
 from src.modules.BaseClasses import MovingEnemy, ShootingEnemy, BaseTear
+from src.modules.characters.parents import Body
 from src.modules.entities.tears.ExampleTear import ExampleTear
 from src.utils.funcs import load_sound, load_image
 
@@ -25,7 +26,7 @@ class Maw(MovingEnemy, ShootingEnemy):
 
     def __init__(self,
                  xy_pos: tuple[int, int],
-                 main_hero: pg.sprite.Sprite,
+                 main_hero: Body,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup):

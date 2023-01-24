@@ -3,6 +3,7 @@ import pygame as pg
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Enemies.MovingEnemy import MovingEnemy
 from src.modules.animations.Animation import Animation
+from src.modules.characters.parents import Body
 from src.utils.funcs import load_image
 
 
@@ -61,7 +62,6 @@ class Guts(MovingEnemy):
     def collide(self, other: MoveSprite):
         MovingEnemy.collide(self, other)
 
-        # Изменить на ГГ!!!
-        if isinstance(other, MoveSprite):
+        if isinstance(other, Body):
             other.hurt(1)
             other.move_back(self.rect)

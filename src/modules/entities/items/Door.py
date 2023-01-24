@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src import consts
-from src.modules.BaseClasses import BaseItem, MoveSprite, MovingEnemy
+from src.modules.BaseClasses import BaseItem, MoveSprite
 from src.utils.funcs import load_image, crop
 from src.modules.characters.parents import Body
 
@@ -348,7 +348,7 @@ class Door(BaseItem, DoorTextures):
             elif self.xy_pos == consts.DoorsCoords.DOWN.value:
                 direction = consts.Moves.DOWN
                 next_coords = consts.DoorsCoords.UP.value
-                next_coords = next_coords[0] , next_coords[1] + 1
+                next_coords = next_coords[0], next_coords[1] + 1
             elif self.xy_pos == consts.DoorsCoords.RIGHT.value:
                 direction = consts.Moves.RIGHT
                 next_coords = consts.DoorsCoords.LEFT.value
@@ -358,7 +358,8 @@ class Door(BaseItem, DoorTextures):
                 next_coords = consts.DoorsCoords.RIGHT.value
                 next_coords = next_coords[0] - 1, next_coords[1]
             assert direction
-            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM, {'direction': direction, 'next_coords': next_coords}))
+            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM,
+                                         {'direction': direction, 'next_coords': next_coords}))
 
             # Реализовать закрытие двери после входа в секретку:
             # if self.room_type == consts.RoomsTypes.SECRET:

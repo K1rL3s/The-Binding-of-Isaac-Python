@@ -5,7 +5,6 @@ from src.utils.graph import valid_coords, get_neighbors_coords
 from src.modules.levels.Room import Room
 from src.modules.levels.LevelGenerator import generate_level
 from src.modules.animations.MovingRoomAnimation import MovingRoomAnimation
-from src.modules.BaseClasses import BaseEnemy
 from src.modules.characters.parents import Player
 
 

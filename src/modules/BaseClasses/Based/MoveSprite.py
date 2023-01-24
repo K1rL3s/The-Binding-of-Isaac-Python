@@ -48,7 +48,7 @@ class MoveSprite(BaseSprite):
         Перемещение сущности.
 
         :param delta_t: Время с прошлого кадра.
-        :param use_a: Крч, для ускорения \ торможения ГГ.
+        :param use_a: Крч, для ускорения/торможения ГГ.
         """
         if self.a and use_a:
             if self.vx:

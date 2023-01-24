@@ -7,7 +7,7 @@ import pygame as pg
 from src.consts import CELL_SIZE
 from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
-from src.modules.characters.parents import Player
+from src.modules.characters.parents import Body
 
 
 class ShootingEnemy(BaseEnemy):
@@ -36,7 +36,7 @@ class ShootingEnemy(BaseEnemy):
                  hp: int,
                  damage_from_blow: int,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Player,
+                 main_hero: Body,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  shot_damage: int | float,
                  shot_max_distance: int | float,

@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src.modules.BaseClasses import MovingEnemy
-from src.modules.characters.parents import Player
+from src.modules.characters.parents import Body
 from src.modules.enemies.fistula import Fistula
 from src.utils.funcs import load_sound, load_image, crop
 
@@ -13,14 +13,15 @@ class Pudge(Fistula):
                  xy_pos: tuple[int, int],
                  hp: int,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Player,
+                 main_hero: Body,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
+                 hp_bar_group: pg.sprite.AbstractGroup,
                  stage: int,
                  speed: int | float,
-                 *groups: pg.sprite.AbstractGroup, flyable=True):
+                 *groups: pg.sprite.AbstractGroup):
         Fistula.__init__(self, xy_pos, hp, room_graph, main_hero,
-                         enemy_collide_groups, stage, speed,
-                         *groups, flyable=True)
+                         enemy_collide_groups, hp_bar_group, stage, speed,
+                         *groups)
         self.image = Pudge.images[stage - 1]
         self.image = pg.transform.scale2x(self.image)
         self.rect = self.image.get_rect(
@@ -29,19 +30,19 @@ class Pudge(Fistula):
     def death(self):
         MovingEnemy.death(self)
         if self.stage == 3:
-            # НАДО СДЕЛАТЬ ЛЮК!!!
-            return 0
+            return
+
         if self.stage == 1:
             Pudge((self.x, self.y), 25, self.room_graph, self.main_hero,
-                  (self.enemy_collide_groups[0],), self.stage + 1, self.vx + 0.5,
-                  *self.groups, flyable=True)
+                  self.enemy_collide_groups, self.hp_bar_group, self.stage + 1, self.vx + 0.5,
+                  *self.groups)
             Pudge((self.x, self.y), 25, self.room_graph, self.main_hero,
-                  (self.enemy_collide_groups[0],), self.stage + 1, -(abs(self.vx) + 0.5),
-                  *self.groups, flyable=True)
-        if self.stage == 2:
+                  self.enemy_collide_groups, self.hp_bar_group, self.stage + 1, -(abs(self.vx) + 0.5),
+                  *self.groups)
+        elif self.stage == 2:
             Pudge((self.x, self.y), 10, self.room_graph, self.main_hero,
-                  (self.enemy_collide_groups[0],), self.stage + 1, self.vx + 0.5,
-                  *self.groups, flyable=True)
+                  self.enemy_collide_groups, self.hp_bar_group, self.stage + 1, self.vx + 0.5,
+                  *self.groups)
             Pudge((self.x, self.y), 10, self.room_graph, self.main_hero,
-                  (self.enemy_collide_groups[0],), self.stage + 1, -(abs(self.vx) + 0.5),
-                  *self.groups, flyable=True)
+                  self.enemy_collide_groups, self.hp_bar_group, self.stage + 1, -(abs(self.vx) + 0.5),
+                  *self.groups)

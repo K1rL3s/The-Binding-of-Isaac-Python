@@ -29,7 +29,7 @@ class Border(BaseSprite):
         self.rect = pg.Rect(x, y, width, height)
 
         # Для видимости, где это чудо
-        #pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height), width=4)
+        # pg.draw.rect(self.image, 'red', (0, 0, self.rect.width, self.rect.height), width=4)
 
     def collide(self, other: MoveSprite):
         if isinstance(other, BaseTear):

@@ -99,6 +99,7 @@ class Room(RoomTextures):
 
         self.enemies = pg.sprite.Group()
         self.bosses = pg.sprite.Group()
+        self.hp_bar_group = pg.sprite.Group()
         self.rocks = pg.sprite.Group()
         self.poops = pg.sprite.Group()
         self.webs = pg.sprite.Group()
@@ -149,7 +150,7 @@ class Room(RoomTextures):
             background.blit(Room.controls_hint, (consts.WALL_SIZE, consts.WALL_SIZE))
         self.background = background
 
-    def setup_entities(self, ):
+    def setup_entities(self):
         """
         Рандомная генерация вещей в комнате без какой-либо особой логики :)
         """
@@ -158,36 +159,34 @@ class Room(RoomTextures):
         if self.room_type == consts.RoomsTypes.SPAWN:
             return
 
-        if self.room_type == consts.RoomsTypes.BOSS:
-            Trapdoor(self.colliadble_group, self.doors)
-
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
-            Teratoma((6, 3), 40, self.paths, self.main_hero,
-                     (self.movement_borders,), 1, 2,
-                     self.bosses, self.blowable, self.other, flyable=True)
-            self.is_friendly = False
+            Teratoma((6, 3), 40, self.paths, self.main_hero.body,
+                     (self.movement_borders,), self.hp_bar_group, 1, 2,
+                     self.bosses, self.blowable, self.other)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
-            Fistula((6, 3), 40, self.paths, self.main_hero,
-                    (self.movement_borders,), 1, 2,
-                    self.bosses, self.blowable, flyable=True)
+            Fistula((6, 3), 40, self.paths, self.main_hero.body,
+                    (self.movement_borders,), self.hp_bar_group, 1, 2,
+                    self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.DEPTHS:
-            Duke((6, 3), self.paths, self.main_hero,
-                 (self.movement_borders,), (self.main_hero_group, self.colliadble_group), 1.4,
-                 self.bosses, self.blowable, flyable=True)
+            Duke((6, 3), self.paths, self.main_hero.body,
+                 (self.movement_borders,), (self.main_hero_group, self.colliadble_group), self.hp_bar_group,
+                 1.4, self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CAVES:
-            Envy((6, 3), 40, self.paths, self.main_hero,
-                 (self.movement_borders,), 1, 2,
-                 self.bosses, self.blowable, flyable=True)
+            Envy((6, 3), 40, self.paths, self.main_hero.body,
+                 (self.movement_borders,), self.hp_bar_group, 1, 2,
+                 self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.WOMB:
-            Pudge((6, 3), 40, self.paths, self.main_hero,
-                  (self.movement_borders,), 1, 2,
-                  self.bosses, self.blowable, self.other, flyable=True)
+            Pudge((6, 3), 40, self.paths, self.main_hero.body,
+                  (self.movement_borders,), self.hp_bar_group, 1, 2,
+                  self.bosses, self.blowable, self.other)
 
         if self.room_type == consts.RoomsTypes.BOSS:
+            self.is_friendly = False
+            Trapdoor(self.colliadble_group, self.doors)
             return
 
         if self.room_type == consts.RoomsTypes.TREASURE:
@@ -226,16 +225,16 @@ class Room(RoomTextures):
                     FirePlace((x, y), self.colliadble_group, self.fires, self.blowable, self.obstacles,
                               fire_type=fire_type,
                               tear_collide_groups=(self.colliadble_group, self.tears_borders, self.main_hero_group),
-                              main_hero=self.main_hero)
+                              main_hero=self.main_hero.body)
                 elif chance > 0.5:
                     self.set_pickable((x, y))
                 elif chance > 0.4 and enemies < max_enemies:
-                    Maw((x, y), self.main_hero, (self.movement_borders, self.doors),
+                    Maw((x, y), self.main_hero.body, (self.movement_borders, self.doors),
                         (self.colliadble_group, self.tears_borders, self.main_hero_group),
                         self.enemies, self.blowable)
                     enemies += 1
                 elif chance > 0.35:
-                    Host((x, y), self.main_hero, (self.colliadble_group, self.movement_borders, self.doors),
+                    Host((x, y), self.main_hero.body, (self.colliadble_group, self.movement_borders, self.doors),
                          (self.colliadble_group, self.tears_borders, self.main_hero_group),
                          self.enemies, self.blowable)
                     enemies += 1
@@ -246,7 +245,7 @@ class Room(RoomTextures):
                 elif chance > 0.28:
                     Spikes((x, y), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
 
-        self.is_friendly = bool(self.enemies)
+        self.is_friendly = bool(self.enemies) or bool(self.bosses)
 
     def setup_graph(self):
         """
@@ -438,10 +437,13 @@ class Room(RoomTextures):
         self.spikes.update(delta_t)
         self.webs.update(delta_t)
         self.fires.update(delta_t)
-        # self.bosses.update(delta_t)  # !!!
 
         if self.is_over:
             return
+
+        if not self.enemies and not self.bosses:
+            self.is_over = True
+            self.win_room()
 
         self.paths_update_ticks += delta_t
         if self.paths_update_ticks >= self.paths_update_delay:
@@ -450,9 +452,6 @@ class Room(RoomTextures):
             self.update_enemies_paths()
         self.enemies.update(delta_t)
         self.bosses.update(delta_t)
-
-        if not self.enemies.sprites():
-            self.win_room()
 
     def update_enemies_paths(self):
         """
@@ -469,7 +468,6 @@ class Room(RoomTextures):
         """
         Открытие всех дверей итд, когда все враги умерли.
         """
-        self.is_over = True
         self.update_doors("open")
         if not self.is_friendly:
             for spikes in self.spikes.sprites():
@@ -479,7 +477,7 @@ class Room(RoomTextures):
     def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
         return (
             (self.colliadble_group, self.movement_borders, self.other),
-            (self.colliadble_group, self.tears_borders, self.other, self.enemies)
+            (self.colliadble_group, self.tears_borders, self.other, self.enemies, self.bosses)
         )
 
     def render(self, screen: pg.Surface):
@@ -495,18 +493,16 @@ class Room(RoomTextures):
         self.bosses.draw(screen)
         # self.movement_borders.draw(screen)
         self.artifacts_group.draw(screen)
-
-        # ЗАТЫЧКА ГГ
+        self.hp_bar_group.draw(screen)
         self.main_hero_group.draw(screen)
-        # ЗАТЫЧКА ГГ
 
         for enemy in self.enemies.sprites():
             if isinstance(enemy, ShootingEnemy):
                 enemy.draw_tears(screen)
-            # enemy.draw_stats(screen)  # СНИЖАЕТ ФПС!!!
         for fire in self.fires.sprites():
             if isinstance(fire, ShootingEnemy):
                 fire.draw_tears(screen)
+
         # self.debug_render.draw(screen)
 
         self.main_hero.render(screen)
