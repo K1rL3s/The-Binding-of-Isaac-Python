@@ -2,17 +2,8 @@ import pygame as pg
 
 from src.consts import STATS_WIDTH, STATS_HEIGHT, MINIMAP_WIDTH
 from src.modules.Banners.UpheavalFont import UpheavalFont
+from src.modules.characters.parents import Player, Body
 from src.utils.funcs import cut_sheet, crop
-
-
-class Player:
-    red_hp = 9
-    blue_hp = 9
-    black_hp = 9
-    max_red_hp = 12
-    count_money = 12
-    count_keys = 34
-    count_bombs = 56
 
 
 class HeroStats:
@@ -31,8 +22,10 @@ class HeroStats:
     """
 
     def __init__(self,
-                 main_hero: Player | None):
-        self.main_hero = Player()  # ЗАГЛУШКА
+
+                 main_hero: Player):
+        self.main_hero = main_hero
+        self.main_body: Body = main_hero.body
 
         self.font = UpheavalFont(scale_sizes=(HeroStats.size_s, HeroStats.size_s))
         self.hearts_surface = pg.Surface((0, 0), pg.SRCALPHA, 32)
@@ -48,9 +41,9 @@ class HeroStats:
     def draw_hearts(self):
         self.hearts_surface = pg.Surface((HeroStats.size * 10, HeroStats.size * 2), pg.SRCALPHA, 32)
         red_hp, max_hp, blue_hp, black_hp =\
-            self.main_hero.red_hp, self.main_hero.max_red_hp, self.main_hero.blue_hp, self.main_hero.black_hp,
+            self.main_body.red_hp, self.main_body.max_red_hp, self.main_body.blue_hp, self.main_body.black_hp,
         x, y = 0, 0
-        empty_hp = max_hp - red_hp - (max_hp - red_hp) % 2
+        empty_hp = (max_hp - red_hp) // 2 * 2
 
         while red_hp > 1:
             red_hp -= 2
@@ -67,7 +60,7 @@ class HeroStats:
                 x = 0
                 y += HeroStats.size
 
-        if empty_hp:
+        while empty_hp:
             empty_hp -= 2
             self.hearts_surface.blit(HeroStats.hud["empty"], (x, y))
             x += HeroStats.size
@@ -115,7 +108,7 @@ class HeroStats:
                              (HeroStats.size_s * 2, 0))
         self.font.place_text(self.other_surface, str(self.main_hero.count_bombs), (0, 0),
                              (HeroStats.size_s * 2, HeroStats.size_s))
-        self.font.place_text(self.other_surface, str(self.main_hero.count_keys), (0, 0),
+        self.font.place_text(self.other_surface, str(self.main_hero.count_key), (0, 0),
                              (HeroStats.size_s * 2, HeroStats.size_s * 2))
 
     def render(self, screen: pg.Surface):

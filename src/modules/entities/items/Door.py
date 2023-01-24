@@ -262,6 +262,7 @@ class Door(BaseItem, DoorTextures):
         :param with_sound: Со звуком ли.
         :param with_key: Открывается ли ключом.
         """
+        with_key = with_key or self.room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE)
         if not self.collidable:
             return
         if self.room_type == consts.RoomsTypes.SECRET:

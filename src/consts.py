@@ -87,3 +87,4 @@ PICKUP_ART = pg.USEREVENT + 4                     # Подбор артефак�
 BUY_ITEM = pg.USEREVENT + 5                       # Покупка в магазине
 USE_BOMB = pg.USEREVENT + 6                       # Установка бомбы под персонажем
 GAME_OVER = pg.USEREVENT + 7                      # Конец игры
+GG_HURT = pg.USEREVENT + 8                        # ГГ получил урон

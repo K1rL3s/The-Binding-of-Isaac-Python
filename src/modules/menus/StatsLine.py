@@ -3,6 +3,7 @@ from typing import Any
 import pygame as pg
 
 from src.consts import STATS_HEIGHT
+from src.modules.characters.parents import Player
 from src.modules.menus.Minimap import Minimap
 from src.modules.menus.HeroStats import HeroStats
 from src.modules.levels.Level import Level
@@ -19,7 +20,7 @@ class Stats:
     black_line = load_image("textures/room/black_line.png")
 
     def __init__(self,
-                 main_hero: Any,
+                 main_hero: Player,
                  level: Level):
         self.main_hero = main_hero
         self.minimap = Minimap(level)

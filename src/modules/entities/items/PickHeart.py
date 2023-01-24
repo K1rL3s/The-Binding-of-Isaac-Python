@@ -37,17 +37,17 @@ class PickHeart(PickMovableItem):
     pickup_sound = load_sound("sounds/heart_pickup.wav")
     hearts: dict[HeartsTypes, [HeartsTypes, dict[int, tuple[pg.Surface, pg.mixer.Sound]]]] = {
         HeartsTypes.RED: {
-            1: (red_hearts[0], pickup_sound),
-            2: (red_hearts[1], pickup_sound),
+            1: (red_hearts[1], pickup_sound),
+            2: (red_hearts[0], pickup_sound),
             4: (red_hearts[2], pickup_sound),
         },
         HeartsTypes.BLUE: {
-            1: (blue_hearts[0], pickup_sound),
-            2: (blue_hearts[1], pickup_sound),
+            1: (blue_hearts[1], pickup_sound),
+            2: (blue_hearts[0], pickup_sound),
         },
         HeartsTypes.BLACK: {
-            1: (black_hearts[0], pickup_sound),
-            2: (black_hearts[1], pickup_sound),
+            1: (black_hearts[1], pickup_sound),
+            2: (black_hearts[0], pickup_sound),
         }
     }
 

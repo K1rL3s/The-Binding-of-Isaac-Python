@@ -2,8 +2,10 @@ import random
 
 import pygame as pg
 
+from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.animations.Animation import Animation
 from src.modules.BaseClasses import BaseSprite, MovableItem
+from src.modules.characters.parents import Body
 from src.utils.funcs import load_image, load_sound, crop
 from src.consts import CELL_SIZE
 
@@ -23,7 +25,8 @@ class BlowBomb(MovableItem):
     bomb_animation = load_image("textures/room/bomb_explosion.png")
     explosion_sounds: list[pg.mixer.Sound] = [load_sound(f"sounds/explosion{i}.mp3") for i in range(1, 4)]
 
-    explosion_delay: int | float = 2  # Задержка перед взрывом в секундах
+    explosion_delay: int | float = 2.5  # Задержка перед взрывом в секундах
+    collide_by_player_delay: int | float = 0.5  # Задержка перед тем, как будут обрабатываться столкновения с ГГ
     explosion_radius: int | float = 1.25 * CELL_SIZE  # Радиус взрыва в пикселях
     explosion_fps: int = 30
 
@@ -57,6 +60,11 @@ class BlowBomb(MovableItem):
             self.ticks += delta_t
             if self.ticks >= BlowBomb.explosion_delay:
                 self.blow_up()
+
+    def collide(self, other: MoveSprite):
+        if isinstance(other, Body) and self.ticks < self.collide_by_player_delay:
+            return
+        MovableItem.collide(self, other)
 
     def blow_up(self):
         """

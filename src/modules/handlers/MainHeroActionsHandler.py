@@ -9,7 +9,6 @@ from src.modules.entities.items import PickMoney, PickHeart, PickBomb,PickKey, S
 from src.modules.entities.artifacts import Dinner, FreshMeat, GreySyringe, GreenSyringe, MomsHeels, PurpleSyringe, RedSyringe, WhiteSyringe
 
 
-
 class MainHeroActionsHandler:
     """
     Обработчик событий для главного героя.
@@ -32,15 +31,9 @@ class MainHeroActionsHandler:
         #     return False
         self.main_hero.set_flags_move(event, is_down)
 
-        # Сделать обработку кол-ва бомб!
         if event.key == pg.K_e:
             if self.main_hero.get_count_bombs():
                 pg.event.post(pg.event.Event(USE_BOMB, {"pos": self.main_hero.rect.center}))
-
-        # Временно!!! (хотел сюда спавн пик-лута поставить, но ладно уже)
-        elif event.key == pg.K_r:
-            pg.event.post(pg.event.Event(USE_BOMB, {"pos": (self.main_hero.rect.centerx,
-                                                            self.main_hero.rect.bottom - 100)}))
 
     def loot_pickup_handler(self, event: pg.event.Event):
         """
