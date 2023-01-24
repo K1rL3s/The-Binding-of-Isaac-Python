@@ -5,12 +5,9 @@ from src.modules.handlers.MainHeroActionsHandler import MainHeroActionsHandler
 from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
 from src.modules.menus.StatsLine import Stats
-from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE)
-from src.utils.funcs import cell_to_pixels
 from src.modules.characters.parents import Player
-from src.consts import (FloorsTypes, Moves, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE,
+from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE,
                         MOVE_TO_NEXT_ROOM, MOVE_TO_NEXT_LEVEL, PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB)
-from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 
 
 # Заглушка (переделать!)
@@ -66,6 +63,8 @@ class Game(BaseGame):
         self.update_stats()
         self.current_level.update_main_hero_collide_groups()
         self.stats.update_minimap()
+        next_coords = event.next_coords
+        self.move_main_hero(next_coords)
 
     def move_main_hero(self, xy_pos: tuple[int, int]):
         """
