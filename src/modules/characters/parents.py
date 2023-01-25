@@ -155,9 +155,9 @@ class Player(MoveSprite):
         self.damage_from_blow = damage_from_blow
         self.a = 0.35
         self.count_bombs = 10
-        self.count_key = 0
+        self.count_key = 10
         self.speed = 2
-        self.count_money: int = 0
+        self.count_money = 10
         super().__init__(center_room, (), acceleration=self.a)
 
         self.tears = pg.sprite.Group()
@@ -383,7 +383,6 @@ class Player(MoveSprite):
                 if not self.pickup_heart(count * 2, heart_type):
                     return False
             self.count_money -= price
-            print(self.count_money)
             return True
         return False
 
@@ -521,6 +520,6 @@ class HeroTear(BaseTear):
 
     def set_image(self):
         max_size = len(BaseTear.all_tears[0]) - 1
-        self.image = crop(BaseTear.all_tears[0][min(self.damage + 2, max_size)])
+        self.image = crop(BaseTear.all_tears[0][min(int(self.damage + 2), max_size)])
 
 

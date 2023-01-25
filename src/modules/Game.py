@@ -7,7 +7,8 @@ from src.modules.levels.Room import Room
 from src.modules.menus.StatsLine import Stats
 from src.modules.characters.parents import Player
 from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, CELL_SIZE,
-                        MOVE_TO_NEXT_ROOM, MOVE_TO_NEXT_LEVEL, PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB, GG_HURT)
+                        MOVE_TO_NEXT_ROOM, MOVE_TO_NEXT_LEVEL, PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB, GG_HURT,
+                        USE_KEY)
 
 
 # Заглушка (переделать!)
@@ -38,7 +39,7 @@ class Game(BaseGame):
 
         self.register_event(pg.KEYDOWN, self.kill_all)
 
-        for event in (PICKUP_LOOT, BUY_ITEM, USE_BOMB, GG_HURT):
+        for event in (PICKUP_LOOT, BUY_ITEM, USE_BOMB, GG_HURT, USE_KEY, MOVE_TO_NEXT_ROOM):
             self.register_event(event, self.update_stats)
 
     def get_current_level_rooms(self) -> list[list[Room | None]]:
@@ -65,7 +66,6 @@ class Game(BaseGame):
         :param event: Ивент, который имеет direction (вызывается дверью).
         """
         self.current_level.move_to_next_room(event.direction)
-        self.update_stats()
         self.current_level.update_main_hero_collide_groups()
         self.stats.update_minimap()
         next_coords = event.next_coords

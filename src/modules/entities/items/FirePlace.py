@@ -102,6 +102,9 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
         # и я хз как отрисовать image не в левом верхнем углу rect'a
         self.set_rect()
 
+        self.event_rect = pg.Rect(0, 0, 50, 50)
+        self.event_rect.center = self.rect.center
+
     def set_image(self):
         for i, fire_type in enumerate(FirePlacesTypes):
             if fire_type == self.fire_type:
@@ -187,4 +190,5 @@ class FirePlace(DestroyableItem, ShootingEnemy, FireTextures):
     def collide(self, other: MoveSprite):
         if self.fire_type == FirePlacesTypes.RED and other in self.tears:
             return
-        DestroyableItem.collide(self, other)
+        if other.rect.colliderect(self.event_rect):
+            DestroyableItem.collide(self, other)
