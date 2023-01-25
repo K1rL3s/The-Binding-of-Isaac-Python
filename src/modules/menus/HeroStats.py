@@ -2,7 +2,7 @@ import pygame as pg
 
 from src.consts import STATS_WIDTH, STATS_HEIGHT, MINIMAP_WIDTH
 from src.modules.Banners.UpheavalFont import UpheavalFont
-from src.modules.characters.parents import Player, Body
+from src.modules.characters.parents import Player
 from src.utils.funcs import cut_sheet, crop
 
 
@@ -25,7 +25,6 @@ class HeroStats:
 
                  main_hero: Player):
         self.main_hero = main_hero
-        self.main_body: Body = main_hero.body
 
         self.font = UpheavalFont(scale_sizes=(HeroStats.size_s, HeroStats.size_s))
         self.hearts_surface = pg.Surface((0, 0), pg.SRCALPHA, 32)
@@ -41,7 +40,7 @@ class HeroStats:
     def draw_hearts(self):
         self.hearts_surface = pg.Surface((HeroStats.size * 10, HeroStats.size * 2), pg.SRCALPHA, 32)
         red_hp, max_hp, blue_hp, black_hp =\
-            self.main_body.red_hp, self.main_body.max_red_hp, self.main_body.blue_hp, self.main_body.black_hp,
+            self.main_hero.red_hp, self.main_hero.max_red_hp, self.main_hero.blue_hp, self.main_hero.black_hp,
         x, y = 0, 0
         empty_hp = (max_hp - red_hp) // 2 * 2
 

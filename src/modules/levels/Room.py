@@ -93,7 +93,7 @@ class Room(RoomTextures):
         self.obstacles = pg.sprite.Group()  # Препятствия для построения графа комнаты
         self.blowable = pg.sprite.Group()  # То, что взрывается
         self.main_hero_group = pg.sprite.Group()
-        self.main_hero_group.add(main_hero.body)
+        self.main_hero_group.add(main_hero)
         self.movement_borders = pg.sprite.Group()  # Барьеры, не дающие пройти через себя
         self.tears_borders = pg.sprite.Group()  # Барьеры, не дающие слезам пролететь через себя
 
@@ -160,27 +160,27 @@ class Room(RoomTextures):
             return
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
-            Teratoma((6, 3), 40, self.paths, self.main_hero.body,
+            Teratoma((6, 3), 40, self.paths, self.main_hero,
                      (self.movement_borders,), self.hp_bar_group, 1, 2,
                      self.bosses, self.blowable, self.other)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
-            Fistula((6, 3), 40, self.paths, self.main_hero.body,
+            Fistula((6, 3), 40, self.paths, self.main_hero,
                     (self.movement_borders,), self.hp_bar_group, 1, 2,
                     self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.DEPTHS:
-            Duke((6, 3), self.paths, self.main_hero.body,
+            Duke((6, 3), self.paths, self.main_hero,
                  (self.movement_borders,), (self.main_hero_group, self.colliadble_group), self.hp_bar_group,
                  1.4, self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CAVES:
-            Envy((6, 3), 40, self.paths, self.main_hero.body,
+            Envy((6, 3), 40, self.paths, self.main_hero,
                  (self.movement_borders,), self.hp_bar_group, 1, 2,
                  self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.WOMB:
-            Pudge((6, 3), 40, self.paths, self.main_hero.body,
+            Pudge((6, 3), 40, self.paths, self.main_hero,
                   (self.movement_borders,), self.hp_bar_group, 1, 2,
                   self.bosses, self.blowable, self.other)
 
@@ -225,16 +225,16 @@ class Room(RoomTextures):
                     FirePlace((x, y), self.colliadble_group, self.fires, self.blowable, self.obstacles,
                               fire_type=fire_type,
                               tear_collide_groups=(self.colliadble_group, self.tears_borders, self.main_hero_group),
-                              main_hero=self.main_hero.body)
+                              main_hero=self.main_hero)
                 elif chance > 0.5:
                     self.set_pickable((x, y))
                 elif chance > 0.4 and enemies < max_enemies:
-                    Maw((x, y), self.main_hero.body, (self.movement_borders, self.doors),
+                    Maw((x, y), self.main_hero, (self.movement_borders, self.doors),
                         (self.colliadble_group, self.tears_borders, self.main_hero_group),
                         self.enemies, self.blowable)
                     enemies += 1
                 elif chance > 0.35:
-                    Host((x, y), self.main_hero.body, (self.colliadble_group, self.movement_borders, self.doors),
+                    Host((x, y), self.main_hero, (self.colliadble_group, self.movement_borders, self.doors),
                          (self.colliadble_group, self.tears_borders, self.main_hero_group),
                          self.enemies, self.blowable)
                     enemies += 1

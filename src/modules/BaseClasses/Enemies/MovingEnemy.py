@@ -4,7 +4,7 @@ import pygame as pg
 
 from src.modules.BaseClasses.Enemies.BaseEnemy import BaseEnemy
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
-from src.modules.characters.parents import Body
+from src.modules.characters.parents import Player
 from src.modules.levels.Border import Border
 from src.utils.funcs import pixels_to_cell, cell_to_pixels
 from src.utils.graph import make_path_to_cell
@@ -32,7 +32,7 @@ class MovingEnemy(BaseEnemy, MoveSprite):
                  damage_from_blow: int,
                  move_update_delay: int | float,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Body | pg.sprite.Sprite,
+                 main_hero: Player | pg.sprite.Sprite,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup,
                  flyable: bool = False):

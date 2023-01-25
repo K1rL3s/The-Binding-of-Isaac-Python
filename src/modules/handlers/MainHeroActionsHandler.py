@@ -63,13 +63,13 @@ class MainHeroActionsHandler:
         """
         boosts: dict[str, int] = event.item.__class__.boosts
         if "max_hp" in boosts.keys():
-            self.main_hero.body.max_red_hp += boosts["max_hp"] * 2
+            self.main_hero.max_red_hp += boosts["max_hp"] * 2
         if "heal_hp" in boosts.keys():
             self.main_hero.pickup_heart(boosts['heal_hp'] * 2, HeartsTypes.RED)
         if "damage" in boosts.keys():
             self.main_hero.head.shot_damage += boosts['damage']
         if "speed" in boosts.keys():
-            self.main_hero.body.max_speed += boosts['speed']
+            self.main_hero.max_speed += boosts['speed']
         if "shot_speed" in boosts.keys():
             self.main_hero.head.shot_speed += boosts['shot_speed']
         if "shot_distance" in boosts.keys():

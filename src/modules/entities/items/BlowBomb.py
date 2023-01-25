@@ -5,7 +5,7 @@ import pygame as pg
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.animations.Animation import Animation
 from src.modules.BaseClasses import BaseSprite, MovableItem
-from src.modules.characters.parents import Body
+from src.modules.characters.parents import Player
 from src.utils.funcs import load_image, load_sound, crop
 from src.consts import CELL_SIZE
 
@@ -62,7 +62,7 @@ class BlowBomb(MovableItem):
                 self.blow_up()
 
     def collide(self, other: MoveSprite):
-        if isinstance(other, Body) and self.ticks < self.collide_by_player_delay:
+        if isinstance(other, Player) and self.ticks < self.collide_by_player_delay:
             return
         MovableItem.collide(self, other)
 

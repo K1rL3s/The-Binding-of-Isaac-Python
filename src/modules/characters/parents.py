@@ -10,7 +10,7 @@ from src.consts import Moves, HeartsTypes
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
 
-# from src.modules.entities.tears.ExampleTear import ExampleTear
+# from src.modules.entities.tears.ExampleTear import HeroTear
 
 
 class TexturesHeroes:
@@ -51,20 +51,138 @@ class ParamsHeroes(TexturesHeroes):
         self.settings_head = head
 
 
-class Body(MoveSprite):
-    def __init__(self, name: str, hp, max_speed, a, tears: pg.sprite.AbstractGroup, params: ParamsHeroes):
+class Head(pg.sprite.Sprite):
+    def __init__(self,
+                 name: str,
+                 tears: pg.sprite.AbstractGroup,
+                 shot_damage: int | float,
+                 shot_max_distance: int | float,
+                 shot_speed: int | float,
+                 shot_delay: int | float,
+                 tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...], params: ParamsHeroes):
+        super().__init__()
+        self.name = name
+        self.params_hero = params
+        tear_class: Type[BaseTear] = HeroTear
+        self.image = self.params_hero.head_images_dict["DOWN"]
+        self.is_shot = False
+        self.shot_ticks = 0
+        self.shot_damage = shot_damage
+        self.shot_max_distance = shot_max_distance
+        self.shot_speed = shot_speed
+        self.shot_delay = shot_delay
+        self.tear_class = tear_class
+        self.tear_collide_groups = tear_collide_groups
+        self.tears = tears
+        self.player_speed: tuple[int | float, int | float] = 0, 0
+        self.vx_tear: int | float = 0
+        self.vy_tear: int | float = 0
+        self.last_name_direction = "DOWN"
+        self.rect = pg.Rect((0, 0, self.image.get_width(), self.image.get_height()))
+
+        self.is_rotated = False
+        self.on_directions = []
+
+    def set_tear_collide_groups(self, tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...]):
+        self.tear_collide_groups = tear_collide_groups
+
+    def settings_vx_vy_tear(self):
+        if self.is_rotated:
+            if self.last_name_direction in ["LEFT", "RIGHT"]:
+                self.vx_tear = self.shot_speed if self.last_name_direction == "RIGHT" else -self.shot_speed
+                # if self.player_speed[1] != 0:
+                self.vy_tear += self.player_speed[1] * 0.3  # константа выведена практически
+            elif self.last_name_direction in ["UP", "DOWN"]:
+                self.vy_tear = self.shot_speed if self.last_name_direction == "DOWN" else -self.shot_speed
+                # if self.player_speed[0] != 0:
+                self.vx_tear += self.player_speed[0] * 0.3 # константа выведена практически
+
+    def set_player_speed(self, vx: int | float, vy: int | float):
+        self.vy_tear, self.vx_tear = 0, 0
+        self.player_speed = vx, vy
+
+    def update(self, delta_t) -> None:
+        self.shot_ticks += delta_t
+        if self.shot_ticks >= self.shot_delay and self.is_rotated:
+            self.is_shot = True
+            self.shot()
+        self.tears.update(delta_t)
+
+    def set_damage(self):
+        self.shot_damage += 1
+
+    def shot(self) -> None:
+        self.shot_ticks = 0
+        self.settings_vx_vy_tear()
+        self.tear_class((0, 0), self.rect.center, self.shot_damage, self.shot_max_distance,
+                        self.vx_tear, self.vy_tear, self.tear_collide_groups, self.tears)
+
+    def set_directions(self, direction: str, is_keydown: bool):
+        self.on_directions.append(direction) if is_keydown else self.on_directions.remove(direction)
+        if self.on_directions:
+            self.last_name_direction, self.is_rotated = self.on_directions[-1], True
+        else:
+            self.last_name_direction, self.is_rotated = "DOWN", False
+        self.animating()
+
+    # поворот головы
+    def animating(self):
+        self.image = self.params_hero.head_images_dict[self.last_name_direction]
+
+    def draw_tears(self, screen: pg.Surface):
+        self.tears.draw(screen)
+
+
+# по факту - это родительский класс для песронажей( ГГ )
+class Player(MoveSprite):
+    death = load_image("death_isaac (2) (1).png")
+    use_bombs_delay: int | float = 1
+
+    def __init__(self,
+                 name: str,
+                 hp: int,
+                 speed_body,
+                 damage_from_blow: int,
+                 shot_damage: int | float,
+                 shot_max_distance: int | float,
+                 shot_speed: int | float,
+                 shot_delay: int | float,
+                 tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = (),
+                 ):
         center_room = ROOM_WIDTH // 2, ROOM_HEIGHT // 2
-        super().__init__(center_room, (), acceleration=a)
+        self.params_hero = ParamsHeroes()
+        self.params_hero.set_images(name)
+        self.damage_from_blow = damage_from_blow
+        self.a = 0.35
+        self.count_bombs = 10
+        self.count_key = 0
+        self.speed = 2
+        self.count_money: int = 0
+        super().__init__(center_room, (), acceleration=self.a)
+
+        self.tears = pg.sprite.Group()
+        self.head = Head(name, self.tears, shot_damage + 5, shot_max_distance, shot_speed, shot_delay,
+                         tear_collide_groups, self.params_hero)
+        self.count_cadrs = 0
+        self.soul: Soul = Soul()
+        self.is_alive = True
+        self.use_bombs_ticks = 0
+
+        self.player_sprites = pg.sprite.LayeredUpdates()
+        self.player_sprites.add(self, layer=1)
+        self.player_sprites.add(self.head, layer=2)
+
+        # self.vx, self.vy = 0, 0
+        #################
+
         self.name = name
         self.red_hp = hp
         self.max_red_hp = hp
         self.blue_hp = 0
         self.black_hp = 0
 
-        self.max_speed = max_speed
-        self.tears = tears
+        self.max_speed = speed_body
         self.damage_from_blow: int = 10
-        self.params_hero = params
         self.image = self.params_hero.body_images_dict["DOWN"][0]
         self.image = crop(self.image)
         self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0}
@@ -119,14 +237,15 @@ class Body(MoveSprite):
             self.flag_move_down = is_down
 
     def animating(self):
-        last_name = self.last_name_direction
-        peremennaya = self.indexes[last_name] + 1
-        self.settings()
-        self.indexes[last_name] = peremennaya % len(self.params_hero.body_images_dict["DOWN"])
-        if self.is_move:
-            self.image = self.params_hero.body_images_dict[last_name][self.indexes[last_name]]
-        else:
-            self.image = self.params_hero.body_images_dict["DOWN"][0]
+        if self.count_cadrs == 0:
+            last_name = self.last_name_direction
+            peremennaya = self.indexes[last_name] + 1
+            self.settings()
+            self.indexes[last_name] = peremennaya % len(self.params_hero.body_images_dict["DOWN"])
+            if self.is_move:
+                self.image = self.params_hero.body_images_dict[last_name][self.indexes[last_name]]
+            else:
+                self.image = self.params_hero.body_images_dict["DOWN"][0]
 
     def settings_move_speed(self, delta_t):
         max_speed, a = self.max_speed, self.a * CELL_SIZE
@@ -242,147 +361,20 @@ class Body(MoveSprite):
         elif self.vy < -self.max_speed:
             self.vy = -self.max_speed
 
-
-class Head(pg.sprite.Sprite):
-    def __init__(self,
-                 name: str,
-                 tears: pg.sprite.AbstractGroup,
-                 shot_damage: int | float,
-                 shot_max_distance: int | float,
-                 shot_speed: int | float,
-                 shot_delay: int | float,
-                 tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...], params: ParamsHeroes):
-        super().__init__()
-        self.name = name
-        self.params_hero = params
-        tear_class: Type[BaseTear] = HeroTear
-        self.image = self.params_hero.head_images_dict["DOWN"]
-        self.is_shot = False
-        self.shot_ticks = 0
-        self.shot_damage = shot_damage
-        self.shot_max_distance = shot_max_distance
-        self.shot_speed = shot_speed
-        self.shot_delay = shot_delay
-        self.tear_class = tear_class
-        self.tear_collide_groups = tear_collide_groups
-        self.tears = tears
-        self.player_speed: tuple[int | float, int | float] = 0, 0
-        self.vx_tear: int | float = 0
-        self.vy_tear: int | float = 0
-        self.last_name_direction = "DOWN"
-        self.rect = pg.Rect((0, 0, self.image.get_width(), self.image.get_height()))
-
-        self.is_rotated = False
-        self.on_directions = []
-
-    def set_tear_collide_groups(self, tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...]):
-        self.tear_collide_groups = tear_collide_groups
-
-    def settings_vx_vy_tear(self):
-        if self.is_rotated:
-            if self.last_name_direction in ["LEFT", "RIGHT"]:
-                self.vx_tear = self.shot_speed if self.last_name_direction == "RIGHT" else -self.shot_speed
-                # if self.player_speed[1] != 0:
-                self.vy_tear += self.player_speed[1] * 0.3  # константа выведена практически
-            elif self.last_name_direction in ["UP", "DOWN"]:
-                self.vy_tear = self.shot_speed if self.last_name_direction == "DOWN" else -self.shot_speed
-                # if self.player_speed[0] != 0:
-                self.vx_tear += self.player_speed[0] * 0.3 # константа выведена практически
-
-    def set_player_speed(self, vx: int | float, vy: int | float):
-        self.vy_tear, self.vx_tear = 0, 0
-        self.player_speed = vx, vy
-
-    def update(self, delta_t) -> None:
-        self.shot_ticks += delta_t
-        if self.shot_ticks >= self.shot_delay and self.is_rotated:
-            self.is_shot = True
-            self.shot()
-        self.tears.update(delta_t)
-
-    def set_damage(self):
-        self.shot_damage += 1
-
-    def shot(self) -> None:
-        self.shot_ticks = 0
-        self.settings_vx_vy_tear()
-        self.tear_class((0, 0), self.rect.center, self.shot_damage, self.shot_max_distance,
-                        self.vx_tear, self.vy_tear, self.tear_collide_groups, self.tears)
-
-    def set_directions(self, direction: str, is_keydown: bool):
-        self.on_directions.append(direction) if is_keydown else self.on_directions.remove(direction)
-        if self.on_directions:
-            self.last_name_direction, self.is_rotated = self.on_directions[-1], True
-        else:
-            self.last_name_direction, self.is_rotated = "DOWN", False
-        self.animating()
-
-    # поворот головы
-    def animating(self):
-        self.image = self.params_hero.head_images_dict[self.last_name_direction]
-
-    def draw_tears(self, screen: pg.Surface):
-        self.tears.draw(screen)
-
-
-# по факту - это родительский класс для песронажей( ГГ )
-class Player:
-    death = load_image("death_isaac (2) (1).png")
-    use_bombs_delay: int | float = 1
-
-    def __init__(self,
-                 name: str,
-                 hp: int,
-                 speed_body,
-                 damage_from_blow: int,
-                 shot_damage: int | float,
-                 shot_max_distance: int | float,
-                 shot_speed: int | float,
-                 shot_delay: int | float,
-                 tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...] = (),
-                 ):
-        super().__init__()
-
-        self.params_hero = ParamsHeroes()
-        self.params_hero.set_images(name)
-        self.damage_from_blow = damage_from_blow
-        self.a = 0.35
-        self.count_bombs = 10
-        self.count_key = 0
-        ################################################################################################
-        self.speed = 5
-        self.count_money: int = 0
-
-        self.tears = pg.sprite.Group()
-        self.body = Body(name, hp, speed_body, self.a, self.tears, self.params_hero)
-        self.head = Head(name, self.tears, shot_damage, shot_max_distance, shot_speed, shot_delay,
-                         tear_collide_groups, self.params_hero)
-        self.count_cadrs = 0
-        self.rect = self.body.rect
-        self.soul: Soul = Soul()
-        self.is_alive = True
-        self.use_bombs_ticks = 0
-
-        self.player_sprites = pg.sprite.LayeredUpdates()
-        self.player_sprites.add(self.body, layer=1)
-        self.player_sprites.add(self.head, layer=2)
-
-        # self.vx, self.vy = 0, 0
-
     def update_room_groups(self, hero_collide_groups, tear_collide_groups) -> None:
         self.head.set_tear_collide_groups(tear_collide_groups)
-        self.body.collide_groups = hero_collide_groups
+        self.collide_groups = hero_collide_groups
 
     def pickup_heart(self, count: int, heart_type: HeartsTypes) -> bool:
         if heart_type == HeartsTypes.RED:
-            if self.body.red_hp >= self.body.max_red_hp:
+            if self.red_hp >= self.max_red_hp:
                 return False
-            self.body.red_hp += count
-            self.body.red_hp = min(self.body.red_hp, self.body.max_red_hp)
+            self.red_hp += count
+            self.red_hp = min(self.red_hp, self.max_red_hp)
         elif heart_type == HeartsTypes.BLUE:
-            self.body.blue_hp += count
+            self.blue_hp += count
         elif heart_type == HeartsTypes.BLACK:
-            self.body.black_hp += count
+            self.black_hp += count
         return True
 
     def is_buy(self, count: int, price: int,  heart_type: HeartsTypes | None) -> bool:
@@ -397,52 +389,52 @@ class Player:
 
     def move_to_cell(self, xy_pos):
         x, y = cell_to_pixels(xy_pos)
-        self.body.x_center = x
-        self.body.x_center_last = x
-        self.body.y_center = y
-        self.body.y_center_last = y
+        self.x_center = x
+        self.x_center_last = x
+        self.y_center = y
+        self.y_center_last = y
         self.reset_speed()
 
     def set_flags_move(self, event: pg.event.Event, is_keydown: bool):
         key = event.key
         if key in self.params_hero.settings_body:
-            self.body.setting_flags(key, is_keydown)
+            self.setting_flags(key, is_keydown)
 
         elif key in self.params_hero.settings_head:
             self.head.set_directions(self.params_hero.directions_head[key], is_keydown)
 
     def reset_speed(self):
-        self.body.flag_move_up = False
-        self.body.flag_move_left = False
-        self.body.flag_move_right = False
-        self.body.flag_move_down = False
-        self.body.vx, self.body.vy = 0, 0
+        self.flag_move_up = False
+        self.flag_move_left = False
+        self.flag_move_right = False
+        self.flag_move_down = False
+        self.vx, self.vy = 0, 0
 
     def set_damage(self):
         self.head.set_damage()
 
     def update(self, delta_t: float):
-        if self.body.red_hp > 0:
+        if self.red_hp > 0:
             self.use_bombs_ticks += delta_t
             self.count_cadrs += 1
             self.count_cadrs %= 3
 
             self.animating()
             self.head.update(delta_t)
-            self.body.move(delta_t, use_a=False)
-            self.body.update_timer(delta_t)
-            self.body.reset_collides()
-            self.body.settings_move_speed(delta_t)
-            self.body.check_collides()
+            self.move(delta_t, use_a=False)
+            self.update_timer(delta_t)
+            self.reset_collides()
+            self.settings_move_speed(delta_t)
+            self.check_collides()
 
             self.head.set_player_speed(*self.get_speed())
-            coords = self.body.rect.midtop
+            coords = self.rect.midtop
             self.head.rect.center = coords[0], coords[1] - 8  # выведена на практике(чтобы голова выглядела нормально)
         else:
             if self.is_alive:
-                self.body.image = self.death
+                self.image = self.death
                 self.player_sprites.remove(self.head)
-                self.soul.set_coords(self.body.rect.center)
+                self.soul.set_coords(self.rect.center)
             self.is_alive = False
             self.soul.update(delta_t)
             if self.soul.is_end_animation():
@@ -456,21 +448,54 @@ class Player:
         return False
 
     def get_coords(self):
-        return self.body.rect.center
+        return self.rect.center
 
     def get_speed(self) -> tuple[int, int]:
-        return self.body.vx, self.body.vy
-
-    # анимация
-    def animating(self):
-        if self.count_cadrs == 0:
-            self.body.animating()
+        return self.vx, self.vy
 
     def render(self, screen: pg.Surface):
         self.player_sprites.draw(screen)
         self.head.draw_tears(screen)
         if not self.is_alive:
             self.soul.render(screen)
+
+
+class Soul(pg.sprite.Sprite):
+    start_image = load_image('soul0.png')
+    images = load_image('move_soul.png')
+    fps_animation = 15
+
+    def __init__(self):
+        super().__init__()
+        self.image = self.start_image
+        self.animation = Animation(self.images, 10, 1, self.fps_animation, False)
+        self.xy_pos: tuple[int, int] | None = None
+        self.start_x_pos: int | None = None
+        self.vx, self.vy = -50, -50
+        self.timer: int | float = 3
+
+    def set_coords(self, xy_pos: tuple[int, int]):
+        self.xy_pos = xy_pos
+        self.start_x_pos = xy_pos[0]
+
+    def is_end_animation(self) -> bool:
+        return self.timer <= 0
+
+    def update(self, delta_t):
+        if self.timer > 0:
+            self.animation.update(delta_t)
+            self.image = self.animation.image
+            self.move(delta_t)
+            self.timer -= delta_t
+
+    def move(self, delta_t):
+        if self.xy_pos[0] <= self.start_x_pos - CELL_SIZE // 4 or self.xy_pos[0] >= self.start_x_pos + CELL_SIZE // 4:
+            self.vx *= -1
+        self.xy_pos = self.xy_pos[0] + self.vx * delta_t, self.xy_pos[1] + self.vy * delta_t
+
+    def render(self, screen: pg.Surface):
+        if self.timer > 0:
+            screen.blit(self.image, self.xy_pos)
 
 
 class HeroTear(BaseTear):
@@ -497,43 +522,5 @@ class HeroTear(BaseTear):
     def set_image(self):
         max_size = len(BaseTear.all_tears[0]) - 1
         self.image = crop(BaseTear.all_tears[0][min(self.damage + 2, max_size)])
-
-
-class Soul(pg.sprite.Sprite):
-    start_image = load_image('soul0.png')
-    images = load_image('move_soul.png')
-    fps_animation = 15
-
-    def __init__(self):
-        super().__init__()
-        self.image = self.start_image
-        self.animation = Animation(self.images, 10, 1, self.fps_animation, False)
-        self.xy_pos: tuple[int, int] | None = None
-        self.start_x_pos: int | None = None
-        self.vx, self.vy = -50, -50
-        self.timer: int | float = 3
-
-    def set_coords(self, xy_pos: tuple[int, int]):
-        self.xy_pos = xy_pos
-        self.start_x_pos = xy_pos[0]
-
-    def is_end_animation(self) -> bool:
-        return True if self.timer <= 0 else False
-
-    def update(self, delta_t):
-        if self.timer > 0:
-            self.animation.update(delta_t)
-            self.image = self.animation.image
-            self.move(delta_t)
-            self.timer -= delta_t
-
-    def move(self, delta_t):
-        if self.xy_pos[0] <= self.start_x_pos - CELL_SIZE // 4 or self.xy_pos[0] >= self.start_x_pos + CELL_SIZE // 4:
-            self.vx *= -1
-        self.xy_pos = self.xy_pos[0] + self.vx * delta_t, self.xy_pos[1] + self.vy * delta_t
-
-    def render(self, screen: pg.Surface):
-        if self.timer > 0:
-            screen.blit(self.image, self.xy_pos)
 
 

@@ -6,7 +6,7 @@ from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
 from src.modules.Baners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.animations.Animation import Animation
-from src.modules.characters.parents import Body
+from src.modules.characters.parents import Player
 from src.modules.enemies.Fly import Fly
 from src.utils.funcs import load_sound, load_image, crop
 
@@ -18,7 +18,7 @@ class Duke(MovingEnemy):
     def __init__(self,
                  xy_pos: tuple[int, int],
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Body,
+                 main_hero: Player,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  hp_bar_group: pg.sprite.AbstractGroup,

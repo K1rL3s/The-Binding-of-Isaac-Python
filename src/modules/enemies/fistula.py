@@ -4,7 +4,7 @@ import pygame
 from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
 from src.modules.Baners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
-from src.modules.characters.parents import Body
+from src.modules.characters.parents import Player
 from src.utils.funcs import load_sound, load_image, crop
 
 
@@ -16,7 +16,7 @@ class Fistula(MovingEnemy):
                  xy_pos: tuple[int, int],
                  hp: int,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Body,
+                 main_hero: Player,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  hp_bar_group: pg.sprite.AbstractGroup,
                  stage: int,

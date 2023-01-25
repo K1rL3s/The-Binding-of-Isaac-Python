@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src.modules.BaseClasses import MovingEnemy
-from src.modules.characters.parents import Body
+from src.modules.characters.parents import Player
 from src.modules.enemies.fistula import Fistula
 from src.utils.funcs import load_sound, load_image, crop
 
@@ -14,7 +14,7 @@ class Envy(Fistula):
                  xy_pos: tuple[int, int],
                  hp: int,
                  room_graph: dict[tuple[int, int]],
-                 main_hero: Body,
+                 main_hero: Player,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  hp_bar_group: pg.sprite.AbstractGroup,
                  stage: int,

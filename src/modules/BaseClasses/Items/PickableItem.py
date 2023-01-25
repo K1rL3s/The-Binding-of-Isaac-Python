@@ -3,7 +3,7 @@ import pygame as pg
 from src.consts import PICKUP_LOOT
 from src.modules.BaseClasses.Items.BaseItem import BaseItem
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
-from src.modules.characters.parents import Body
+from src.modules.characters.parents import Player
 
 
 class PickableItem(BaseItem):
@@ -35,7 +35,7 @@ class PickableItem(BaseItem):
             return False
 
         # Заменить MovingEnemy на MainCharacter
-        if isinstance(other, Body):
+        if isinstance(other, Player):
             self.pickup()
 
         return True

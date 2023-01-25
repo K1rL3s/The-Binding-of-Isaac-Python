@@ -3,7 +3,7 @@ import pygame as pg
 from src import consts
 from src.modules.BaseClasses import BaseItem, MoveSprite
 from src.utils.funcs import load_image, crop
-from src.modules.characters.parents import Body
+from src.modules.characters.parents import Player
 
 DOOR_CELL_SIZE = int(consts.CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
 
@@ -339,7 +339,7 @@ class Door(BaseItem, DoorTextures):
             return
 
         # Вместо MovingEnemy поставить MainCharacter или его туловище
-        if isinstance(other, Body) and self.event_rect.colliderect(other.rect):
+        if isinstance(other, Player) and self.event_rect.colliderect(other.rect):
             direction, next_coords = None, None
             if self.xy_pos == consts.DoorsCoords.UP.value:
                 direction = consts.Moves.UP

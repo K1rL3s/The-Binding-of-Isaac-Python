@@ -6,8 +6,8 @@ import pygame as pg
 from src.consts import CELL_SIZE
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
 from src.modules.BaseClasses.Enemies.ShootingEnemy import ShootingEnemy
-from src.modules.characters.parents import Body
 from src.modules.entities import ExampleTear
+from src.modules.characters.parents import Player
 from src.utils.funcs import load_image, crop
 
 
@@ -29,7 +29,7 @@ class Host(ShootingEnemy):
 
     def __init__(self,
                  xy_pos: tuple[int, int],
-                 main_hero: Body,
+                 main_hero: Player,
                  enemy_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
                  *groups: pg.sprite.AbstractGroup):
