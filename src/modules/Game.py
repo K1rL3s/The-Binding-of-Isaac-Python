@@ -33,8 +33,6 @@ class Game(BaseGame):
         self.register_event(pg.KEYDOWN, self.main_hero_handler.keyboard_handler)
         self.register_event(pg.KEYDOWN, self.switch_pause)
         self.register_event(pg.KEYUP, self.main_hero_handler.keyboard_handler)
-        self.register_event(MOVE_TO_NEXT_LEVEL, self.move_to_next_level)
-        self.register_event(MOVE_TO_NEXT_ROOM, self.move_to_next_room)
         self.register_event(PICKUP_LOOT, self.main_hero_handler.loot_pickup_handler)
         self.register_event(PICKUP_ART, self.main_hero_handler.artifact_pickup_handler)
         self.register_event(BUY_ITEM, self.main_hero_handler.buy_handler)
