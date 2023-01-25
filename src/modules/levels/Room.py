@@ -245,7 +245,7 @@ class Room(RoomTextures):
                 elif chance > 0.28:
                     Spikes((x, y), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
 
-        self.is_friendly = bool(self.enemies) or bool(self.bosses)
+        self.is_friendly = not(bool(self.enemies) + bool(self.bosses))
 
     def setup_graph(self):
         """
