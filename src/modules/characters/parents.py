@@ -380,8 +380,10 @@ class Player(MoveSprite):
     def is_buy(self, count: int, price: int,  heart_type: HeartsTypes | None) -> bool:
         if self.count_money >= price:
             if heart_type:
+                print(self.red_hp)
                 if not self.pickup_heart(count * 2, heart_type):
                     return False
+            print(self.red_hp)
             self.count_money -= price
             print(self.count_money)
             return True

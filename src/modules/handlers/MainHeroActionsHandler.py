@@ -86,5 +86,7 @@ class MainHeroActionsHandler:
                       и иногда heart_type (HeartsTypes).
         """
         if self.main_hero.is_buy(event.count, event.price, event.heart_type):
+            if not event.heart_type:
+                self.loot_pickup_handler(event)
             event.item.kill()
             event.self.kill()
