@@ -65,7 +65,7 @@ class Game(BaseGame):
         """
         self.current_level = self.levels[(self.levels.index(self.current_level) + 1) % len(self.levels)]
         self.current_level.update_main_hero_collide_groups()
-        self.move_main_hero((ROOM_WIDTH // 2 * CELL_SIZE, ROOM_HEIGHT // 2 * CELL_SIZE))
+        self.move_main_hero((ROOM_WIDTH // 2, ROOM_HEIGHT // 2))
         self.stats = Stats(self.main_hero, self.current_level)
 
     def move_to_next_room(self, event: pg.event.Event):
@@ -95,6 +95,7 @@ class Game(BaseGame):
     def kill_all(self, event: pg.event.Event):
         if event.key == pg.K_r:
             self.current_level.current_room.enemies.empty()
+            self.current_level.current_room.bosses.empty()
 
     def set_bomb(self, event: pg.event.Event):
         if event.type == USE_BOMB:
