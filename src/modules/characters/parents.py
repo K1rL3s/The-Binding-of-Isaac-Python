@@ -401,7 +401,7 @@ class Player:
         self.body.x_center_last = x
         self.body.y_center = y
         self.body.y_center_last = y
-        self.reset_speed()
+        self.body.vx, self.body.vy = 0, 0
 
     def set_flags_move(self, event: pg.event.Event, is_keydown: bool):
         key = event.key
