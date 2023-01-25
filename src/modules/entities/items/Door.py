@@ -1,8 +1,9 @@
 import pygame as pg
 
 from src import consts
+from src.consts import USE_KEY
 from src.modules.BaseClasses import BaseItem, MoveSprite
-from src.utils.funcs import load_image, crop
+from src.utils.funcs import load_image, crop, load_sound
 from src.modules.characters.parents import Player
 
 DOOR_CELL_SIZE = int(consts.CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
@@ -205,10 +206,14 @@ class Door(BaseItem, DoorTextures):
     :param collidable: Закрыта ли дверь.
     :param hurtable: Наносит ли урон дверь при проходе через неё.
     """
+
+    open_by_key = load_sound("sounds/door_unlock.wav")
+
     def __init__(self,
                  xy_pos: consts.DoorsCoords | tuple[int, int],
                  floor_type: consts.FloorsTypes,
-                 room_type: consts.RoomsTypes,  # из этого определять текстурку (секретка в т.ч.)
+                 from_room_type: consts.RoomsTypes,
+                 to_room_type: consts.RoomsTypes,  # из этого определять текстурку (секретка в т.ч.)
                  *groups: pg.sprite.AbstractGroup,
                  collidable: bool = True,
                  hurtable: bool = False):
@@ -217,19 +222,22 @@ class Door(BaseItem, DoorTextures):
         else:
             self.xy_pos = xy_pos
         self.floor_type = floor_type
-        self.room_type = room_type
+        self.to_room_type = to_room_type
+        self.from_room_type = from_room_type
         self.state = ''
         self.texture = ''
         self.direction = ''
+        self.room_finished = False
 
         BaseItem.__init__(self, self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
         self.set_image()
         BaseItem.set_rect(self)
         self.set_rect()
-        self.event_rect = pg.Rect(self.rect.centerx - 25, self.rect.centery - 25, 50, 50)
+        self.event_rect = pg.Rect(0, 0, 50, 50)
+        self.event_rect.center = self.rect.center
 
     def set_rect(self, width: int | None = None, height: int | None = None, up: int = 0, left: int = 0):
-        if self.room_type == consts.RoomsTypes.SECRET:
+        if self.to_room_type == consts.RoomsTypes.SECRET:
             image: pg.Surface = getattr(DoorTextures, f'{self.floor_type.value}_blow_{self.direction}')
             self.rect = image.get_rect()
         if self.direction == 'up':
@@ -251,7 +259,7 @@ class Door(BaseItem, DoorTextures):
         """
         if not self.collidable:
             return
-        if self.room_type in (consts.RoomsTypes.BOSS, consts.RoomsTypes.TREASURE, consts.RoomsTypes.SHOP):
+        if self.to_room_type in (consts.RoomsTypes.BOSS, consts.RoomsTypes.TREASURE, consts.RoomsTypes.SHOP):
             return
         self.update_image('blow', with_sound=with_sound)
 
@@ -262,12 +270,13 @@ class Door(BaseItem, DoorTextures):
         :param with_sound: Со звуком ли.
         :param with_key: Открывается ли ключом.
         """
-        with_key = with_key or self.room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE)
+        with_key = with_key or self.from_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE)
+        self.room_finished = True
         if not self.collidable:
             return
-        if self.room_type == consts.RoomsTypes.SECRET:
+        if self.to_room_type == consts.RoomsTypes.SECRET:
             return
-        if self.room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and not with_key:
+        if self.to_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and not with_key:
             return
         self.update_image("open", with_sound=with_sound)
 
@@ -291,9 +300,9 @@ class Door(BaseItem, DoorTextures):
             self.state = state
         if direction:
             self.direction = direction
-        self.collidable = True if self.state == 'close' else False
+        self.collidable = self.state == 'close'
 
-        if self.room_type == consts.RoomsTypes.SECRET and self.collidable:
+        if self.to_room_type == consts.RoomsTypes.SECRET and self.collidable:
             self.image = pg.Surface((0, 0))
         else:
             self.image = getattr(Door, f'{self.texture}_{self.state}_{self.direction}')
@@ -311,10 +320,10 @@ class Door(BaseItem, DoorTextures):
         """
         Определяет state, direction и texture при инициализации для метода update_image.
         """
-        if self.room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE, consts.RoomsTypes.BOSS):
-            self.texture = self.room_type.value
-        elif self.room_type == consts.RoomsTypes.SECRET:
-            self.texture = f'{self.floor_type.value}_{self.room_type.value}'
+        if self.to_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE, consts.RoomsTypes.BOSS):
+            self.texture = self.to_room_type.value
+        elif self.to_room_type == consts.RoomsTypes.SECRET:
+            self.texture = f'{self.floor_type.value}_{self.to_room_type.value}'
         else:
             self.texture = self.floor_type.value
 
@@ -337,6 +346,16 @@ class Door(BaseItem, DoorTextures):
     def collide(self, other: MoveSprite):
         if not BaseItem.collide(self, other):
             return
+
+        if not self.room_finished:
+            return
+
+        if self.to_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and isinstance(other, Player):
+            if self.collidable and other.count_key:
+                other.count_key -= 1
+                self.open(with_key=True)
+                Door.open_by_key.play()
+                pg.event.post(pg.event.Event(USE_KEY))
 
         # Вместо MovingEnemy поставить MainCharacter или его туловище
         if isinstance(other, Player) and self.event_rect.colliderect(other.rect):
@@ -362,5 +381,5 @@ class Door(BaseItem, DoorTextures):
                                          {'direction': direction, 'next_coords': next_coords}))
 
             # Реализовать закрытие двери после входа в секретку:
-            # if self.room_type == consts.RoomsTypes.SECRET:
+            # if self.to_room_type == consts.RoomsTypes.SECRET:
             #     self.update_image("close")

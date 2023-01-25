@@ -1,3 +1,5 @@
+import random
+
 import pygame as pg
 
 from src.utils.funcs import cell_to_pixels, get_direction
@@ -138,6 +140,9 @@ class Player(MoveSprite):
     death = load_image("death_isaac (2) (1).png")
     use_bombs_delay: int | float = 1
 
+    death_sound = load_sound("sounds/isaac_death2.mp3")
+    hurt_sounds: list[pg.mixer.Sound] = [load_sound(f"sounds/isaac_hurt{i}.mp3") for i in range(1, 4)]
+
     def __init__(self,
                  name: str,
                  hp: int,
@@ -155,9 +160,9 @@ class Player(MoveSprite):
         self.damage_from_blow = damage_from_blow
         self.a = 0.35
         self.count_bombs = 10
-        self.count_key = 0
+        self.count_key = 10
         self.speed = 2
-        self.count_money: int = 0
+        self.count_money = 10
         super().__init__(center_room, (), acceleration=self.a)
 
         self.tears = pg.sprite.Group()
@@ -215,6 +220,7 @@ class Player(MoveSprite):
             else:
                 self.red_hp -= damage
             self.timer = 0
+            random.choice(Player.hurt_sounds).play()
             pg.event.post(pg.event.Event(GG_HURT))
 
     def update_timer(self, delta_t):
@@ -385,7 +391,6 @@ class Player(MoveSprite):
                     return False
             print(self.red_hp)
             self.count_money -= price
-            print(self.count_money)
             return True
         return False
 
@@ -395,7 +400,7 @@ class Player(MoveSprite):
         self.x_center_last = x
         self.y_center = y
         self.y_center_last = y
-        self.reset_speed()
+        self.vx, self.vy = 0, 0
 
     def set_flags_move(self, event: pg.event.Event, is_keydown: bool):
         key = event.key
@@ -437,6 +442,7 @@ class Player(MoveSprite):
                 self.image = self.death
                 self.player_sprites.remove(self.head)
                 self.soul.set_coords(self.rect.center)
+                # Player.death_sound.play()
             self.is_alive = False
             self.soul.update(delta_t)
             if self.soul.is_end_animation():
@@ -523,6 +529,6 @@ class HeroTear(BaseTear):
 
     def set_image(self):
         max_size = len(BaseTear.all_tears[0]) - 1
-        self.image = crop(BaseTear.all_tears[0][min(self.damage + 2, max_size)])
+        self.image = crop(BaseTear.all_tears[0][min(int(self.damage + 2), max_size)])
 
 

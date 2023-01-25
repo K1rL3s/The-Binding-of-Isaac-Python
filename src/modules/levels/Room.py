@@ -266,8 +266,9 @@ class Room(RoomTextures):
         """
         Установка дверей с нужными текстурками.
         """
-        for coords, room_type in doors:
-            Door(coords, self.floor_type, room_type, self.doors, self.colliadble_group, self.blowable)
+        for coords, to_room_type in doors:
+            Door(coords, self.floor_type, self.room_type, to_room_type,
+                 self.doors, self.colliadble_group, self.blowable)
         self.setup_door_borders(doors)
 
     def setup_door_borders(self, doors: list[tuple[consts.DoorsCoords, consts.RoomsTypes]]):
