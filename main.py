@@ -1,6 +1,7 @@
 import pygame as pg
 
 from src import consts
+from src.modules.Banners.pause import pause
 
 pg.init()
 pg.font.init()
@@ -16,9 +17,8 @@ from src.utils.funcs import load_sound
 def main():
     pg.mixer.music.load(load_sound('sounds/main_theme.mp3', return_path=True))
     pg.mixer.music.play()
-    hero_hame = startscrean.start_screen(screen)
-    print(f'{hero_hame=}')
-    game = Game(screen)
+    name = startscrean.start_screen(screen)
+    game = Game(screen, name)
     game.background = pg.Color(27, 24, 24)
     pg.mixer.music.stop()
     game.setup()

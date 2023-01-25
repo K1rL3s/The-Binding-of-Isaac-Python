@@ -1,5 +1,6 @@
 import pygame as pg
 
+from src.modules.Banners.pause import pause
 from src.modules.BaseClasses.Based.BaseGame import BaseGame
 from src.modules.handlers.MainHeroActionsHandler import MainHeroActionsHandler
 from src.modules.levels.Level import Level
@@ -13,13 +14,14 @@ from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM
 
 # Заглушка (переделать!)
 class Game(BaseGame):
-    def __init__(self, main_screen: pg.Surface, fps: int = 60):
+    def __init__(self, main_screen: pg.Surface, name, fps: int = 60):
 
+        self.name_hero = name
         self.main_hero = Player('isaac', 10, 4, 10, 2, 5, 5, 0.5)
 
         BaseGame.__init__(self, main_screen, fps)
         self.level_screen = pg.Surface((GAME_WIDTH, GAME_HEIGHT))
-
+        self.is_paused = False
         self.levels = [Level(floor_type, self.main_hero) for floor_type in FloorsTypes]
         self.current_level = self.levels[0]
         self.current_level.update_main_hero_collide_groups()
@@ -29,7 +31,10 @@ class Game(BaseGame):
 
     def setup(self):
         self.register_event(pg.KEYDOWN, self.main_hero_handler.keyboard_handler)
+        self.register_event(pg.KEYDOWN, self.switch_pause)
         self.register_event(pg.KEYUP, self.main_hero_handler.keyboard_handler)
+        self.register_event(MOVE_TO_NEXT_LEVEL, self.move_to_next_level)
+        self.register_event(MOVE_TO_NEXT_ROOM, self.move_to_next_room)
         self.register_event(PICKUP_LOOT, self.main_hero_handler.loot_pickup_handler)
         self.register_event(PICKUP_ART, self.main_hero_handler.artifact_pickup_handler)
         self.register_event(BUY_ITEM, self.main_hero_handler.buy_handler)
@@ -41,6 +46,12 @@ class Game(BaseGame):
 
         for event in (PICKUP_LOOT, BUY_ITEM, USE_BOMB, GG_HURT, USE_KEY, MOVE_TO_NEXT_ROOM):
             self.register_event(event, self.update_stats)
+
+    def switch_pause(self, event: pg.event.Event):
+        if event.key == pg.K_ESCAPE:
+            # self.main_hero.reset_speed()
+            self.is_paused = True
+            pause(self.main_screen, self.name_hero)
 
     def get_current_level_rooms(self) -> list[list[Room | None]]:
         """
@@ -92,6 +103,9 @@ class Game(BaseGame):
             self.current_level.current_room.set_bomb(event)
 
     def update(self, delta_t: float):
+        if self.is_paused:
+            self.is_paused = False
+            return
         self.current_level.update(delta_t)
         self.main_hero.update(delta_t)
 
