@@ -3,7 +3,7 @@ import pygame as pg
 from src import consts
 from src.consts import USE_KEY
 from src.modules.BaseClasses import BaseItem, MoveSprite
-from src.utils.funcs import load_image, crop
+from src.utils.funcs import load_image, crop, load_sound
 from src.modules.characters.parents import Player
 
 DOOR_CELL_SIZE = int(consts.CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
@@ -206,6 +206,9 @@ class Door(BaseItem, DoorTextures):
     :param collidable: Закрыта ли дверь.
     :param hurtable: Наносит ли урон дверь при проходе через неё.
     """
+
+    open_by_key = load_sound("sounds/door_unlock.wav")
+
     def __init__(self,
                  xy_pos: consts.DoorsCoords | tuple[int, int],
                  floor_type: consts.FloorsTypes,
@@ -351,6 +354,7 @@ class Door(BaseItem, DoorTextures):
             if self.collidable and other.count_key:
                 other.count_key -= 1
                 self.open(with_key=True)
+                Door.open_by_key.play()
                 pg.event.post(pg.event.Event(USE_KEY))
 
         # Вместо MovingEnemy поставить MainCharacter или его туловище

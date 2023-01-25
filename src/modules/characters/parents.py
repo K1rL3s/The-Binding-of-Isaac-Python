@@ -1,3 +1,5 @@
+import random
+
 import pygame as pg
 
 from src.utils.funcs import cell_to_pixels, get_direction
@@ -138,6 +140,9 @@ class Player(MoveSprite):
     death = load_image("death_isaac (2) (1).png")
     use_bombs_delay: int | float = 1
 
+    death_sound = load_sound("sounds/isaac_death2.mp3")
+    hurt_sounds: list[pg.mixer.Sound] = [load_sound(f"sounds/isaac_hurt{i}.mp3") for i in range(1, 4)]
+
     def __init__(self,
                  name: str,
                  hp: int,
@@ -215,6 +220,7 @@ class Player(MoveSprite):
             else:
                 self.red_hp -= damage
             self.timer = 0
+            random.choice(Player.hurt_sounds).play()
             pg.event.post(pg.event.Event(GG_HURT))
 
     def update_timer(self, delta_t):
@@ -392,7 +398,7 @@ class Player(MoveSprite):
         self.x_center_last = x
         self.y_center = y
         self.y_center_last = y
-        self.reset_speed()
+        self.vx, self.vy = 0, 0
 
     def set_flags_move(self, event: pg.event.Event, is_keydown: bool):
         key = event.key
@@ -434,6 +440,7 @@ class Player(MoveSprite):
                 self.image = self.death
                 self.player_sprites.remove(self.head)
                 self.soul.set_coords(self.rect.center)
+                # Player.death_sound.play()
             self.is_alive = False
             self.soul.update(delta_t)
             if self.soul.is_end_animation():
