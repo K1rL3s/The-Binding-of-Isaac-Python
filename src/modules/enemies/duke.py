@@ -92,8 +92,8 @@ class Duke(MovingEnemy):
         if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
             self.vy = -self.vy
 
-    def death(self):
-        MovingEnemy.death(self)
+    def death(self, *args):
+        MovingEnemy.death(self, True)
         for i in range(1, random.randint(3, 5)):
             Fly((self.x, self.y), self.room_graph, self.main_hero,
                 self.enemy_collide_groups,

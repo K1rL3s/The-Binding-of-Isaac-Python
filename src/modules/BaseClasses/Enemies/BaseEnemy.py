@@ -5,6 +5,7 @@ from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.utils.funcs import load_sound
 from src.modules.BaseClasses.Based.BaseSprite import BaseSprite
 from src.modules.characters.parents import Player
+from src.consts import DEATH_ENEMY
 
 
 class BaseEnemy(BaseSprite):
@@ -62,15 +63,22 @@ class BaseEnemy(BaseSprite):
         """
         self.room_graph = room_graph
 
-    def death(self):
+    def death(self, is_boss: bool = False):
         """
         Смерть врага.
         """
+        count_score = 100
+        if is_boss:
+            count_score *= 10
         self.kill()
+        pg.event.post(pg.event.Event(DEATH_ENEMY, {'count': count_score}))
 
     def collide(self, other: MoveSprite):
         if isinstance(other, BaseTear):
             self.hurt(other.damage)
             other.destroy()
+            return True
+        if isinstance(other, Player):
+            other.hurt(1)
             return True
         return False

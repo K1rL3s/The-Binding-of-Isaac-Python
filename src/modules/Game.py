@@ -10,6 +10,7 @@ from src.modules.menus.StatsLine import Stats
 from src.modules.characters.parents import Player
 from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT,
                         MOVE_TO_NEXT_ROOM, MOVE_TO_NEXT_LEVEL, PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB, GG_HURT,
+                        USE_KEY, DEATH_ENEMY)
                         USE_KEY, GAME_OVER)
 
 
@@ -18,7 +19,7 @@ class Game(BaseGame):
     def __init__(self, main_screen: pg.Surface, name, fps: int = 60):
 
         self.name_hero = name
-        self.main_hero = Player('isaac', 10, 4, 10, 2, 5, 5, 0.5)
+        self.main_hero = Player(name, 10, 4, 10, 2, 5, 5, 0.5)
 
         BaseGame.__init__(self, main_screen, fps)
         self.level_screen = pg.Surface((GAME_WIDTH, GAME_HEIGHT))
@@ -40,6 +41,7 @@ class Game(BaseGame):
         self.register_event(USE_BOMB, self.set_bomb)
         self.register_event(MOVE_TO_NEXT_LEVEL, self.move_to_next_level)
         self.register_event(MOVE_TO_NEXT_ROOM, self.move_to_next_room)
+        self.register_event(DEATH_ENEMY, self.main_hero_handler.scoring_points)
         self.register_event(GAME_OVER, self.end_screen)
         self.register_event(pg.KEYDOWN, self.kill_all)
 
@@ -67,6 +69,7 @@ class Game(BaseGame):
         """
         Переход на следующий этаж.
         """
+        self.main_hero.kill_tears()
         self.current_level = self.levels[(self.levels.index(self.current_level) + 1) % len(self.levels)]
         self.current_level.update_main_hero_collide_groups()
         self.move_main_hero((ROOM_WIDTH // 2, ROOM_HEIGHT // 2))
@@ -78,13 +81,12 @@ class Game(BaseGame):
 
         :param event: Ивент, который имеет direction (вызывается дверью).
         """
+        self.main_hero.kill_tears()
         self.current_level.move_to_next_room(event.direction)
         self.current_level.update_main_hero_collide_groups()
         self.stats.update_minimap()
         next_coords = event.next_coords
         self.move_main_hero(next_coords)
-
-
 
     def move_main_hero(self, xy_pos: tuple[int, int]):
         """

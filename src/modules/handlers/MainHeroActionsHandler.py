@@ -1,13 +1,8 @@
-# import random
-
 import pygame as pg
 
-# from src.consts import USE_BOMB, MOVE_TO_NEXT_ROOM, Moves
-from src.consts import USE_BOMB, HeartsTypes
+from src.consts import USE_BOMB, HeartsTypes, DEATH_ENEMY
 from src.modules.characters.parents import Player
 from src.modules.entities.items import PickMoney, PickHeart, PickBomb, PickKey
-# from src.modules.entities.artifacts import (Dinner, FreshMeat, GreySyringe, GreenSyringe, MomsHeels, PurpleSyringe,
-#                                             RedSyringe, WhiteSyringe)
 
 
 class MainHeroActionsHandler:
@@ -91,3 +86,6 @@ class MainHeroActionsHandler:
                 self.loot_pickup_handler(event)
             event.item.kill()
             event.self.kill()
+
+    def scoring_points(self, event: DEATH_ENEMY):
+        self.main_hero.scoring_points(event.count)

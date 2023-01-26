@@ -8,10 +8,9 @@ from typing import Type
 from src.utils.funcs import load_image, crop, load_sound
 from src.consts import CELL_SIZE, ROOM_WIDTH, ROOM_HEIGHT, GAME_OVER, GG_HURT
 from src.consts import Moves, HeartsTypes
-
+# from src.modules.levels.Border import Border
 from src.modules.BaseClasses.Based.MoveSprite import MoveSprite
 from src.modules.BaseClasses.Based.BaseTear import BaseTear
-
 # from src.modules.entities.tears.ExampleTear import HeroTear
 
 
@@ -29,7 +28,7 @@ class TexturesHeroes:
                  "RIGHT": crop(load_image(f'textures/heroes/head/{name}_right.png')),
                  "UP": crop(load_image(f'textures/heroes/head/{name}_up.png'))}
              }
-        for name in ('isaac',)  # eсли не запускается, нет изображений, то уберите cain/lost
+        for name in ('isaac', 'cain')  # eсли не запускается, нет изображений, то уберите cain/lost
     }
 
 
@@ -42,13 +41,34 @@ class ParamsHeroes(TexturesHeroes):
                        settings_head[3]: "DOWN"}
     body_images_dict: dict | None
     head_images_dict: dict | None
+    characterizations: dict[str, dict] = {
+        'isaac': {
+            'hp': 6,
+            'speed': 4,
+            'damage': 2,
+            'is_flying': False},
+        'cain': {
+            'hp': 4,
+            'speed': 6,
+            'damage': 3,
+            'is_flying': False
+        },
+        'lost': {
+            'hp': 1,
+            'speed': 4,
+            'damage': 2,
+            'is_flying': True
+        }
+    }
 
     def set_images(self, name: str):
         self.body_images_dict = self.textures[name]['body']
         self.head_images_dict = self.textures[name]['head']
 
-    def set_params(self, body: list[pg.event.Event],
-                   head: list[pg.event.Event]):
+    def get_characters(self, name: str):
+        pass
+
+    def set_move_params(self, body: list[pg.event.Event], head: list[pg.event.Event]):
         self.settings_body = body
         self.settings_head = head
 
@@ -61,7 +81,8 @@ class Head(pg.sprite.Sprite):
                  shot_max_distance: int | float,
                  shot_speed: int | float,
                  shot_delay: int | float,
-                 tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...], params: ParamsHeroes):
+                 tear_collide_groups: tuple[pg.sprite.AbstractGroup, ...],
+                 params: ParamsHeroes):
         super().__init__()
         self.name = name
         self.params_hero = params
@@ -159,20 +180,22 @@ class Player(MoveSprite):
         self.params_hero.set_images(name)
         self.damage_from_blow = damage_from_blow
         self.a = 0.35
-        self.count_bombs = 10
-        self.count_key = 10
-        self.speed = 2
-        self.count_money = 10
+        self.count_bombs = 3
+        self.count_key = 0
+        self.speed = speed_body
+        self.count_money = 0
         super().__init__(center_room, (), acceleration=self.a)
 
+        self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0}
+        self.collide_groups: tuple[pg.sprite.AbstractGroup, ...] | None = None
         self.tears = pg.sprite.Group()
+
         self.head = Head(name, self.tears, shot_damage + 5, shot_max_distance, shot_speed, shot_delay,
                          tear_collide_groups, self.params_hero)
         self.count_cadrs = 0
         self.soul: Soul = Soul()
-        self.is_alive = True
         self.use_bombs_ticks = 0
-
+        self.score = 0
         self.player_sprites = pg.sprite.LayeredUpdates()
         self.player_sprites.add(self, layer=1)
         self.player_sprites.add(self.head, layer=2)
@@ -191,17 +214,20 @@ class Player(MoveSprite):
         self.damage_from_blow: int = 10
         self.image = self.params_hero.body_images_dict["DOWN"][0]
         self.image = crop(self.image)
-        self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0}
+
         self.timer_hurt: float = 2
         self.timer: float = 2
-
-        self.collide_groups: tuple[pg.sprite.AbstractGroup, ...] | None = None
+        self.score_sub_tick: float = 1
+        self.score_sub_timer: float = 0
 
         self.flag_move_down: bool = False
         self.flag_move_left: bool = False
         self.flag_move_right: bool = False
         self.flag_move_up: bool = False
         self.is_move: bool = False
+        self.is_alive = True
+        self.is_flying = name == 'cain'
+        self.collide_is_borders: bool = False
 
         self.x_collide = False
         self.y_collide = False
@@ -221,17 +247,22 @@ class Player(MoveSprite):
             else:
                 self.red_hp -= damage
             self.timer = 0
-            random.choice(Player.hurt_sounds).play()
+            if self.red_hp > 0:
+                random.choice(Player.hurt_sounds).play()
             pg.event.post(pg.event.Event(GG_HURT))
+
+    def kill_tears(self):
+        self.head.tears.empty()
 
     def update_timer(self, delta_t):
         self.timer += delta_t
+        self.score_sub_timer += delta_t
+        if self.score_sub_timer >= self.score_sub_tick:
+            self.score -= 1
+            self.score_sub_timer -= self.score_sub_tick
 
     def blow(self):
         self.hurt(self.damage_from_blow)
-
-    def settings(self):
-        self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0}
 
     def setting_flags(self, key, is_down: bool):
         if key == self.params_hero.settings_body[0]:
@@ -247,8 +278,8 @@ class Player(MoveSprite):
         if self.count_cadrs == 0:
             last_name = self.last_name_direction
             peremennaya = self.indexes[last_name] + 1
-            self.settings()
-            self.indexes[last_name] = peremennaya % len(self.params_hero.body_images_dict["DOWN"])
+            self.indexes = {"DOWN": 0, "LEFT": 0, "RIGHT": 0, "UP": 0,
+                            last_name: peremennaya % len(self.params_hero.body_images_dict["DOWN"])}
             if self.is_move:
                 self.image = self.params_hero.body_images_dict[last_name][self.indexes[last_name]]
             else:
@@ -291,11 +322,23 @@ class Player(MoveSprite):
 
         self.is_move = self.vx != 0 or self.vy != 0
 
+    # def check_collides(self):
+    #     for group in self.collide_groups:
+    #         if sprites := pg.sprite.spritecollide(self, group, False):
+    #             for sprite in sprites:
+    #                 if sprite == self:
+    #                     continue
+    #                 if self.is_flying and not isinstance(sprite, Border):
+    #                     continue
+    #                 sprite.collide(self)
+
     def collide(self, other):
+        if not MoveSprite.collide(self, other):
+            return
+
         if isinstance(other, BaseTear) and other not in self.tears.sprites():
             self.hurt(other.damage)
             other.destroy()
-        MoveSprite.collide(self, other)
 
     def reset_collides(self):
         self.x_collide = self.y_collide = False
@@ -306,6 +349,7 @@ class Player(MoveSprite):
 
         :param rect: Rect того, с чем было столкновение.
         """
+
         direction = get_direction(self.rect, rect)
 
         self.y_collide = direction in (Moves.UP, Moves.DOWN) or self.y_collide
@@ -368,9 +412,9 @@ class Player(MoveSprite):
         elif self.vy < -self.max_speed:
             self.vy = -self.max_speed
 
-    def update_room_groups(self, hero_collide_groups, tear_collide_groups) -> None:
+    def update_room_groups(self, required_groups, hero_collide_groups, tear_collide_groups) -> None:
         self.head.set_tear_collide_groups(tear_collide_groups)
-        self.collide_groups = hero_collide_groups
+        self.collide_groups = required_groups if self.is_flying else hero_collide_groups
 
     def pickup_heart(self, count: int, heart_type: HeartsTypes) -> bool:
         if heart_type == HeartsTypes.RED:
@@ -443,11 +487,11 @@ class Player(MoveSprite):
                 self.image = self.death
                 self.player_sprites.remove(self.head)
                 self.soul.set_coords(self.rect.center)
-                # Player.death_sound.play()
+                Player.death_sound.play()
             self.is_alive = False
             self.soul.update(delta_t)
             if self.soul.is_end_animation():
-                pg.event.post(pg.event.Event(GAME_OVER))
+                pg.event.post(pg.event.Event(GAME_OVER, {'score': self.score}))
 
     def get_count_bombs(self) -> bool:
         if self.count_bombs > 0 and self.use_bombs_ticks > self.use_bombs_delay:
@@ -455,6 +499,9 @@ class Player(MoveSprite):
             self.use_bombs_ticks = 0
             return True
         return False
+
+    def scoring_points(self, counts):
+        self.score += counts
 
     def get_coords(self):
         return self.rect.center

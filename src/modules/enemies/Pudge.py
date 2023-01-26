@@ -28,7 +28,7 @@ class Pudge(Fistula):
             center=(251, 251))
 
     def death(self):
-        MovingEnemy.death(self)
+        MovingEnemy.death(self, True)
         if self.stage == 3:
             return
 

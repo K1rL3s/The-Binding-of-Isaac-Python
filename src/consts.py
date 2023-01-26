@@ -89,3 +89,4 @@ USE_BOMB = pg.USEREVENT + 6                       # Установка бомб�
 GAME_OVER = pg.USEREVENT + 7                      # Конец игры
 GG_HURT = pg.USEREVENT + 8                        # ГГ получил урон
 USE_KEY = pg.USEREVENT + 9                        # Использование ключа для открытия двери
+DEATH_ENEMY = pg.USEREVENT + 10                   # Враг умер.

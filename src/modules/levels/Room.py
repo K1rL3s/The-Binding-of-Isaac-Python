@@ -162,7 +162,7 @@ class Room(RoomTextures):
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
             Teratoma((6, 3), 40, self.paths, self.main_hero,
                      (self.movement_borders,), self.hp_bar_group, 1, 2,
-                     self.bosses, self.blowable, self.other)
+                     self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
             Fistula((6, 3), 40, self.paths, self.main_hero,
@@ -182,7 +182,7 @@ class Room(RoomTextures):
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.WOMB:
             Pudge((6, 3), 40, self.paths, self.main_hero,
                   (self.movement_borders,), self.hp_bar_group, 1, 2,
-                  self.bosses, self.blowable, self.other)
+                  self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS:
             self.is_friendly = False
@@ -475,9 +475,10 @@ class Room(RoomTextures):
                 spikes: Spikes
                 spikes.hide(True)
 
-    def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], tuple[pg.sprite.Group, ...]]:
+    def get_room_groups(self) -> tuple[tuple[pg.sprite.Group, ...], ...]:
         return (
-            (self.colliadble_group, self.movement_borders, self.other),
+            (self.movement_borders, self.doors, self.other, self.enemies, self.bosses),
+            (self.colliadble_group, self.movement_borders, self.other, self.enemies, self.bosses),
             (self.colliadble_group, self.tears_borders, self.other, self.enemies, self.bosses)
         )
 

@@ -80,8 +80,8 @@ class Fistula(MovingEnemy):
             self.death()
         self.hp_bar.hurt(damage)
 
-    def death(self):
-        MovingEnemy.death(self)
+    def death(self, *args):
+        MovingEnemy.death(self, True)
         if self.stage == 3:
             return
 
