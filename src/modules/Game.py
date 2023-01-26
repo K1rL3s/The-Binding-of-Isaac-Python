@@ -5,6 +5,7 @@ from src.utils.funcs import load_sound, load_image
 
 from src.modules.Banners.end_screen import end_screen
 from src.modules.Banners.pause import pause
+from src.modules.Banners.win import win
 from src.modules.BaseClasses.Based.BaseGame import BaseGame
 from src.modules.handlers.MainHeroActionsHandler import MainHeroActionsHandler
 from src.modules.levels.Level import Level
@@ -64,7 +65,6 @@ class Game(BaseGame):
 
     def switch_pause(self, event: pg.event.Event):
         if event.key == pg.K_ESCAPE:
-            # self.main_hero.reset_speed()
             self.is_paused = True
             pause(self.main_screen, self.name_hero)
 
@@ -80,6 +80,9 @@ class Game(BaseGame):
         """
         Переход на следующий этаж.
         """
+        if self.levels.index(self.current_level) == 4:
+            if win(self.main_screen, score=self.main_hero.score):
+                self.running = False
         self.main_hero.kill_tears()
         self.current_level = self.levels[(self.levels.index(self.current_level) + 1) % len(self.levels)]
         self.current_level.update_main_hero_collide_groups()
