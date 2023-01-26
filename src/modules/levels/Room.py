@@ -515,9 +515,13 @@ class Room(RoomTextures):
                      (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
 
     def set_pickable(self, xy_pos: tuple[int, int]):  # Клетка
+        k = 0
         chance = random.random()
-        if chance > 0.75:
-            PickMoney(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
+        if chance > 0.75 and k < 1:
+            Fistula((6, 3), 40, self.paths, self.main_hero,
+                    (self.movement_borders,), self.hp_bar_group, 1, 2,
+                    self.bosses, self.blowable)
+            k += 1
         elif chance > 0.50:
             PickBomb(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
         elif chance > 0.25:

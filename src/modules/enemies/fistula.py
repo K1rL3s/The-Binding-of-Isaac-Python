@@ -60,15 +60,18 @@ class Fistula(MovingEnemy):
         """
         self.x_center, self.y_center = self.x_center_last, self.y_center_last
         self.rect.center = self.x_center, self.y_center
-
         centerx, centery = rect.center
         if centerx == GAME_WIDTH - WALL_SIZE and self.vx > 0:
+            print(123)
             self.vx = -self.vx
         if centerx == WALL_SIZE and self.vx < 0:
+            print(123)
             self.vx = -self.vx
         if centery == WALL_SIZE and self.vy < 0:
+            print(123)
             self.vy = -self.vy
         if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
+            print(123)
             self.vy = -self.vy
 
     def hurt(self, damage: int):

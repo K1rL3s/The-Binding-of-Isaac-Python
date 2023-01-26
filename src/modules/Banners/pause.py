@@ -21,5 +21,5 @@ def pause(screen, hero='isaac'):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
+                if event.key == pg.K_ESCAPE or event.key == pg.K_RETURN:
                     return

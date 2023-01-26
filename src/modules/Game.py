@@ -1,5 +1,6 @@
 import pygame as pg
 
+from src.modules.Banners.end_screen import end_screen
 from src.modules.Banners.pause import pause
 from src.modules.BaseClasses.Based.BaseGame import BaseGame
 from src.modules.handlers.MainHeroActionsHandler import MainHeroActionsHandler
@@ -9,7 +10,7 @@ from src.modules.menus.StatsLine import Stats
 from src.modules.characters.parents import Player
 from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT,
                         MOVE_TO_NEXT_ROOM, MOVE_TO_NEXT_LEVEL, PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB, GG_HURT,
-                        USE_KEY)
+                        USE_KEY, GAME_OVER)
 
 
 # Заглушка (переделать!)
@@ -39,11 +40,14 @@ class Game(BaseGame):
         self.register_event(USE_BOMB, self.set_bomb)
         self.register_event(MOVE_TO_NEXT_LEVEL, self.move_to_next_level)
         self.register_event(MOVE_TO_NEXT_ROOM, self.move_to_next_room)
-
+        self.register_event(GAME_OVER, self.end_screen)
         self.register_event(pg.KEYDOWN, self.kill_all)
 
         for event in (PICKUP_LOOT, BUY_ITEM, USE_BOMB, GG_HURT, USE_KEY, MOVE_TO_NEXT_ROOM):
             self.register_event(event, self.update_stats)
+
+    def end_screen(self, event: pg.event.Event):
+        end_screen(self.main_screen, self.name_hero)
 
     def switch_pause(self, event: pg.event.Event):
         if event.key == pg.K_ESCAPE:
@@ -79,6 +83,8 @@ class Game(BaseGame):
         self.stats.update_minimap()
         next_coords = event.next_coords
         self.move_main_hero(next_coords)
+
+
 
     def move_main_hero(self, xy_pos: tuple[int, int]):
         """

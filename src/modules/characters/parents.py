@@ -181,7 +181,8 @@ class Player(MoveSprite):
         #################
 
         self.name = name
-        self.red_hp = hp
+        self.red_hp = 1
+        # Я поменял хп!!!!!!
         self.max_red_hp = hp
         self.blue_hp = 0
         self.black_hp = 0
