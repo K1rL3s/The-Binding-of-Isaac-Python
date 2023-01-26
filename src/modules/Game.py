@@ -24,12 +24,11 @@ def start_game(main_screen):
     return startscrean.start_screen(main_screen)
 
 
-# Заглушка (переделать!)
 class Game(BaseGame):
     def __init__(self, name: str, main_screen: pg.Surface, fps: int = 60):
 
         self.name_hero = name
-        self.main_hero = Player(name, 10, 4, 10, 2, 5, 5, 0.5)
+        self.main_hero = Player(name)
 
         BaseGame.__init__(self, main_screen, fps)
         self.level_screen = pg.Surface((GAME_WIDTH, GAME_HEIGHT))
