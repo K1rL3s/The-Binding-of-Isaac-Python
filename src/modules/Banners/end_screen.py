@@ -6,6 +6,8 @@ import pygame as pg
 import random
 
 from src.modules.Banners.ShopFont import ShopFont
+from src.modules.mainmenu import startscrean
+
 from src.modules.mainmenu.startscrean import MenuSprite
 from src.utils.funcs import load_image
 
@@ -38,4 +40,4 @@ def end_screen(screen, hero, score='1000'):
                 if event.key == pg.K_ESCAPE:
                     terminate()
                 if event.key == pg.K_SPACE or event.key == pg.K_RETURN:
-                    print(123)
+                    startscrean.start_screen(screen)

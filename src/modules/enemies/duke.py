@@ -2,13 +2,13 @@ import random
 
 import pygame as pg
 
-from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
+from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT, Moves
 from src.modules.Banners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.animations.Animation import Animation
 from src.modules.characters.parents import Player
 from src.modules.enemies.Fly import Fly
-from src.utils.funcs import load_sound, load_image, crop
+from src.utils.funcs import load_sound, load_image, crop, get_direction
 
 
 class Duke(MovingEnemy):
@@ -68,10 +68,10 @@ class Duke(MovingEnemy):
         else:
             self.image = Duke.images[4]
             self.image = pg.transform.scale2x(self.image)
-        if self.flyable:
-            MovingEnemy.check_fly_collides(self)
-        else:
-            MovingEnemy.check_collides(self)
+        # if self.flyable:
+        #     MovingEnemy.check_fly_collides(self)
+        # else:
+        MovingEnemy.check_collides(self)
 
     def move_back(self, rect: pg.Rect):
         """
@@ -79,22 +79,36 @@ class Duke(MovingEnemy):
 
         :param rect: Rect того, с чем было столкновение.
         """
-        self.x_center, self.y_center = self.x_center_last, self.y_center_last
-        self.rect.center = self.x_center, self.y_center
+        # self.x_center, self.y_center = self.x_center_last, self.y_center_last
+        # self.rect.center = self.x_center, self.y_center
+        #
+        # centerx, centery = rect.center
+        # if centerx == GAME_WIDTH - WALL_SIZE and self.vx > 0:
+        #     self.vx = -self.vx
+        # if centerx == WALL_SIZE and self.vx < 0:
+        #     self.vx = -self.vx
+        # if centery == WALL_SIZE and self.vy < 0:
+        #     self.vy = -self.vy
+        # if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
+        #     self.vy = -self.vy
 
-        centerx, centery = rect.center
-        if centerx == GAME_WIDTH - WALL_SIZE and self.vx > 0:
-            self.vx = -self.vx
-        if centerx == WALL_SIZE and self.vx < 0:
-            self.vx = -self.vx
-        if centery == WALL_SIZE and self.vy < 0:
+        # MovingEnemy.move_back(self, rect)
+
+        direction = get_direction(self.rect, rect)
+        if direction == Moves.DOWN and self.vy > 0:
             self.vy = -self.vy
-        if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
+        elif direction == Moves.UP and self.vy < 0:
             self.vy = -self.vy
+        if direction == Moves.RIGHT and self.vx > 0:
+            self.vx = -self.vx
+        elif direction == Moves.LEFT and self.vx < 0:
+            self.vx = -self.vx
 
     def death(self, *args):
         MovingEnemy.death(self, True)
-        for i in range(1, random.randint(3, 5)):
+        self.hp_bar.kill()
+        self.hp_bar_ram.kill()
+        for i in range(1, random.randint(4, 7)):
             Fly((self.x, self.y), self.room_graph, self.main_hero,
                 self.enemy_collide_groups,
                 self.tear_collide_groups,

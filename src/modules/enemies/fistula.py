@@ -1,11 +1,11 @@
 import pygame as pg
 import pygame
 
-from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
+from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT, Moves
 from src.modules.Banners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.characters.parents import Player
-from src.utils.funcs import load_sound, load_image, crop
+from src.utils.funcs import load_sound, load_image, crop, get_direction
 
 
 class Fistula(MovingEnemy):
@@ -47,10 +47,10 @@ class Fistula(MovingEnemy):
 
     def update(self, delta_t: float):
         MovingEnemy.move(self, delta_t, change_speeds=False)
-        if self.flyable:
-            MovingEnemy.check_fly_collides(self)
-        else:
-            MovingEnemy.check_collides(self)
+        # if self.flyable:
+        #     MovingEnemy.check_fly_collides(self)
+        # else:
+        MovingEnemy.check_collides(self)
 
     def move_back(self, rect: pg.Rect):
         """
@@ -58,21 +58,32 @@ class Fistula(MovingEnemy):
 
         :param rect: Rect того, с чем было столкновение.
         """
-        self.x_center, self.y_center = self.x_center_last, self.y_center_last
-        self.rect.center = self.x_center, self.y_center
-        centerx, centery = rect.center
-        if centerx == GAME_WIDTH - WALL_SIZE and self.vx > 0:
-            print(123)
-            self.vx = -self.vx
-        if centerx == WALL_SIZE and self.vx < 0:
-            print(123)
-            self.vx = -self.vx
-        if centery == WALL_SIZE and self.vy < 0:
-            print(123)
+        # self.x_center, self.y_center = self.x_center_last, self.y_center_last
+        # self.rect.center = self.x_center, self.y_center
+        # centerx, centery = rect.center
+        # if centerx == GAME_WIDTH - WALL_SIZE and self.vx > 0:
+        #     self.vx = -self.vx
+        # if centerx == WALL_SIZE and self.vx < 0:
+        #     print(123)
+        #     self.vx = -self.vx
+        # if centery == WALL_SIZE and self.vy < 0:
+        #     print(123)
+        #     self.vy = -self.vy
+        # if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
+        #     print(123)
+        #     self.vy = -self.vy
+
+        # MovingEnemy.move_back(self, rect)
+
+        direction = get_direction(self.rect, rect)
+        if direction == Moves.DOWN and self.vy > 0:
             self.vy = -self.vy
-        if centery == GAME_HEIGHT - WALL_SIZE and self.vy > 0:
-            print(123)
+        elif direction == Moves.UP and self.vy < 0:
             self.vy = -self.vy
+        if direction == Moves.RIGHT and self.vx > 0:
+            self.vx = -self.vx
+        elif direction == Moves.LEFT and self.vx < 0:
+            self.vx = -self.vx
 
     def hurt(self, damage: int):
         self.hp -= damage
@@ -82,6 +93,8 @@ class Fistula(MovingEnemy):
 
     def death(self, *args):
         MovingEnemy.death(self, True)
+        self.hp_bar.kill()
+        self.hp_bar_ram.kill()
         if self.stage == 3:
             return
 

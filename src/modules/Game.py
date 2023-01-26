@@ -8,10 +8,9 @@ from src.modules.levels.Level import Level
 from src.modules.levels.Room import Room
 from src.modules.menus.StatsLine import Stats
 from src.modules.characters.parents import Player
-from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT,
+from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM_WIDTH, ROOM_HEIGHT, GAME_OVER,
                         MOVE_TO_NEXT_ROOM, MOVE_TO_NEXT_LEVEL, PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB, GG_HURT,
                         USE_KEY, DEATH_ENEMY)
-                        USE_KEY, GAME_OVER)
 
 
 # Заглушка (переделать!)
@@ -45,7 +44,7 @@ class Game(BaseGame):
         self.register_event(GAME_OVER, self.end_screen)
         self.register_event(pg.KEYDOWN, self.kill_all)
 
-        for event in (PICKUP_LOOT, BUY_ITEM, USE_BOMB, GG_HURT, USE_KEY, MOVE_TO_NEXT_ROOM):
+        for event in (PICKUP_LOOT, PICKUP_ART, BUY_ITEM, USE_BOMB, GG_HURT, USE_KEY, MOVE_TO_NEXT_ROOM):
             self.register_event(event, self.update_stats)
 
     def end_screen(self, event: pg.event.Event):
@@ -102,8 +101,12 @@ class Game(BaseGame):
 
     def kill_all(self, event: pg.event.Event):
         if event.key == pg.K_r:
-            self.current_level.current_room.enemies.empty()
-            self.current_level.current_room.bosses.empty()
+            for enemy in self.current_level.current_room.enemies.sprites():
+                enemy.death()
+            for boss in self.current_level.current_room.bosses.sprites():
+                boss.death()
+            # self.current_level.current_room.enemies.empty()
+            # self.current_level.current_room.bosses.empty()
 
     def set_bomb(self, event: pg.event.Event):
         if event.type == USE_BOMB:

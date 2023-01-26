@@ -161,27 +161,28 @@ class Room(RoomTextures):
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CATACOMBS:
             Teratoma((6, 3), 40, self.paths, self.main_hero,
-                     (self.movement_borders,), self.hp_bar_group, 1, 2,
+                     (self.movement_borders, self.doors), self.hp_bar_group, 1, 2,
                      self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.BASEMENT:
             Fistula((6, 3), 40, self.paths, self.main_hero,
-                    (self.movement_borders,), self.hp_bar_group, 1, 2,
+                    (self.movement_borders, self.doors), self.hp_bar_group, 1, 2,
                     self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.DEPTHS:
             Duke((6, 3), self.paths, self.main_hero,
-                 (self.movement_borders,), (self.main_hero_group, self.colliadble_group), self.hp_bar_group,
+                 (self.movement_borders, self.doors, self.main_hero_group),
+                 (self.main_hero_group, self.colliadble_group), self.hp_bar_group,
                  1.4, self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.CAVES:
             Envy((6, 3), 40, self.paths, self.main_hero,
-                 (self.movement_borders,), self.hp_bar_group, 1, 2,
+                 (self.movement_borders, self.doors), self.hp_bar_group, 1, 2,
                  self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS and self.floor_type == consts.FloorsTypes.WOMB:
             Pudge((6, 3), 40, self.paths, self.main_hero,
-                  (self.movement_borders,), self.hp_bar_group, 1, 2,
+                  (self.movement_borders, self.doors), self.hp_bar_group, 1, 2,
                   self.bosses, self.blowable)
 
         if self.room_type == consts.RoomsTypes.BOSS:
@@ -520,7 +521,7 @@ class Room(RoomTextures):
         chance = random.random()
         if chance > 0.75 and k < 1:
             Fistula((6, 3), 40, self.paths, self.main_hero,
-                    (self.movement_borders,), self.hp_bar_group, 1, 2,
+                    (self.movement_borders, self.doors, self.main_hero_group), self.hp_bar_group, 1, 2,
                     self.bosses, self.blowable)
             k += 1
         elif chance > 0.50:
