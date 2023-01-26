@@ -2,7 +2,7 @@ import pygame as pg
 import pygame
 
 from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT
-from src.modules.Baners.hpboss_bar import HpBossBarRam, HpBossBar
+from src.modules.Banners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.characters.parents import Player
 from src.utils.funcs import load_sound, load_image, crop
