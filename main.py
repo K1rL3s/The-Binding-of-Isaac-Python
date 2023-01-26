@@ -1,7 +1,6 @@
 import pygame as pg
 
 from src import consts
-from src.modules.Banners.pause import pause
 
 pg.init()
 pg.font.init()
@@ -11,10 +10,12 @@ screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 
 from src.modules.Game import Game
 from src.modules.mainmenu import startscrean
-from src.utils.funcs import load_sound
+from src.utils.funcs import load_sound, load_image
 
 
 def main():
+    pg.display.set_caption("The Binding of Isaac: Python")
+    pg.display.set_icon(load_image("images/icon/64x64.ico"))
     pg.mixer.music.load(load_sound('sounds/main_theme.mp3', return_path=True))
     pg.mixer.music.play()
     name = startscrean.start_screen(screen)

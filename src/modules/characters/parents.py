@@ -97,7 +97,7 @@ class Head(pg.sprite.Sprite):
             elif self.last_name_direction in ["UP", "DOWN"]:
                 self.vy_tear = self.shot_speed if self.last_name_direction == "DOWN" else -self.shot_speed
                 # if self.player_speed[0] != 0:
-                self.vx_tear += self.player_speed[0] * 0.3 # константа выведена практически
+                self.vx_tear += self.player_speed[0] * 0.3  # константа выведена практически
 
     def set_player_speed(self, vx: int | float, vy: int | float):
         self.vy_tear, self.vx_tear = 0, 0
