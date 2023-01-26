@@ -11,9 +11,9 @@ from src.modules.animations.Animation import Animation
 
 
 class Fly(MovingEnemy, ShootingEnemy):
-    fly_ok = load_image("textures/enemy/fly_ok.png")
-    fly_ne_ok = load_image("textures/enemy/fly_ne_ok.png")
-    fly_shoot = load_image("textures/enemy/fly_shoot.png")
+    fly_ok = load_image("textures/enemies/fly_ok.png")
+    fly_ne_ok = load_image("textures/enemies/fly_ne_ok.png")
+    fly_shoot = load_image("textures/enemies/fly_shoot.png")
 
     def __init__(self,
                  xy_pos: tuple[int, int],
