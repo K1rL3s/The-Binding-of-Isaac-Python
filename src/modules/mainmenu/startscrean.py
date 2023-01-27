@@ -2,7 +2,9 @@ import sys
 import pygame
 import src.consts
 import pygame as pg
-from src.utils.funcs import load_image
+
+from src.modules.Banners.BaseFont import BaseFont
+from src.utils.funcs import load_image, select_from_db
 
 WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
 
@@ -23,6 +25,19 @@ class MenuSprite(pygame.sprite.Sprite):
 def terminate():
     pygame.quit()
     sys.exit()
+
+
+def streak(lst):
+    a = lst[-1]
+    st = ''
+    for i in range(1, len(lst) + 1):
+        if lst[-i] == a:
+            st += lst[-i]
+        else:
+            break
+    if 'l' in st:
+        return f'-{len(st)}'
+    return f'{len(st)}'
 
 
 def start_screen(screen):
@@ -108,6 +123,11 @@ def return_cheack(j: int, i: int):
         return None
 
 
+def wr(lst):
+    win = lst.count('w')
+    return int(win / len(lst) * 100)
+
+
 # Возвращает имя персонажа (допилить возврат управления)
 def choise_menu(screen):
     fon = pygame.transform.scale(load_image('images/menu/choise_fon.png'), (WIDTH, HEIGHT))
@@ -138,8 +158,23 @@ def choise_menu(screen):
     MenuSprite(load_image(list_hero[0], -1), 610, 450, 80, 90, hero_choise_sprites)
     MenuSprite(load_image(list_hero[1], -1), 510, 360, 80, 90, hero_choise_sprites)
     MenuSprite(load_image(list_hero[2], -1), 710, 360, 80, 90, hero_choise_sprites)
-    i = 0
-    j = 0
+
+    font = streak([i[1] for i in select_from_db()])
+    streak_text = BaseFont("fonts/upheaval_black.png", "abcdifghijklmnopqrstyvwxyz0123456789$%э=?+-_",
+                           26, 2, total=44, scale_sizes=(50, 50))
+    font = streak_text.write_text(f'{font}')
+
+    score_max = max(list(map(int, [i[2] for i in select_from_db()])))
+    score_text = BaseFont("fonts/upheaval_black.png", "abcdifghijklmnopqrstyvwxyz0123456789$%э=?+-_",
+                          26, 2, total=44, scale_sizes=(30, 40))
+    score_max = score_text.write_text(f'{score_max}')
+
+    win_rate = wr([i[1] for i in select_from_db()])
+    wr_text = BaseFont("fonts/upheaval_black.png", "abcdifghijklmnopqrstyvwxyz0123456789$%э=?+-_",
+                       26, 2, total=44, scale_sizes=(40, 40))
+    win_rate = wr_text.write_text(f'{win_rate}%')
+
+    i, j = 0, 0
     f = f'isaac.draw(screen)'
     f1 = f'new.draw(screen)'
 
@@ -156,6 +191,7 @@ def choise_menu(screen):
                     list_hero = list_hero[1:] + list_hero[:1]
                     create_sprite(list_hero, hero_choise_sprites)
                     hero_choise_sprites.draw(screen)
+
                 elif event.key == pygame.K_RIGHT:
                     i -= 1
                     hero_choise_sprites = pygame.sprite.Group()
@@ -164,12 +200,15 @@ def choise_menu(screen):
                     list_hero = list_hero[-1:] + list_hero[:-1]
                     create_sprite(list_hero, hero_choise_sprites)
                     hero_choise_sprites.draw(screen)
+
                 elif event.key == pygame.K_DOWN:
                     j += 1
                     f1 = draw_menu(j)
+
                 elif event.key == pygame.K_UP:
                     j -= 1
                     f1 = draw_menu(j)
+
                 elif event.key == pygame.K_RETURN:
                     if return_cheack(j, i) is not None:
                         return return_cheack(j, i)
@@ -181,4 +220,9 @@ def choise_menu(screen):
             hero_choise_sprites.draw(screen)
             eval(f)
             eval(f1)
+            screen.blit(score_max, (60, 245))
+
+            screen.blit(win_rate, (150, 290))
+
+            screen.blit(font, (200, 680))
             pygame.display.flip()

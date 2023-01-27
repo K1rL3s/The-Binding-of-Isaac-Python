@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src.modules.mainmenu import startscrean
-from src.utils.funcs import load_sound, load_image
+from src.utils.funcs import load_sound, load_image, create_data_base
 
 from src.modules.Banners.end_screen import end_screen
 from src.modules.Banners.pause import pause
@@ -28,7 +28,7 @@ def start_game(main_screen):
 # Заглушка (переделать!)
 class Game(BaseGame):
     def __init__(self, name: str, main_screen: pg.Surface, fps: int = 60):
-
+        create_data_base()
         self.name_hero = name
         self.main_hero = Player(name, 10, 4, 10, 2, 5, 5, 0.5)
 
@@ -60,7 +60,7 @@ class Game(BaseGame):
             self.register_event(event, self.update_stats)
 
     def end_screen(self, event: pg.event.Event):
-        if end_screen(self.main_screen, self.name_hero):
+        if end_screen(self.main_screen, self.name_hero, self.main_hero.score):
             self.running = False
 
     def switch_pause(self, event: pg.event.Event):
