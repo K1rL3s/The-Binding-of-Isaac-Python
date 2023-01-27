@@ -2,7 +2,7 @@ import os
 from functools import cache
 
 import pygame as pg
-
+import sqlite3
 from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT, Moves
 
 
@@ -240,8 +240,8 @@ def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
             ) and
             not first_rect.collidepoint(second_rect.midtop) and
             (
-            not first_rect.collidepoint(second_rect.topleft) or
-            not first_rect.collidepoint(second_rect.topright)
+                    not first_rect.collidepoint(second_rect.topleft) or
+                    not first_rect.collidepoint(second_rect.topright)
             )
     ):
         return Moves.DOWN
@@ -249,13 +249,13 @@ def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
     if (
             first_rect.collidepoint(second_rect.midtop) and
             (
-            first_rect.collidepoint(second_rect.topleft) or
-            first_rect.collidepoint(second_rect.topright)
+                    first_rect.collidepoint(second_rect.topleft) or
+                    first_rect.collidepoint(second_rect.topright)
             ) and
             not first_rect.collidepoint(second_rect.midbottom) and
             (
-            not first_rect.collidepoint(second_rect.bottomleft) or
-            not first_rect.collidepoint(second_rect.bottomright)
+                    not first_rect.collidepoint(second_rect.bottomleft) or
+                    not first_rect.collidepoint(second_rect.bottomright)
             )
     ):
         return Moves.UP
@@ -273,3 +273,27 @@ def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
 
     if second_rect.collidepoint(first_rect.bottomright):
         return Moves.BOTTOMRIGHT
+
+
+def create_data_base():
+    con = sqlite3.connect('src/data/data_base/stats.sqlite')
+    con.execute("""
+            CREATE TABLE IF NOT EXISTS game_over(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            win_or_loose STRING,
+            score INT);
+            """)
+
+
+def add_db(win_or_loose, score):  # добавление данных в дб
+    con = sqlite3.connect('src/data/data_base/stats.sqlite')
+    cur = con.cursor()
+    ins = f"""INSERT INTO game_over (win_or_loose, score) VALUES ('{win_or_loose}', {score})"""
+    cur.execute(ins)
+    con.commit()
+
+def select_from_db():
+    con = sqlite3.connect('src/data/data_base/stats.sqlite')
+    cur = con.cursor()
+    res = cur.execute(f"""SELECT * FROM game_over""").fetchall()
+    return res

@@ -7,7 +7,7 @@ import random
 
 from src.modules.Banners.ShopFont import ShopFont
 from src.modules.mainmenu.startscrean import MenuSprite
-from src.utils.funcs import load_image
+from src.utils.funcs import load_image, add_db
 
 WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
 
@@ -17,7 +17,7 @@ def terminate():
     sys.exit()
 
 
-def end_screen(screen, hero, score='1000'):
+def end_screen(screen, hero, score=1000):
     end_list = pygame.sprite.Group()
     MenuSprite(load_image(f"images/menu/death_list.png", -1), 320, 100, 660, 760, end_list)
     MenuSprite(load_image(f"images/menu/{hero}_name.png", -1), 780, 223, 150, 70, name := pygame.sprite.Group())
@@ -26,7 +26,7 @@ def end_screen(screen, hero, score='1000'):
     surf.fill((0, 0, 0))
     surf.set_alpha(200)
     font = ShopFont(black=True)
-    banner = font.write_text(f'{score}')
+    banner = font.write_text(f'{abs(score)}')
     screen.blit(surf, (0, 0))
     end_list.draw(screen)
     name.draw(screen)
@@ -36,6 +36,8 @@ def end_screen(screen, hero, score='1000'):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
+                    add_db('l', score)
                     terminate()
                 if event.key == pg.K_SPACE or event.key == pg.K_RETURN:
+                    add_db('l', score)
                     return True

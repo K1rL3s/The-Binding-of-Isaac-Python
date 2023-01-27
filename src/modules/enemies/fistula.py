@@ -47,9 +47,6 @@ class Fistula(MovingEnemy):
 
     def update(self, delta_t: float):
         MovingEnemy.move(self, delta_t, change_speeds=False)
-        # if self.flyable:
-        #     MovingEnemy.check_fly_collides(self)
-        # else:
         MovingEnemy.check_collides(self)
 
     def move_back(self, rect: pg.Rect):

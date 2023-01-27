@@ -1,10 +1,11 @@
 import pygame as pg
 
 from src.modules.mainmenu import startscrean
-from src.utils.funcs import load_sound, load_image
+from src.utils.funcs import load_sound, load_image, create_data_base
 
 from src.modules.Banners.end_screen import end_screen
 from src.modules.Banners.pause import pause
+from src.modules.Banners.win import win
 from src.modules.BaseClasses.Based.BaseGame import BaseGame
 from src.modules.handlers.MainHeroActionsHandler import MainHeroActionsHandler
 from src.modules.levels.Level import Level
@@ -29,6 +30,7 @@ def start_game(main_screen):
     return startscrean.start_screen(main_screen)
 
 
+# Заглушка (переделать!)
 class Game(BaseGame):
     """
     Класс игры.
@@ -37,7 +39,7 @@ class Game(BaseGame):
     :param main_screen: полотно, на котором нужно нарисовать.
     """
     def __init__(self, name: str, main_screen: pg.Surface, fps: int = 60):
-
+        create_data_base()
         self.name_hero = name
         self.main_hero = Player(name)
 
@@ -103,6 +105,9 @@ class Game(BaseGame):
         """
         Переход на следующий этаж.
         """
+        if self.levels.index(self.current_level) == 4:
+            if win(self.main_screen, score=self.main_hero.score):
+                self.running = False
         self.main_hero.kill_tears()
         self.current_level = self.levels[(self.levels.index(self.current_level) + 1) % len(self.levels)]
         self.current_level.update_main_hero_collide_groups()
