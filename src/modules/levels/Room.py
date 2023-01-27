@@ -207,7 +207,10 @@ class Room(RoomTextures):
             return
 
         enemies = 0
-        max_enemies = 10
+        max_enemies = 9
+        max_pickable: int = 2
+        max_host = max_guts = max_maw = 3
+        count_pickable = count_host = count_guts = count_maw = 0
         for y in range(consts.ROOM_HEIGHT):
             for x in range(consts.ROOM_WIDTH):
                 if y == centery or x == centerx:
@@ -227,22 +230,26 @@ class Room(RoomTextures):
                               fire_type=fire_type,
                               tear_collide_groups=(self.colliadble_group, self.tears_borders, self.main_hero_group),
                               main_hero=self.main_hero)
-                elif chance > 0.5:
+                elif chance > 0.5 and count_pickable < max_pickable:
                     self.set_pickable((x, y))
-                elif chance > 0.4 and enemies < max_enemies:
+                    count_pickable += 1
+                elif chance > 0.4 and enemies < max_enemies and count_maw < max_maw:
                     Maw((x, y), self.main_hero, (self.movement_borders, self.doors),
                         (self.colliadble_group, self.tears_borders, self.main_hero_group),
                         self.enemies, self.blowable)
                     enemies += 1
-                elif chance > 0.35:
+                    count_maw += 1
+                elif chance > 0.35 and count_host < max_host:
                     Host((x, y), self.main_hero, (self.colliadble_group, self.movement_borders, self.doors),
                          (self.colliadble_group, self.tears_borders, self.main_hero_group),
                          self.enemies, self.blowable)
                     enemies += 1
-                elif chance > 0.3:
+                    count_host += 1
+                elif chance > 0.3 and count_guts < max_guts:
                     Guts((x, y), self.paths, (self.colliadble_group, self.movement_borders, self.other),
                          self.enemies, self.blowable)
                     enemies += 1
+                    count_guts += 1
                 elif chance > 0.28:
                     Spikes((x, y), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
 
@@ -517,16 +524,12 @@ class Room(RoomTextures):
                      (self.blowable, self.other, self.main_hero_group), self.other, xy_pixels=xy_pos)
 
     def set_pickable(self, xy_pos: tuple[int, int]):  # Клетка
-        k = 0
         chance = random.random()
-        if chance > 0.75 and k < 1:
-            Fistula((6, 3), 40, self.paths, self.main_hero,
-                    (self.movement_borders, self.doors, self.main_hero_group), self.hp_bar_group, 1, 2,
-                    self.bosses, self.blowable)
-            k += 1
+        if chance > 0.75:
+            PickMoney(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
         elif chance > 0.50:
             PickBomb(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
         elif chance > 0.25:
             PickHeart(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)
-        else:
+        elif chance < 0.20:
             PickKey(xy_pos, (self.colliadble_group, self.movement_borders, self.other), self.other)

@@ -40,7 +40,7 @@ class BaseTear(MoveSprite, PopsImage):
     :param groups: Группы спрайтов.
     :param acceleration: Ускорение торможения слезы, если надо, чтобы она тормозила.
     :param max_lifetime: Максимальное время жизни.
-    :param is_friendly: Игноририует ли главного героя.
+    :param is_friendly: Игнорирует ли главного героя.
     """
 
     def __init__(self,

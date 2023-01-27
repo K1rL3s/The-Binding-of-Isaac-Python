@@ -17,6 +17,11 @@ from src.consts import (FloorsTypes, GAME_HEIGHT, GAME_WIDTH, STATS_HEIGHT, ROOM
 
 
 def start_game(main_screen):
+    """
+    Стартовое меню.
+
+    :param main_screen: полотно, на котором нужно нарисовать.
+    """
     pg.display.set_caption("The Binding of Isaac: Python")
     pg.display.set_icon(load_image("images/icon/64x64.ico"))
     pg.mixer.music.load(load_sound('sounds/main_theme.mp3', return_path=True))
@@ -25,6 +30,12 @@ def start_game(main_screen):
 
 
 class Game(BaseGame):
+    """
+    Класс игры.
+
+    :param name: имя персонажа
+    :param main_screen: полотно, на котором нужно нарисовать.
+    """
     def __init__(self, name: str, main_screen: pg.Surface, fps: int = 60):
 
         self.name_hero = name
@@ -41,6 +52,9 @@ class Game(BaseGame):
         self.main_hero_handler = MainHeroActionsHandler(self.main_hero)
 
     def setup(self):
+        """
+        Регистрация событий.
+        """
         self.register_event(pg.KEYDOWN, self.main_hero_handler.keyboard_handler)
         self.register_event(pg.KEYDOWN, self.switch_pause)
         self.register_event(pg.KEYUP, self.main_hero_handler.keyboard_handler)
@@ -58,10 +72,20 @@ class Game(BaseGame):
             self.register_event(event, self.update_stats)
 
     def end_screen(self, event: pg.event.Event):
+        """
+        Конечное окно.
+
+        :param event: нажатая кнопка
+        """
         if end_screen(self.main_screen, self.name_hero):
             self.running = False
 
     def switch_pause(self, event: pg.event.Event):
+        """
+        Пауза.
+
+        :param event: нажатая кнопка
+        """
         if event.key == pg.K_ESCAPE:
             # self.main_hero.reset_speed()
             self.is_paused = True
@@ -107,10 +131,20 @@ class Game(BaseGame):
         self.main_hero.move_to_cell(xy_pos)
 
     def update_stats(self, event: pg.event.Event = None):
+        """
+        Обновление мини-карты и статов героя.
+
+        :param event: нажатая кнопка
+        """
         self.stats.update_minimap()
         self.stats.update_hero_stats()
 
     def kill_all(self, event: pg.event.Event):
+        """
+        Убийство всех. По сути - встроенные читы.
+
+        :param event: нажатая кнопка
+        """
         if event.key == pg.K_r:
             for enemy in self.current_level.current_room.enemies.sprites():
                 enemy.death()
@@ -120,10 +154,20 @@ class Game(BaseGame):
             # self.current_level.current_room.bosses.empty()
 
     def set_bomb(self, event: pg.event.Event):
+        """
+        Активация бомбы.
+
+        :param event: нажатая кнопка
+        """
         if event.type == USE_BOMB:
             self.current_level.current_room.set_bomb(event)
 
     def update(self, delta_t: float):
+        """
+        Обновление.
+
+        :param delta_t: время с прошлого обновления.
+        """
         if self.is_paused:
             self.is_paused = False
             return
@@ -131,6 +175,11 @@ class Game(BaseGame):
         self.main_hero.update(delta_t)
 
     def draw(self, screen: pg.Surface):
+        """
+        Отрисовка всего.
+
+        :param screen: полотно, на котором надо отрисовать.
+        """
         self.stats.render(self.main_screen)
         self.current_level.render(self.level_screen)
         screen.blit(self.level_screen, (0, STATS_HEIGHT))

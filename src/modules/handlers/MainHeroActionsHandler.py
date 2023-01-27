@@ -28,7 +28,7 @@ class MainHeroActionsHandler:
         self.main_hero.set_flags_move(event, is_down)
 
         if event.key == pg.K_e:
-            if self.main_hero.get_count_bombs():
+            if self.main_hero.activate_bombs():
                 pg.event.post(pg.event.Event(USE_BOMB, {"pos": self.main_hero.rect.center}))
 
     def loot_pickup_handler(self, event: pg.event.Event):
@@ -71,7 +71,7 @@ class MainHeroActionsHandler:
         if "shot_distance" in boosts.keys():
             self.main_hero.head.shot_max_distance += boosts["shot_distance"]
         if "shot_delay" in boosts.keys():
-            self.main_hero.head.shot_delay += boosts["shot_delay"]
+            self.main_hero.head.shot_delay += boosts["shot_delay"] * 0.1
         event.item.kill()
 
     def buy_handler(self, event: pg.event.Event):
@@ -88,4 +88,9 @@ class MainHeroActionsHandler:
             event.self.kill()
 
     def scoring_points(self, event: DEATH_ENEMY):
+        """
+        Обработка смерти врага.
+
+        :param event: Ивент, который содержит кол-во очков за убийство врага count (int).
+        """
         self.main_hero.scoring_points(event.count)
