@@ -652,8 +652,8 @@ class Soul(pg.sprite.Sprite):
     """
     Класс души.
     """
-    start_image = load_image('soul0.png')
-    images = load_image('move_soul.png')
+    start_image = load_image('textures/heroes/soul/soul0.png')
+    images = load_image('textures/heroes/soul/move_soul.png')
     fps_animation = 15
 
     def __init__(self):

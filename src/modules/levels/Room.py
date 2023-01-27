@@ -209,8 +209,8 @@ class Room(RoomTextures):
         enemies = 0
         max_enemies = 9
         max_pickable: int = 2
-        max_host = max_guts = max_maw = 3
-        count_pickable = count_host = count_guts = count_maw = 0
+        max_host = max_guts = max_maw = max_spikes = 3
+        count_pickable = count_host = count_guts = count_maw = count_spikes = 0
         for y in range(consts.ROOM_HEIGHT):
             for x in range(consts.ROOM_WIDTH):
                 if y == centery or x == centerx:
@@ -250,8 +250,9 @@ class Room(RoomTextures):
                          self.enemies, self.blowable)
                     enemies += 1
                     count_guts += 1
-                elif chance > 0.28:
+                elif chance > 0.28 and count_spikes < max_spikes:
                     Spikes((x, y), self.colliadble_group, self.obstacles, self.spikes, hiding_delay=1, hiding_time=1)
+                    count_spikes += 1
 
         self.is_friendly = not(bool(self.enemies) + bool(self.bosses))
 
