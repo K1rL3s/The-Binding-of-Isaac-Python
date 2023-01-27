@@ -79,7 +79,7 @@ class Game(BaseGame):
 
         :param event: нажатая кнопка
         """
-        if end_screen(self.main_screen, self.name_hero):
+        if end_screen(self.main_screen, self.name_hero, self.main_hero.score):
             self.running = False
 
     def switch_pause(self, event: pg.event.Event):
@@ -105,7 +105,7 @@ class Game(BaseGame):
         """
         Переход на следующий этаж.
         """
-        if self.levels.index(self.current_level) == 4:
+        if self.current_level.floor_type == FloorsTypes.WOMB:
             if win(self.main_screen, score=self.main_hero.score):
                 self.running = False
         self.main_hero.kill_tears()

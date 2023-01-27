@@ -17,7 +17,7 @@ def terminate():
     sys.exit()
 
 
-def end_screen(screen, hero, score=1000):
+def end_screen(screen, hero, score):
     end_list = pygame.sprite.Group()
     MenuSprite(load_image(f"images/menu/death_list.png", -1), 320, 100, 660, 760, end_list)
     MenuSprite(load_image(f"images/menu/{hero}_name.png", -1), 780, 223, 150, 70, name := pygame.sprite.Group())
@@ -34,6 +34,9 @@ def end_screen(screen, hero, score=1000):
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
+            if event.type == pg.QUIT:
+                add_db('l', score)
+                terminate()
             if event.type == pygame.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     add_db('l', score)

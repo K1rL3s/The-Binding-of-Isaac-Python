@@ -14,7 +14,7 @@ from src.utils.funcs import load_image, add_db
 WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
 
 
-def win(screen, score=1000):
+def win(screen, score):
     win_list = pygame.sprite.Group()
     MenuSprite(load_image(f"images/menu/win.jpg", -1), 0, 0, WIDTH, HEIGHT, win_list)
     surf = pg.Surface((WIDTH, HEIGHT))
@@ -28,6 +28,9 @@ def win(screen, score=1000):
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
+            if event.type == pg.QUIT:
+                add_db('w', score)
+                terminate()
             if event.type == pygame.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     add_db('w', score)
