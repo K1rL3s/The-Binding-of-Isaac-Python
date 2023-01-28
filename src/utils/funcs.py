@@ -1,9 +1,24 @@
 import os
+import sys
 from functools import cache
 
 import pygame as pg
 import sqlite3
 from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT, Moves
+
+
+def resource_path(*relative_path, is_sound: bool = False):
+    save_relative = relative_path
+    try:
+        base_path = sys._MEIPASS  # noqa
+        if 'heroes' in relative_path:
+            relative_path = relative_path[3:]
+        else:
+            relative_path = relative_path[-1:] if is_sound else relative_path[-2:]
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, *relative_path), save_relative, relative_path
 
 
 @cache
@@ -18,9 +33,9 @@ def load_image(name: str,
     :param crop_it: Обрезать ли изображение по прозрачному фону.
     :return: pygame.Surface
     """
-    fullname = os.path.join('src', 'data', name)
+    fullname, save_rel, rel = resource_path('src', 'data', *name.split('/'))
     if not os.path.isfile(fullname):
-        exit(f"Файл с изображением '{fullname}' не найден")
+        raise FileNotFoundError(f"Файл с изображением '{fullname}' не найден\n{save_rel}\n{rel}")
     image = pg.image.load(fullname)
 
     if colorkey is not None:
@@ -46,9 +61,9 @@ def load_sound(name, return_path: bool = False) -> pg.mixer.Sound | str:
     :param return_path: Вернуть ли путь до файла вместо самого звука.
     :return: pygame.Sound или путь до файла
     """
-    fullname = os.path.join('src', 'data', name)
+    fullname, save_rel, rel = resource_path('src', 'data', *name.split('/'), is_sound=True)
     if not os.path.isfile(fullname):
-        exit(f"Файл с звуком '{fullname}' не найден")
+        raise FileNotFoundError(f"Файл с звуком '{fullname}' не найден\n{save_rel}\n{rel}")
     if return_path:
         return fullname
     sound = pg.mixer.Sound(fullname)
@@ -276,7 +291,7 @@ def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
 
 
 def create_data_base():
-    con = sqlite3.connect('src/data/data_base/stats.sqlite')
+    con = sqlite3.connect(resource_path(*'src/data/data_base/stats.sqlite'.split('/'))[0])
     con.execute("""
             CREATE TABLE IF NOT EXISTS game_over(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -286,14 +301,15 @@ def create_data_base():
 
 
 def add_db(win_or_loose, score):  # добавление данных в дб
-    con = sqlite3.connect('src/data/data_base/stats.sqlite')
+    con = sqlite3.connect(resource_path(*'src/data/data_base/stats.sqlite'.split('/'))[0])
     cur = con.cursor()
     ins = f"""INSERT INTO game_over (win_or_loose, score) VALUES ('{win_or_loose}', {score})"""
     cur.execute(ins)
     con.commit()
 
+
 def select_from_db():
-    con = sqlite3.connect('src/data/data_base/stats.sqlite')
+    con = sqlite3.connect(resource_path(*'src/data/data_base/stats.sqlite'.split('/'))[0])
     cur = con.cursor()
     res = cur.execute(f"""SELECT * FROM game_over""").fetchall()
     return res
