@@ -253,7 +253,7 @@ class Player(MoveSprite):
 
         self.count_bombs: int = 3                       # кол-во бомб
         self.count_key: int = 0                         # кол-во ключей
-        self.count_money: int = 100                       # кол-во монет
+        self.count_money: int = 10                       # кол-во монет
 
         # таймеры
         self.use_bombs_delay: int | float = 1           # интервал между активациями бомб
@@ -531,10 +531,8 @@ class Player(MoveSprite):
         """
         if self.count_money >= price:
             if heart_type:
-                print(self.red_hp)
                 if not self.pickup_heart(count, heart_type):
                     return False
-            print(self.red_hp)
             self.count_money -= price
             return True
         return False
