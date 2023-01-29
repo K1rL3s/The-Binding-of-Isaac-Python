@@ -13,7 +13,7 @@
 помощью `python -m pip install -r ./requirements` или `pip install -r requirements.txt`\
 Запустить игру с помощью команды `python main.py`
 
-Для сбора .exe файла необходимо установить библиотеку **pyinstaller** и выполнить команду `pyinstaller --onefile --noconsole --add-data "./src/*;." main.py`
+Для сбора .exe файла необходимо установить библиотеку **pyinstaller** и выполнить команду `pyinstaller --onefile --noconsole --icon="./src/data/images/icon/64x64.ico" --add-data="./src/*;." ./main.py`
 
 ### КЛЮЧЕВЫЕ ОСОБЕННОСТИ: 
 
@@ -42,8 +42,14 @@
 3) Сделать разные концовки.
 
 ### Скриншоты
-...
-
+![isaac_IPU55ODdsb](https://user-images.githubusercontent.com/104463209/215344266-21f53dc1-2f5f-46b0-9c60-246aeca3a754.png)
+![isaac_2XHjvtHyfc](https://user-images.githubusercontent.com/104463209/215344280-3b2338db-5f86-469e-b109-7487e46fa72d.png)
+![isaac_XZxB7cC1A9](https://user-images.githubusercontent.com/104463209/215344300-e97a3a59-0826-4c84-9bd6-f4e24f5fb280.png)
+![isaac_CUBLM1jKSM](https://user-images.githubusercontent.com/104463209/215344301-43a5dd86-60a0-46d7-8e86-ed1911395c1e.png)
+![isaac_SlTizpsGhf](https://user-images.githubusercontent.com/104463209/215344303-4f7429f5-0218-463b-87c5-8281e5ff4208.png)
+![isaac_ZLJmv4O1KA](https://user-images.githubusercontent.com/104463209/215344306-8ae8b4fa-7bbd-4c11-aa13-40c14ed945e5.png)
+![isaac_d6y5od8WbZ](https://user-images.githubusercontent.com/104463209/215344311-ae9b537e-16ad-4ad8-8a40-781df2877e44.png)
+![isaac_hbMbEcGsDO](https://user-images.githubusercontent.com/104463209/215344317-f50f5e60-d73d-4c33-ab05-3f68c221e3dc.png)
 
 ### Пояснительная часть.
 Проект "The Binding of Isaac: Python" был создан командой из трёх человек в рамках Лицея Академии Яндекса (Лесовым Кириллом, Дядечковым Иваном и Загитовым Ростиславом)\
