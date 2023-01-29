@@ -37,8 +37,10 @@ class ParamsHeroes(TexturesHeroes):
     """
     Класс настроек ГГ.
     """
-    settings_body: list[pg.event.Event] = [pg.K_a, pg.K_d, pg.K_w, pg.K_s]                # настройки движения ГГ
-    settings_head: list[pg.event.Event] = [pg.K_KP_4, pg.K_KP_6, pg.K_KP_8, pg.K_KP_5]    # настройки поворота головы
+    settings_body: list[int] = [pg.K_a, pg.K_d, pg.K_w, pg.K_s]                # настройки движения ГГ
+    # settings_head: list[int] = [pg.K_KP_4, pg.K_KP_6, pg.K_KP_8, pg.K_KP_5]    # настройки поворота головы
+    settings_head: list[int] = [pg.K_LEFT, pg.K_RIGHT, pg.K_UP, pg.K_DOWN]    # настройки поворота головы
+
     directions_head = {settings_head[0]: "LEFT",
                        settings_head[1]: "RIGHT",
                        settings_head[2]: "UP",
@@ -87,11 +89,11 @@ class ParamsHeroes(TexturesHeroes):
         """
         return self.characterizations[name].values()
 
-    def set_move_params(self, body: list[pg.event.Event], head: list[pg.event.Event]):
+    def set_move_params(self, body: list[int], head: list[int]):
         """
-        Настройка изображений героя, в зависимости от его имени.
+        Настройка управления (боди - ходьба, хед - стрельба).
 
-        :param body: настройки передвижения(тело).
+        :param body: настройки передвижения (тело).
         :param head: настройки поворота головы.
         """
         self.settings_body = body

@@ -3,7 +3,7 @@ import pygame
 import src.consts
 import pygame as pg
 
-from src.modules.Banners.BaseFont import BaseFont
+from src.modules.Banners.UpheavalFont import UpheavalFont
 from src.utils.funcs import load_image, select_from_db
 
 WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
@@ -28,6 +28,8 @@ def terminate():
 
 
 def streak(lst):
+    if not lst:
+        return 0
     a = lst[-1]
     st = ''
     for i in range(1, len(lst) + 1):
@@ -124,6 +126,8 @@ def return_cheack(j: int, i: int):
 
 
 def wr(lst):
+    if not lst:
+        return 0
     win = lst.count('w')
     return int(win / len(lst) * 100)
 
@@ -160,18 +164,15 @@ def choise_menu(screen):
     MenuSprite(load_image(list_hero[2], -1), 710, 360, 80, 90, hero_choise_sprites)
 
     font = streak([i[1] for i in select_from_db()])
-    streak_text = BaseFont("fonts/upheaval_black.png", "abcdifghijklmnopqrstyvwxyz0123456789$%э=?+-_",
-                           26, 2, total=44, scale_sizes=(50, 50))
+    streak_text = UpheavalFont(is_black=True)
     font = streak_text.write_text(f'{font}')
 
-    score_max = max(list(map(int, [i[2] for i in select_from_db()])))
-    score_text = BaseFont("fonts/upheaval_black.png", "abcdifghijklmnopqrstyvwxyz0123456789$%э=?+-_",
-                          26, 2, total=44, scale_sizes=(30, 40))
+    score_max = max(list(map(int, [i[2] for i in select_from_db()])), default=0)
+    score_text = UpheavalFont(is_black=True)
     score_max = score_text.write_text(f'{score_max}')
 
     win_rate = wr([i[1] for i in select_from_db()])
-    wr_text = BaseFont("fonts/upheaval_black.png", "abcdifghijklmnopqrstyvwxyz0123456789$%э=?+-_",
-                       26, 2, total=44, scale_sizes=(40, 40))
+    wr_text = UpheavalFont(is_black=True)
     win_rate = wr_text.write_text(f'{win_rate}%')
 
     i, j = 0, 0
@@ -201,13 +202,13 @@ def choise_menu(screen):
                     create_sprite(list_hero, hero_choise_sprites)
                     hero_choise_sprites.draw(screen)
 
-                elif event.key == pygame.K_DOWN:
-                    j += 1
-                    f1 = draw_menu(j)
-
-                elif event.key == pygame.K_UP:
-                    j -= 1
-                    f1 = draw_menu(j)
+                # elif event.key == pygame.K_DOWN:
+                #     j += 1
+                #     f1 = draw_menu(j)
+                #
+                # elif event.key == pygame.K_UP:
+                #     j -= 1
+                #     f1 = draw_menu(j)
 
                 elif event.key == pygame.K_RETURN:
                     if return_cheack(j, i) is not None:

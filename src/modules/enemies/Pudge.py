@@ -3,7 +3,7 @@ import pygame as pg
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.characters.parents import Player
 from src.modules.enemies.fistula import Fistula
-from src.utils.funcs import load_sound, load_image, crop
+from src.utils.funcs import load_image, crop
 
 
 class Pudge(Fistula):

@@ -1,7 +1,7 @@
 import pygame as pg
 
 from src.modules.mainmenu import startscrean
-from src.utils.funcs import load_sound, load_image, create_data_base
+from src.utils.funcs import load_sound, load_image
 
 from src.modules.Banners.end_screen import end_screen
 from src.modules.Banners.pause import pause
@@ -39,7 +39,6 @@ class Game(BaseGame):
     :param main_screen: полотно, на котором нужно нарисовать.
     """
     def __init__(self, name: str, main_screen: pg.Surface, fps: int = 60):
-        create_data_base()
         self.name_hero = name
         self.main_hero = Player(name)
 
@@ -79,8 +78,8 @@ class Game(BaseGame):
 
         :param event: нажатая кнопка
         """
-        if end_screen(self.main_screen, self.name_hero, self.main_hero.score):
-            self.running = False
+        self.running = False
+        end_screen(self.main_screen, self.name_hero, self.main_hero.score)
 
     def switch_pause(self, event: pg.event.Event):
         """
@@ -89,7 +88,7 @@ class Game(BaseGame):
         :param event: нажатая кнопка
         """
         if event.key == pg.K_ESCAPE:
-            # self.main_hero.reset_speed()
+            self.main_hero.reset_speed()
             self.is_paused = True
             pause(self.main_screen, self.name_hero)
 

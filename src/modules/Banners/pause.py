@@ -2,14 +2,13 @@ import pygame
 import src.consts
 import pygame as pg
 
-from src.modules.Banners.UpheavalFont import UpheavalFont
 from src.modules.mainmenu.startscrean import MenuSprite
 from src.utils.funcs import load_image
 
 WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
 
 
-def pause(screen, hero='isaac'):
+def pause(screen, hero: str):
     pause_list = pygame.sprite.Group()
     MenuSprite(load_image(f"images/menu/pause_{hero}.png", -1), 250, 100, 800, 740, pause_list)
     surf = pg.Surface((WIDTH, HEIGHT))

@@ -2,7 +2,7 @@ import random
 
 import pygame as pg
 
-from src.consts import WALL_SIZE, GAME_WIDTH, GAME_HEIGHT, Moves
+from src.consts import Moves
 from src.modules.Banners.hpboss_bar import HpBossBarRam, HpBossBar
 from src.modules.BaseClasses import MovingEnemy
 from src.modules.animations.Animation import Animation

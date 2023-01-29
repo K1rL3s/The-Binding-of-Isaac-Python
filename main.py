@@ -1,6 +1,7 @@
 import pygame as pg
 
 from src import consts
+from src.utils.funcs import create_data_base
 
 pg.init()
 pg.font.init()
@@ -11,6 +12,7 @@ from src.modules.Game import Game, start_game
 
 
 def main():
+    create_data_base()
     while True:
         name = start_game(screen)
         game = Game(name, screen)

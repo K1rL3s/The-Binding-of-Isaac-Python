@@ -1,37 +1,29 @@
-import sys
-
-import pygame
-import src.consts
 import pygame as pg
-import random
 
+from src.consts import WIDTH, HEIGHT
 from src.modules.Banners.ShopFont import ShopFont
-from src.modules.mainmenu import startscrean
-
 from src.modules.mainmenu.startscrean import MenuSprite, terminate
 from src.utils.funcs import load_image, add_db
 
-WIDTH, HEIGHT = src.consts.WIDTH, src.consts.HEIGHT
-
 
 def win(screen, score):
-    win_list = pygame.sprite.Group()
+    win_list = pg.sprite.Group()
     MenuSprite(load_image(f"images/menu/win.jpg", -1), 0, 0, WIDTH, HEIGHT, win_list)
     surf = pg.Surface((WIDTH, HEIGHT))
     surf.fill((0, 0, 0))
     surf.set_alpha(200)
-    font = ShopFont(green=True)
+    font = ShopFont(is_green=True)
     banner = font.write_text(f'{abs(score)}')
     screen.blit(surf, (0, 0))
     win_list.draw(screen)
     screen.blit(banner, (280, 330))
-    pygame.display.flip()
+    pg.display.flip()
     while True:
-        for event in pygame.event.get():
+        for event in pg.event.get():
             if event.type == pg.QUIT:
                 add_db('w', score)
                 terminate()
-            if event.type == pygame.KEYDOWN:
+            if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     add_db('w', score)
                     terminate()

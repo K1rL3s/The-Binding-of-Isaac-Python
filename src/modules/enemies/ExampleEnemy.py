@@ -80,6 +80,6 @@ class ExampleEnemy(MovingEnemy, ShootingEnemy):
         screen.blit(text3, (text_x, text_y + 2 * h))
         screen.blit(text4, (text_x, text_y + 3 * h))
 
-    def death(self):
+    def death(self, is_boss: bool = False):
         random.choice(ExampleEnemy.death_sounds).play()
         MovingEnemy.death(self)

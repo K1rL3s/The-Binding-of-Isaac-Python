@@ -64,6 +64,6 @@ class Maw(MovingEnemy, ShootingEnemy):
     #     if (self.rect.centery > centery and self.vy < 0) or (self.rect.centery < centery and self.vy > 0):
     #         self.set_speed(self.speed if self.vx > 0 else -self.speed, 0)
 
-    def death(self):
+    def death(self, is_boss: bool = False):
         random.choice(Maw.death_sounds).play()
         MovingEnemy.death(self)

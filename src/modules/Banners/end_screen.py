@@ -25,7 +25,7 @@ def end_screen(screen, hero, score):
     surf = pg.Surface((WIDTH, HEIGHT))
     surf.fill((0, 0, 0))
     surf.set_alpha(200)
-    font = ShopFont(black=True)
+    font = ShopFont(is_black=True)
     banner = font.write_text(f'{abs(score)}')
     screen.blit(surf, (0, 0))
     end_list.draw(screen)

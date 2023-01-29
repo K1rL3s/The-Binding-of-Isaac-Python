@@ -7,15 +7,13 @@ import sqlite3
 from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT, Moves
 
 
-def resource_path(*relative_path, is_sound: bool = False):
+def resource_path(*relative_path, use_abs_path: bool = False):
     save_relative = relative_path
-    try:
-        base_path = sys._MEIPASS  # noqa
-        if 'heroes' in relative_path:
-            relative_path = relative_path[3:]
-        else:
-            relative_path = relative_path[-1:] if is_sound else relative_path[-2:]
-    except Exception:
+
+    if not use_abs_path and getattr(sys, '_MEIPASS', False):
+        base_path = getattr(sys, '_MEIPASS')
+        relative_path = relative_path[2:]
+    else:
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, *relative_path), save_relative, relative_path
@@ -61,7 +59,7 @@ def load_sound(name, return_path: bool = False) -> pg.mixer.Sound | str:
     :param return_path: Вернуть ли путь до файла вместо самого звука.
     :return: pygame.Sound или путь до файла
     """
-    fullname, save_rel, rel = resource_path('src', 'data', *name.split('/'), is_sound=True)
+    fullname, save_rel, rel = resource_path('src', 'data', *name.split('/'))
     if not os.path.isfile(fullname):
         raise FileNotFoundError(f"Файл с звуком '{fullname}' не найден\n{save_rel}\n{rel}")
     if return_path:
@@ -171,47 +169,6 @@ def cut_sheet(sheet: str | pg.Surface, columns: int, rows: int,
     return frames
 
 
-def get_direction2(first_rect: pg.Rect, second_rect: pg.Rect) -> list[Moves]:
-    """
-    Возвращает, с какой стороны второй rect
-
-    :param first_rect: тело, которое врезалось
-    :param second_rect: тело, с которым произошло столкновение
-    """
-
-    dirs = []
-
-    if second_rect.collidepoint(first_rect.midtop):
-        dirs.append(Moves.UP)
-        # return Moves.UP
-
-    if second_rect.collidepoint(first_rect.midbottom):
-        dirs.append(Moves.DOWN)
-        # return Moves.DOWN
-
-    if second_rect.collidepoint(first_rect.midleft):
-        dirs.append(Moves.LEFT)
-        # return Moves.LEFT
-
-    if second_rect.collidepoint(first_rect.midright):
-        dirs.append(Moves.RIGHT)
-        # return Moves.RIGHT
-
-    if second_rect.collidepoint(first_rect.topleft):
-        dirs.append(Moves.TOPLEFT)
-
-    if second_rect.collidepoint(first_rect.topright):
-        dirs.append(Moves.TOPRIGHT)
-
-    if second_rect.collidepoint(first_rect.bottomleft):
-        dirs.append(Moves.BOTTOMLEFT)
-
-    if second_rect.collidepoint(first_rect.bottomright):
-        dirs.append(Moves.BOTTOMRIGHT)
-
-    return dirs
-
-
 def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
     """
     Возвращает, с какой стороны второй rect
@@ -291,25 +248,26 @@ def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
 
 
 def create_data_base():
-    con = sqlite3.connect(resource_path(*'src/data/data_base/stats.sqlite'.split('/'))[0])
-    con.execute("""
-            CREATE TABLE IF NOT EXISTS game_over(
+    con = sqlite3.connect(resource_path('stats.sqlite', use_abs_path=True)[0])
+    cur = con.cursor()
+    cur.execute("""
+            CREATE TABLE IF NOT EXISTS game_over (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             win_or_loose STRING,
             score INT);
             """)
+    con.commit()
 
 
-def add_db(win_or_loose, score):  # добавление данных в дб
-    con = sqlite3.connect(resource_path(*'src/data/data_base/stats.sqlite'.split('/'))[0])
+def add_db(win_or_loose: str, score: int):
+    con = sqlite3.connect(resource_path('stats.sqlite', use_abs_path=True)[0])
     cur = con.cursor()
-    ins = f"""INSERT INTO game_over (win_or_loose, score) VALUES ('{win_or_loose}', {score})"""
-    cur.execute(ins)
+    cur.execute(f"""INSERT INTO game_over (win_or_loose, score) VALUES (?, ?)""", (win_or_loose, score))
     con.commit()
 
 
 def select_from_db():
-    con = sqlite3.connect(resource_path(*'src/data/data_base/stats.sqlite'.split('/'))[0])
+    con = sqlite3.connect(resource_path('stats.sqlite', use_abs_path=True)[0])
     cur = con.cursor()
     res = cur.execute(f"""SELECT * FROM game_over""").fetchall()
     return res
