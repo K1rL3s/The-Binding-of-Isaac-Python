@@ -227,7 +227,6 @@ class Door(BaseItem, DoorTextures):
         self.state = ''
         self.texture = ''
         self.direction = ''
-        self.room_finished = False
 
         BaseItem.__init__(self, self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
         self.set_image()
@@ -271,7 +270,6 @@ class Door(BaseItem, DoorTextures):
         :param with_key: Открывается ли ключом.
         """
         with_key = with_key or self.from_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE)
-        self.room_finished = True
         if not self.collidable:
             return
         if self.to_room_type == consts.RoomsTypes.SECRET:
@@ -347,7 +345,7 @@ class Door(BaseItem, DoorTextures):
         if not BaseItem.collide(self, other):
             return
 
-        if not self.room_finished:
+        if self.collidable:
             return
 
         if self.to_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and isinstance(other, Player):
