@@ -13,7 +13,8 @@
 
 4. Для сбора .exe файла необходимо установить библиотеку **pyinstaller** и выполнить команду `pyinstaller --onefile --noconsole --icon="./src/data/images/icon/64x64.ico" --add-data="./src/*;." ./main.py`\
    (заменить `--add-data="./src/*:."` при ошибке добавления папки)\
-   ([я собрал](https://drive.google.com/drive/folders/1dPlvhPORBvDJsscCtiBQHlM42Of4yZ1F))
+   ([я собрал](https://disk.yandex.ru/d/jOwi0qNT6PTRwg))
+   
 
 ### КЛЮЧЕВЫЕ ОСОБЕННОСТИ: 
 
