@@ -8,13 +8,28 @@
 
 1. Установить python версии **3.10**+
 (Тестировалось на версии **3.10.8**)
-2. Установить все библиотеки, перечисленные в `requirements.txt` файле с помощью `python -m pip install -r ./requirements` или `pip install -r requirements.txt`
-3. Запустить игру с помощью команды `python main.py`
+2. Склонировать репозиторий и перейти в него: 
+```commandline
+git clone https://github.com/K1rL3s/The-Binding-of-Isaac-Python.git
+cd ./The-Binding-of-Isaac-Python
+```
 
-4. Для сбора .exe файла необходимо установить библиотеку **pyinstaller** и выполнить команду `pyinstaller --onefile --noconsole --icon="./src/data/images/icon/64x64.ico" --add-data="./src/*;." ./main.py`\
+3. Установить все библиотеки, перечисленные в `requiremenets.txt` файле:
+```commandline
+pip install -r ./requirements
+```
+
+4. Запустить игру:
+```commandline
+python ./main.py
+```
+
+5. Для сбора .exe файла необходимо установить библиотеку **pyinstaller** и выполнить команду ниже.\
    (заменить `--add-data="./src/*:."` при ошибке добавления папки)\
-   ([я собрал](https://disk.yandex.ru/d/jOwi0qNT6PTRwg))
-   
+   ([я собрал](https://drive.google.com/drive/folders/1dPlvhPORBvDJsscCtiBQHlM42Of4yZ1F))
+```
+pyinstaller --onefile --noconsole --icon="./src/data/images/icon/64x64.ico" --add-data="./src/*;." ./main.py
+```
 
 ### КЛЮЧЕВЫЕ ОСОБЕННОСТИ: 
 
