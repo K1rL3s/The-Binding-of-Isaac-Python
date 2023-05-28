@@ -7,7 +7,7 @@ from src.modules.levels.Room import Room
 
 class MovingRoomAnimation:
     # Чтобы время туда-сюда в разные направления было одинаковым, умножаю на отношение длины к высоте
-    vy_speed = consts.CELL_SIZE * -15
+    vy_speed = consts.CELL_SIZE * -20
     vx_speed = vy_speed * consts.ROOM_WIDTH / consts.ROOM_HEIGHT
 
     def __init__(self, from_room: Room, to_room: Room, direction: consts.Moves):

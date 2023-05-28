@@ -6,6 +6,7 @@ from src.modules.BaseClasses import BaseItem, MoveSprite
 from src.utils.funcs import load_image, crop, load_sound
 from src.modules.characters.parents import Player
 
+
 DOOR_CELL_SIZE = int(consts.CELL_SIZE * 1.75)  # Размер клетки (ширины) двери.
 
 
@@ -23,10 +24,14 @@ class DoorTextures:  # class DoorTextures(DoorImage):
     """
     all_doors = [
         [
-            crop(load_image("textures/room/doors.png").subsurface(DOOR_CELL_SIZE * x,
-                                                                  DOOR_CELL_SIZE * y,
-                                                                  DOOR_CELL_SIZE,
-                                                                  DOOR_CELL_SIZE))
+            crop(
+                load_image("textures/room/doors.png").subsurface(
+                    DOOR_CELL_SIZE * x,
+                    DOOR_CELL_SIZE * y,
+                    DOOR_CELL_SIZE,
+                    DOOR_CELL_SIZE
+                    )
+                )
             for y in range(4)
         ]
         for x in range(10)
@@ -51,9 +56,15 @@ class DoorTextures:  # class DoorTextures(DoorImage):
     basement_secret_close_left = basement_secret_close_up
     basement_secret_close_right = basement_secret_close_up
     basement_secret_blow_up = basement[3]
-    basement_secret_blow_left = pg.transform.rotate(basement_secret_blow_up, 90)
-    basement_secret_blow_down = pg.transform.rotate(basement_secret_blow_up, 180)
-    basement_secret_blow_right = pg.transform.rotate(basement_secret_blow_up, 270)
+    basement_secret_blow_left = pg.transform.rotate(
+        basement_secret_blow_up, 90
+        )
+    basement_secret_blow_down = pg.transform.rotate(
+        basement_secret_blow_up, 180
+        )
+    basement_secret_blow_right = pg.transform.rotate(
+        basement_secret_blow_up, 270
+        )
 
     caves = all_doors[1]
     caves_close_up = caves[0]
@@ -95,9 +106,15 @@ class DoorTextures:  # class DoorTextures(DoorImage):
     catacombs_secret_close_left = catacombs_secret_close_up
     catacombs_secret_close_right = catacombs_secret_close_up
     catacombs_secret_blow_up = catacombs[3]
-    catacombs_secret_blow_left = pg.transform.rotate(catacombs_secret_blow_up, 90)
-    catacombs_secret_blow_down = pg.transform.rotate(catacombs_secret_blow_up, 180)
-    catacombs_secret_blow_right = pg.transform.rotate(catacombs_secret_blow_up, 270)
+    catacombs_secret_blow_left = pg.transform.rotate(
+        catacombs_secret_blow_up, 90
+        )
+    catacombs_secret_blow_down = pg.transform.rotate(
+        catacombs_secret_blow_up, 180
+        )
+    catacombs_secret_blow_right = pg.transform.rotate(
+        catacombs_secret_blow_up, 270
+        )
 
     depths = all_doors[3]
     depths_close_up = depths[0]
@@ -139,9 +156,15 @@ class DoorTextures:  # class DoorTextures(DoorImage):
     bluewomb_secret_close_left = bluewomb_secret_close_up
     bluewomb_secret_close_right = bluewomb_secret_close_up
     bluewomb_secret_blow_up = bluewomb[3]
-    bluewomb_secret_blow_left = pg.transform.rotate(bluewomb_secret_blow_up, 90)
-    bluewomb_secret_blow_down = pg.transform.rotate(bluewomb_secret_blow_up, 180)
-    bluewomb_secret_blow_right = pg.transform.rotate(bluewomb_secret_blow_up, 270)
+    bluewomb_secret_blow_left = pg.transform.rotate(
+        bluewomb_secret_blow_up, 90
+        )
+    bluewomb_secret_blow_down = pg.transform.rotate(
+        bluewomb_secret_blow_up, 180
+        )
+    bluewomb_secret_blow_right = pg.transform.rotate(
+        bluewomb_secret_blow_up, 270
+        )
 
     womb = all_doors[5]
     womb_close_up = womb[0]
@@ -209,14 +232,17 @@ class Door(BaseItem, DoorTextures):
 
     open_by_key = load_sound("sounds/door_unlock.wav")
 
-    def __init__(self,
-                 xy_pos: consts.DoorsCoords | tuple[int, int],
-                 floor_type: consts.FloorsTypes,
-                 from_room_type: consts.RoomsTypes,
-                 to_room_type: consts.RoomsTypes,  # из этого определять текстурку (секретка в т.ч.)
-                 *groups: pg.sprite.AbstractGroup,
-                 collidable: bool = True,
-                 hurtable: bool = False):
+    def __init__(
+            self,
+            xy_pos: consts.DoorsCoords | tuple[int, int],
+            floor_type: consts.FloorsTypes,
+            from_room_type: consts.RoomsTypes,
+            to_room_type: consts.RoomsTypes,
+            # из этого определять текстурку (секретка в т.ч.)
+            *groups: pg.sprite.AbstractGroup,
+            collidable: bool = True,
+            hurtable: bool = False
+            ):
         if isinstance(xy_pos, consts.DoorsCoords):
             self.xy_pos = xy_pos.value
         else:
@@ -228,21 +254,30 @@ class Door(BaseItem, DoorTextures):
         self.texture = ''
         self.direction = ''
 
-        BaseItem.__init__(self, self.xy_pos, *groups, collidable=collidable, hurtable=hurtable)
+        BaseItem.__init__(
+            self, self.xy_pos, *groups, collidable=collidable,
+            hurtable=hurtable
+            )
         self.set_image()
         BaseItem.set_rect(self)
         self.set_rect()
         self.event_rect = pg.Rect(0, 0, 50, 50)
         self.event_rect.center = self.rect.center
 
-    def set_rect(self, width: int | None = None, height: int | None = None, up: int = 0, left: int = 0):
+    def set_rect(
+            self, width: int | None = None, height: int | None = None,
+            up: int = 0, left: int = 0
+            ):
         if self.to_room_type == consts.RoomsTypes.SECRET:
-            image: pg.Surface = getattr(DoorTextures, f'{self.floor_type.value}_blow_{self.direction}')
+            image: pg.Surface = getattr(
+                DoorTextures, f'{self.floor_type.value}_blow_{self.direction}'
+                )
             self.rect = image.get_rect()
         if self.direction == 'up':
             self.rect.midbottom = (consts.WIDTH // 2, consts.WALL_SIZE)
         elif self.direction == 'down':
-            self.rect.midtop = (consts.WIDTH // 2, consts.GAME_HEIGHT - consts.WALL_SIZE)
+            self.rect.midtop = (
+            consts.WIDTH // 2, consts.GAME_HEIGHT - consts.WALL_SIZE)
         elif self.direction == 'left':
             self.rect.midright = (consts.WALL_SIZE,
                                   consts.WALL_SIZE + consts.CELL_SIZE * consts.ROOM_HEIGHT // 2)
@@ -258,7 +293,9 @@ class Door(BaseItem, DoorTextures):
         """
         if not self.collidable:
             return
-        if self.to_room_type in (consts.RoomsTypes.BOSS, consts.RoomsTypes.TREASURE, consts.RoomsTypes.SHOP):
+        if self.to_room_type in (
+        consts.RoomsTypes.BOSS, consts.RoomsTypes.TREASURE,
+        consts.RoomsTypes.SHOP):
             return
         self.update_image('blow', with_sound=with_sound)
 
@@ -269,12 +306,14 @@ class Door(BaseItem, DoorTextures):
         :param with_sound: Со звуком ли.
         :param with_key: Открывается ли ключом.
         """
-        with_key = with_key or self.from_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE)
+        with_key = with_key or self.from_room_type in (
+        consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE)
         if not self.collidable:
             return
         if self.to_room_type == consts.RoomsTypes.SECRET:
             return
-        if self.to_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and not with_key:
+        if self.to_room_type in (
+        consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and not with_key:
             return
         self.update_image("open", with_sound=with_sound)
 
@@ -286,7 +325,10 @@ class Door(BaseItem, DoorTextures):
         """
         self.update_image('close', with_sound=with_sound)
 
-    def update_image(self, state: str = None, direction: str = None, with_sound: bool = True):
+    def update_image(
+            self, state: str = None, direction: str = None,
+            with_sound: bool = True
+            ):
         """
         Обновление текстурки двери.
 
@@ -303,7 +345,9 @@ class Door(BaseItem, DoorTextures):
         if self.to_room_type == consts.RoomsTypes.SECRET and self.collidable:
             self.image = pg.Surface((0, 0))
         else:
-            self.image = getattr(Door, f'{self.texture}_{self.state}_{self.direction}')
+            self.image = getattr(
+                Door, f'{self.texture}_{self.state}_{self.direction}'
+                )
 
         if with_sound:
             self.play_sound()
@@ -318,7 +362,9 @@ class Door(BaseItem, DoorTextures):
         """
         Определяет state, direction и texture при инициализации для метода update_image.
         """
-        if self.to_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE, consts.RoomsTypes.BOSS):
+        if self.to_room_type in (
+        consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE,
+        consts.RoomsTypes.BOSS):
             self.texture = self.to_room_type.value
         elif self.to_room_type == consts.RoomsTypes.SECRET:
             self.texture = f'{self.floor_type.value}_{self.to_room_type.value}'
@@ -345,7 +391,10 @@ class Door(BaseItem, DoorTextures):
         if not BaseItem.collide(self, other):
             return
 
-        if self.collidable:
+        if self.collidable and (
+                not isinstance(other, Player) or
+                self.to_room_type not in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE)
+        ):
             return
 
         if self.to_room_type in (consts.RoomsTypes.SHOP, consts.RoomsTypes.TREASURE) and isinstance(other, Player):
@@ -356,7 +405,9 @@ class Door(BaseItem, DoorTextures):
                 pg.event.post(pg.event.Event(USE_KEY))
 
         # Вместо MovingEnemy поставить MainCharacter или его туловище
-        if isinstance(other, Player) and self.event_rect.colliderect(other.rect):
+        if isinstance(other, Player) and self.event_rect.colliderect(
+                other.rect
+                ):
             direction, next_coords = None, None
             if self.xy_pos == consts.DoorsCoords.UP.value:
                 direction = consts.Moves.UP
@@ -375,8 +426,12 @@ class Door(BaseItem, DoorTextures):
                 next_coords = consts.DoorsCoords.RIGHT.value
                 next_coords = next_coords[0] - 1, next_coords[1]
             assert direction
-            pg.event.post(pg.event.Event(consts.MOVE_TO_NEXT_ROOM,
-                                         {'direction': direction, 'next_coords': next_coords}))
+            pg.event.post(
+                pg.event.Event(
+                    consts.MOVE_TO_NEXT_ROOM,
+                    {'direction': direction, 'next_coords': next_coords}
+                    )
+                )
 
             # Реализовать закрытие двери после входа в секретку:
             # if self.to_room_type == consts.RoomsTypes.SECRET:
