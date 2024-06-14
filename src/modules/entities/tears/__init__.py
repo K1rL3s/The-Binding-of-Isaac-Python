@@ -1,1 +1,1 @@
-from src.modules.entities.tears.ExampleTear import ExampleTear
+from src.modules.entities.tears.example_tear import ExampleTear as ExampleTear

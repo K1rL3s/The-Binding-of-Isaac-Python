@@ -1,2 +1,11 @@
-from src.modules.entities.items import BlowBomb, Door, FirePlace, PickBomb, PickKey, PickMoney, Poop, Rock, Spikes, Web
-from src.modules.entities.tears import ExampleTear
+from src.modules.entities.items import BlowBomb as BlowBomb
+from src.modules.entities.items import Door as Door
+from src.modules.entities.items import FirePlace as FirePlace
+from src.modules.entities.items import PickBomb as PickBomb
+from src.modules.entities.items import PickKey as PickKey
+from src.modules.entities.items import PickMoney as PickMoney
+from src.modules.entities.items import Poop as Poop
+from src.modules.entities.items import Rock as Rock
+from src.modules.entities.items import Spikes as Spikes
+from src.modules.entities.items import Web as Web
+from src.modules.entities.tears import ExampleTear as ExampleTear

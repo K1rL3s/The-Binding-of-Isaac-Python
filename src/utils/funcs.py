@@ -1,17 +1,18 @@
 import os
+import sqlite3
 import sys
 from functools import cache
 
 import pygame as pg
-import sqlite3
-from src.consts import WALL_SIZE, GAME_WIDTH, CELL_SIZE, GAME_HEIGHT, Moves
+
+from src.consts import CELL_SIZE, GAME_HEIGHT, GAME_WIDTH, WALL_SIZE, Moves
 
 
 def resource_path(*relative_path, use_abs_path: bool = False):
     save_relative = relative_path
 
-    if not use_abs_path and getattr(sys, '_MEIPASS', False):
-        base_path = getattr(sys, '_MEIPASS')
+    if not use_abs_path and getattr(sys, "_MEIPASS", False):
+        base_path = sys._MEIPASS
         relative_path = relative_path[2:]
     else:
         base_path = os.path.abspath(".")
@@ -20,9 +21,11 @@ def resource_path(*relative_path, use_abs_path: bool = False):
 
 
 @cache
-def load_image(name: str,
-               colorkey: pg.Color | int | None = None,
-               crop_it: bool = False) -> pg.Surface:
+def load_image(
+    name: str,
+    colorkey: pg.Color | int | None = None,
+    crop_it: bool = False,
+) -> pg.Surface:
     """
     Загрузка изображения в pygame.Surface.
 
@@ -31,9 +34,11 @@ def load_image(name: str,
     :param crop_it: Обрезать ли изображение по прозрачному фону.
     :return: pygame.Surface
     """
-    fullname, save_rel, rel = resource_path('src', 'data', *name.split('/'))
+    fullname, save_rel, rel = resource_path("src", "data", *name.split("/"))
     if not os.path.isfile(fullname):
-        raise FileNotFoundError(f"Файл с изображением '{fullname}' не найден\n{save_rel}\n{rel}")
+        raise FileNotFoundError(
+            f"Файл с изображением '{fullname}' не найден\n{save_rel}\n{rel}",
+        )
     image = pg.image.load(fullname)
 
     if colorkey is not None:
@@ -59,9 +64,11 @@ def load_sound(name, return_path: bool = False) -> pg.mixer.Sound | str:
     :param return_path: Вернуть ли путь до файла вместо самого звука.
     :return: pygame.Sound или путь до файла
     """
-    fullname, save_rel, rel = resource_path('src', 'data', *name.split('/'))
+    fullname, save_rel, rel = resource_path("src", "data", *name.split("/"))
     if not os.path.isfile(fullname):
-        raise FileNotFoundError(f"Файл с звуком '{fullname}' не найден\n{save_rel}\n{rel}")
+        raise FileNotFoundError(
+            f"Файл с звуком '{fullname}' не найден\n{save_rel}\n{rel}",
+        )
     if return_path:
         return fullname
     sound = pg.mixer.Sound(fullname)
@@ -77,7 +84,7 @@ def crop(screen: pg.Surface) -> pg.Surface:
     :return: Обрезанное изображение.
     """
     pixels = pg.PixelArray(screen)
-    background = pixels[0][0]  # noqa
+    background = pixels[0][0]
     width, height = screen.get_width(), screen.get_height()
     min_x = width
     min_y = height
@@ -86,7 +93,7 @@ def crop(screen: pg.Surface) -> pg.Surface:
 
     for x in range(width):
         for y in range(height):
-            current = pixels[x][y]  # noqa
+            current = pixels[x][y]
             if current != background:
                 max_x = max(x, max_x)
                 max_y = max(y, max_y)
@@ -96,7 +103,9 @@ def crop(screen: pg.Surface) -> pg.Surface:
     return screen.subsurface((min_x, min_y, max_x - min_x, max_y - min_y))
 
 
-def pixels_to_cell(xy_pos: tuple[int, int] | tuple[float, float]) -> tuple[int, int] | None:
+def pixels_to_cell(
+    xy_pos: tuple[int, int] | tuple[float, float],
+) -> tuple[int, int] | None:
     """
     Переводит пиксели на экране в клетку комнаты.
 
@@ -104,7 +113,10 @@ def pixels_to_cell(xy_pos: tuple[int, int] | tuple[float, float]) -> tuple[int, 
     :return: Координаты в клетках.
     """
     x, y = xy_pos
-    if WALL_SIZE <= x < GAME_WIDTH - WALL_SIZE and WALL_SIZE <= y < GAME_HEIGHT - WALL_SIZE:
+    if (
+        WALL_SIZE <= x < GAME_WIDTH - WALL_SIZE
+        and WALL_SIZE <= y < GAME_HEIGHT - WALL_SIZE
+    ):
         x_cell = x - WALL_SIZE
         y_cell = y - WALL_SIZE
         return int(x_cell // CELL_SIZE), int(y_cell // CELL_SIZE)
@@ -124,8 +136,13 @@ def cell_to_pixels(xy_pos: tuple[int, int]) -> tuple[int, int]:
     return int(x), int(y)
 
 
-def cut_sheet(sheet: str | pg.Surface, columns: int, rows: int,
-              total: int = None, scale_sizes: tuple[int, int] = None) -> list[pg.Surface]:
+def cut_sheet(
+    sheet: str | pg.Surface,
+    columns: int,
+    rows: int,
+    total: int = None,
+    scale_sizes: tuple[int, int] = None,
+) -> list[pg.Surface]:
     """
     Загрузка шрифта.
 
@@ -141,15 +158,13 @@ def cut_sheet(sheet: str | pg.Surface, columns: int, rows: int,
     if isinstance(sheet, str):
         sheet = load_image(sheet)
 
-    rect = pg.Rect(
-        0, 0,
-        sheet.get_width() // columns,
-        sheet.get_height() // rows
-    )
+    rect = pg.Rect(0, 0, sheet.get_width() // columns, sheet.get_height() // rows)
 
     if scale_sizes:
-        scale_sizes = (scale_sizes[0] if scale_sizes[0] != -1 else rect.width,
-                       scale_sizes[1] if scale_sizes[0] != -1 else rect.height)
+        scale_sizes = (
+            scale_sizes[0] if scale_sizes[0] != -1 else rect.width,
+            scale_sizes[1] if scale_sizes[0] != -1 else rect.height,
+        )
 
     for y in range(rows):
         if total is not None and len(frames) == total:
@@ -177,58 +192,58 @@ def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
     :param second_rect: тело, с которым произошло столкновение
     """
     if (
-            first_rect.collidepoint(second_rect.midright) and
-            (
-                    first_rect.collidepoint(second_rect.topright) or
-                    first_rect.collidepoint(second_rect.bottomright)
-            ) and
-            not first_rect.collidepoint(second_rect.midleft) and
-            (
-                    not first_rect.collidepoint(second_rect.topleft) or
-                    not first_rect.collidepoint(second_rect.bottomleft)
-            )
+        first_rect.collidepoint(second_rect.midright)
+        and (
+            first_rect.collidepoint(second_rect.topright)
+            or first_rect.collidepoint(second_rect.bottomright)
+        )
+        and not first_rect.collidepoint(second_rect.midleft)
+        and (
+            not first_rect.collidepoint(second_rect.topleft)
+            or not first_rect.collidepoint(second_rect.bottomleft)
+        )
     ):
         return Moves.RIGHT
 
     if (
-            first_rect.collidepoint(second_rect.midleft) and
-            (
-                    first_rect.collidepoint(second_rect.topleft) or
-                    first_rect.collidepoint(second_rect.bottomleft)
-            ) and
-            not first_rect.collidepoint(second_rect.midright) and
-            (
-                    not first_rect.collidepoint(second_rect.topright) or
-                    not first_rect.collidepoint(second_rect.bottomright)
-            )
+        first_rect.collidepoint(second_rect.midleft)
+        and (
+            first_rect.collidepoint(second_rect.topleft)
+            or first_rect.collidepoint(second_rect.bottomleft)
+        )
+        and not first_rect.collidepoint(second_rect.midright)
+        and (
+            not first_rect.collidepoint(second_rect.topright)
+            or not first_rect.collidepoint(second_rect.bottomright)
+        )
     ):
         return Moves.LEFT
 
     if (
-            first_rect.collidepoint(second_rect.midbottom) and
-            (
-                    first_rect.collidepoint(second_rect.bottomleft) or
-                    first_rect.collidepoint(second_rect.bottomright)
-            ) and
-            not first_rect.collidepoint(second_rect.midtop) and
-            (
-                    not first_rect.collidepoint(second_rect.topleft) or
-                    not first_rect.collidepoint(second_rect.topright)
-            )
+        first_rect.collidepoint(second_rect.midbottom)
+        and (
+            first_rect.collidepoint(second_rect.bottomleft)
+            or first_rect.collidepoint(second_rect.bottomright)
+        )
+        and not first_rect.collidepoint(second_rect.midtop)
+        and (
+            not first_rect.collidepoint(second_rect.topleft)
+            or not first_rect.collidepoint(second_rect.topright)
+        )
     ):
         return Moves.DOWN
 
     if (
-            first_rect.collidepoint(second_rect.midtop) and
-            (
-                    first_rect.collidepoint(second_rect.topleft) or
-                    first_rect.collidepoint(second_rect.topright)
-            ) and
-            not first_rect.collidepoint(second_rect.midbottom) and
-            (
-                    not first_rect.collidepoint(second_rect.bottomleft) or
-                    not first_rect.collidepoint(second_rect.bottomright)
-            )
+        first_rect.collidepoint(second_rect.midtop)
+        and (
+            first_rect.collidepoint(second_rect.topleft)
+            or first_rect.collidepoint(second_rect.topright)
+        )
+        and not first_rect.collidepoint(second_rect.midbottom)
+        and (
+            not first_rect.collidepoint(second_rect.bottomleft)
+            or not first_rect.collidepoint(second_rect.bottomright)
+        )
     ):
         return Moves.UP
 
@@ -248,26 +263,31 @@ def get_direction(second_rect: pg.Rect, first_rect: pg.Rect):
 
 
 def create_data_base():
-    con = sqlite3.connect(resource_path('stats.sqlite', use_abs_path=True)[0])
+    con = sqlite3.connect(resource_path("stats.sqlite", use_abs_path=True)[0])
     cur = con.cursor()
-    cur.execute("""
+    cur.execute(
+        """
             CREATE TABLE IF NOT EXISTS game_over (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             win_or_loose STRING,
             score INT);
-            """)
+            """,
+    )
     con.commit()
 
 
 def add_db(win_or_loose: str, score: int):
-    con = sqlite3.connect(resource_path('stats.sqlite', use_abs_path=True)[0])
+    con = sqlite3.connect(resource_path("stats.sqlite", use_abs_path=True)[0])
     cur = con.cursor()
-    cur.execute(f"""INSERT INTO game_over (win_or_loose, score) VALUES (?, ?)""", (win_or_loose, score))
+    cur.execute(
+        """INSERT INTO game_over (win_or_loose, score) VALUES (?, ?)""",
+        (win_or_loose, score),
+    )
     con.commit()
 
 
 def select_from_db():
-    con = sqlite3.connect(resource_path('stats.sqlite', use_abs_path=True)[0])
+    con = sqlite3.connect(resource_path("stats.sqlite", use_abs_path=True)[0])
     cur = con.cursor()
-    res = cur.execute(f"""SELECT * FROM game_over""").fetchall()
+    res = cur.execute("""SELECT * FROM game_over""").fetchall()
     return res

@@ -1,4 +1,4 @@
-from src.modules.enemies.ExampleEnemy import ExampleEnemy
-from src.modules.enemies.Guts import Guts
-from src.modules.enemies.Host import Host
-from src.modules.enemies.Maw import Maw
+from src.modules.enemies.example_enemy import ExampleEnemy as ExampleEnemy
+from src.modules.enemies.gust import Guts as Guts
+from src.modules.enemies.host import Host as Host
+from src.modules.enemies.maw import Maw as Maw

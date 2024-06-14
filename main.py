@@ -8,7 +8,7 @@ pg.font.init()
 pg.mixer.init()
 screen = pg.display.set_mode((consts.WIDTH, consts.HEIGHT))
 
-from src.modules.Game import Game, start_game
+from src.modules.game import Game, start_game
 
 
 def main():
@@ -23,5 +23,5 @@ def main():
     # pg.quit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

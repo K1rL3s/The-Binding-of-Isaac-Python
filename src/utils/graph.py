@@ -16,10 +16,14 @@ def valid_coords(x: int, y: int, width: int, height: int) -> bool:
     return width > x >= 0 and height > y >= 0
 
 
-def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | str]],
-                         *,
-                         ignore_secret: bool = False,
-                         use_diagonals: bool = False) -> list[tuple[int, int]]:
+def get_neighbors_coords(
+    x: int,
+    y: int,
+    rooms: list[list[consts.RoomsTypes | str]],
+    *,
+    ignore_secret: bool = False,
+    use_diagonals: bool = False,
+) -> list[tuple[int, int]]:
     """
     Получение координат клеток-соседей, в которые можно пройти.
 
@@ -37,15 +41,21 @@ def get_neighbors_coords(x: int, y: int, rooms: list[list[consts.RoomsTypes | st
     ignored = [consts.RoomsTypes.EMPTY]
     if ignore_secret:
         ignored.append(consts.RoomsTypes.SECRET)
-    return [(x + i, y + j) for i, j in moves if
-            valid_coords(x + i, y + j, map_width, map_height) and rooms[y + j][x + i] not in ignored]
+    return [
+        (x + i, y + j)
+        for i, j in moves
+        if valid_coords(x + i, y + j, map_width, map_height)
+        and rooms[y + j][x + i] not in ignored
+    ]
 
 
 # Попытаться сделать ход по диагонали, если соседние клетки в эту сторону свободны
 # мб надо побаловаться с созданием графа
-def make_path_to_cell(graph: dict[tuple[int, int]],
-                      xy_start: tuple[int, int],
-                      xy_end: tuple[int, int]) -> bool | list[tuple[int, int]]:
+def make_path_to_cell(
+    graph: dict[tuple[int, int]],
+    xy_start: tuple[int, int],
+    xy_end: tuple[int, int],
+) -> bool | list[tuple[int, int]]:
     """
     Проверка, можно ли дойти от клетки до стартовой комнаты.
 
@@ -62,11 +72,11 @@ def make_path_to_cell(graph: dict[tuple[int, int]],
             break
         next_cells = graph.get(current_cell, [])
         for next_cell in next_cells:
-            if next_cell not in visited.keys():
+            if next_cell not in visited:
                 queue.append(next_cell)
                 visited[next_cell] = current_cell
 
-    if xy_end not in visited.keys():
+    if xy_end not in visited:
         return False
 
     way: list[tuple[int, int]] = []
@@ -78,9 +88,11 @@ def make_path_to_cell(graph: dict[tuple[int, int]],
     return way
 
 
-def make_neighbors_graph(rooms: list[list[consts.RoomsTypes | str]],
-                         ignore_secret: bool = False,
-                         use_diagonals: bool = False) -> dict[tuple[int, int], list[tuple[int, int]]]:
+def make_neighbors_graph(
+    rooms: list[list[consts.RoomsTypes | str]],
+    ignore_secret: bool = False,
+    use_diagonals: bool = False,
+) -> dict[tuple[int, int], list[tuple[int, int]]]:
     """
     Генерация графа соседей.
     Используется как для построения графа всей карты, так и для построения графа конкретной комнаты,
@@ -94,11 +106,20 @@ def make_neighbors_graph(rooms: list[list[consts.RoomsTypes | str]],
     :param use_diagonals: Использовать ли диагональные пути.
     :return: Графоподобный словарь (координаты: список координат соседей).
     """
-    graph = collections.defaultdict(list)  # dict[tuple[int, int], list[tuple[int, int]]]
+    graph = collections.defaultdict(
+        list,
+    )  # dict[tuple[int, int], list[tuple[int, int]]]
     # клетка -> список соседей, в которые можно пройти
     for y, row in enumerate(rooms):
         for x, col in enumerate(row):
             if col != consts.RoomsTypes.EMPTY:
-                graph[(x, y)].extend(get_neighbors_coords(x, y, rooms,
-                                                          ignore_secret=ignore_secret, use_diagonals=use_diagonals))
+                graph[(x, y)].extend(
+                    get_neighbors_coords(
+                        x,
+                        y,
+                        rooms,
+                        ignore_secret=ignore_secret,
+                        use_diagonals=use_diagonals,
+                    ),
+                )
     return graph

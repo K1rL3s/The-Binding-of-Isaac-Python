@@ -1,0 +1,4 @@
+black==24.4.2
+ruff==0.4.9
+isort==5.13.2
+pre-commit==3.5.0

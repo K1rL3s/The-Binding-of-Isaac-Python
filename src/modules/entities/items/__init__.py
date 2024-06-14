@@ -1,14 +1,14 @@
-from src.modules.entities.items.BlowBomb import BlowBomb
-from src.modules.entities.items.Door import Door
-from src.modules.entities.items.FirePlace import FirePlace
-from src.modules.entities.items.PickBomb import PickBomb
-from src.modules.entities.items.PickKey import PickKey
-from src.modules.entities.items.PickMoney import PickMoney
-from src.modules.entities.items.Poop import Poop
-from src.modules.entities.items.Rock import Rock
-from src.modules.entities.items.Spikes import Spikes
-from src.modules.entities.items.Web import Web
-from src.modules.entities.items.Pedestal import Pedestal
-from src.modules.entities.items.PickHeart import PickHeart
-from src.modules.entities.items.Trapdoor import Trapdoor
-from src.modules.entities.items.ShopItem import ShopItem
+from src.modules.entities.items.blow_bomb import BlowBomb as BlowBomb
+from src.modules.entities.items.door import Door as Door
+from src.modules.entities.items.fire_place import FirePlace as FirePlace
+from src.modules.entities.items.pedestal import Pedestal as Pedestal
+from src.modules.entities.items.pick_bomb import PickBomb as PickBomb
+from src.modules.entities.items.pick_heart import PickHeart as PickHeart
+from src.modules.entities.items.pick_key import PickKey as PickKey
+from src.modules.entities.items.pick_money import PickMoney as PickMoney
+from src.modules.entities.items.poop import Poop as Poop
+from src.modules.entities.items.rock import Rock as Rock
+from src.modules.entities.items.shop_item import ShopItem as ShopItem
+from src.modules.entities.items.spikes import Spikes as Spikes
+from src.modules.entities.items.trapdoor import Trapdoor as Trapdoor
+from src.modules.entities.items.web import Web as Web
